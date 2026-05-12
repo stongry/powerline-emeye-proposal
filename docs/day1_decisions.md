@@ -240,16 +240,22 @@ EM Eye 论文(Appendix F)指出 BPF 是"可改进项"但主实验不用。论文
 
 ### Phase 0 仍需采购/借用清单(写进提案 §6 NRE 部分)
 
+**明确约束**:**候选人不采购任何商用 RF 电流探头**。
+
 被雇佣后 Week 1 内需采购或借用的:
 
 | 设备 | 用途 | 备注 |
 |---|---|---|
-| Tekbox TBCP2-1000 宽带电流探头(100kHz-1GHz) | Phase 0 电源线传导验证 | 实验室如已有可直接借用 |
-| Raspberry Pi 3B+ / 4B + RPi Camera V1 | Phase 0 受害设备(对齐论文) | 总成本 < ¥500 |
-| 频谱仪 / 矢网(VNA) | 模拟前端调试 + CT 设计验证 | 实验室通用设备 |
-| 隔离 AC 220V 工作台插座 | 安全调试电源线耦合 | 实验室通用 |
+| 实验室宽带电流探头 / LISN | Phase 0 电源线传导验证(首选 Path A) | 借用实验室公共资源 |
+| Fair-Rite 磁芯样品集 + Teflon 线 | 自研最小 CT (Path B,Path A 不可行时) | ~¥600,1-2 天 |
+| Raspberry Pi 4B + RPi Camera V1 ×2 | Phase 0 受害设备(对齐论文) | ~¥1,200 |
+| 频谱仪 / 矢网(VNA) | 模拟前端调试 + CT 设计验证 | 借用实验室公共资源 |
+| 隔离变压器 1:1 220V | 安全调试电源线耦合 | 实验室如无,采购 ¥1,200 |
 
-**关键决策**:**Phase 0 用商用 Tekbox 探头**,不自研 CT。等 Phase 0 验证电源线传导有可观信号后,Phase 1 再自研便携 CT。
+**关键决策**:
+- **Phase 0 探测策略 Path A**:依赖实验室公共电流探头/LISN(首选)
+- **Phase 0 探测策略 Path B**:自研最小 CT(Fair-Rite 磁芯 + 5-7 匝绕组,< ¥600),验证范围 1 MHz – 300 MHz,覆盖 EM Eye Table II 中过半目标
+- **不采购** Tekbox / Fischer / Pearson 等商用探头
 
 ---
 
