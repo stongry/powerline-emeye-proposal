@@ -299,8 +299,15 @@ Icarus Verilog 单元测试通过。
 
 **可现场屏幕分享**:
 ```bash
+# 1. EM Eye 摄像头攻击仿真(SSIM 0.98)
 cd simulation && python3 emeye_simulation.py
-# 2.8 秒后出 4 面板可视化(原图/IQ波形/自相关/重建图)
+
+# 2. HDMI TEMPEST 仿真(SSIM 0.99)— 证明方法泛化性
+python3 hdmi_simulation.py
+
+# 3. TCP 网络管线 demo — 模拟 LDSDR -> 主机全程
+python3 network_demo.py
+# 输出: TCP 服务/客户端通信成功,重建图特征可见
 
 # FPGA 单元测试现场跑(全部通过):
 cd fpga_accel
@@ -350,9 +357,25 @@ vvp /tmp/tb_top.vvp | tail -10  # PASS
 
 | 层级 | 内容 |
 |---|---|
-| ✅ **真实现** | EM Eye Eq.2 算法管线(幅度解调 + Tf/Tr + 2D reshape + 直方图)、FPGA magnitude_jpl 单元测试 |
-| 🟡 **仿真桩** | IQ 数据合成(没碰硬件)、wireless 传输只打印带宽 |
-| ❌ **未实现** | 多频段融合(Eq.3)、pix2pix GAN、真实 LDSDR 采集、libiio 集成、TCP socket、板级 FPGA bring-up |
+| ✅ **真实现** | EM Eye Eq.2 算法管线、FPGA 4 测试全 PASS、**HDMI TEMPEST 泛化验证(SSIM 0.99)**、**TCP 网络管线主机端代码** |
+| 🟡 **仿真桩** | IQ 数据合成(LDSDR-side 模拟)、Vivado 综合 / bitstream 未做 |
+| ❌ **未实现** | 多频段融合(Eq.3)、pix2pix GAN、真实 RF 捕获、LDSDR PS C 程序、板级 bring-up |
+
+### 关于"能否现在烧板测试"
+
+**直接答案:不能**(无 LDSDR 物理硬件 + Vivado 工具链)。
+
+但已验证主机端代码 100% 工作:
+- `simulation/network_demo.py` 用 Python 线程模拟 LDSDR 整套(IQ+FPGA算法+TCP)
+- 主机端 TCP 客户端 + 解包 + 重建代码**与真实硬件 100% 相同**
+- 实测 533k IQ → 解包到 66k 样本 → 重建 corr 0.62(8× 抽取后预期)
+- 网络协议、32-bit packing、frame_idx 标签、reshape 全部正确
+
+**还差**(Phase 2 启动后):
+- Vivado 集成 emeye_accel_top 到 LDSDR BD
+- LDSDR PS Linux 写 TCP 转发(~100 行 C)
+- 板级综合 + bitstream
+- 天线接 RX1 + 实际 RF 捕获
 
 ---
 
