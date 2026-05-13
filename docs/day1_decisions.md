@@ -86,51 +86,109 @@
 
 ---
 
-## 决策 5:SDR + 主控
+## 决策 5:SDR(LDSDR)— 主控不需要,直接 Ethernet 到 PC(方案 A)
 
-**SDR 选定:ADALM-Pluto SOM**(AD9363 + Zynq xc7z010)
+### SDR 选定:LDSDR 7010 rev2.1(候选人已 BYO)
 
-| 选项 | 频段 | BW | 位数 | 价格 | 决定 |
-|---|---|---|---|---|---|
-| **ADALM-Pluto SOM** | 70M–6G(解锁) | 56 MHz | 12-bit | ~$150 | ✅ **选定** |
-| LimeSDR Mini 2.0 | 10M–3.5G | 30.72 MHz | 12-bit | ~$400 | 备选 |
-| HackRF One | 1M–6G | 20 MHz | 8-bit | ~$300 | ❌ 动态范围不够 |
-| RTL-SDR v4 | 500k–1.7G | 2.4 MHz | 8-bit | ~$40 | ❌ 8-bit + 单通道 |
+**重大更新**:从原计划的 ADALM-Pluto 升级为 LDSDR,因为这就是候选人手头实际使用的板子(OFDM+LDPC 项目同款)。
 
-**关键差异化**:**候选人有 Pluto Zynq-7010 完整 HDL 实战经验**(OFDM+LDPC 收发机,BER=0 板级验证)→ 具备 Phase 2 修改 Pluto 内部 FPGA 固件做 |I+jQ| 解调 + 帧同步的能力,这是大多数 RA 候选人做不到的。
+**LDSDR 关键能力**(比标准 Pluto 增强):
 
-**主控选定:Raspberry Pi CM4 Lite 8GB + WiFi6**
+| 项 | LDSDR 7010 | 标准 ADALM-Pluto | 差异 |
+|---|---|---|---|
+| 主芯片 | XC7Z010CLG400-2 | 同 | — |
+| RF 收发器 | AD9363(解锁到 AD9361,70 MHz – 6 GHz) | 同 | — |
+| 内存 | **512 MB DDR3** | 256 MB | 2 倍 |
+| 网络 | **千兆 Ethernet + USB OTG** | 仅 USB 2.0 | **巨大优势** |
+| RF 端口 | **2 TX + 2 RX(2T2R)** | 1 TX + 1 RX | 双 RX 通道 |
+| 扩展 I/O | 38 pin PL + 8 pin PS | 极少 | 可控外部开关 |
+| 启动 | TF 卡 + 32M Flash | 内嵌 Flash | 调试方便 |
 
-| 候选 | ARM 核 | RAM | WiFi | 决定 |
-|---|---|---|---|---|
-| **Raspberry Pi CM4 8GB Lite WiFi** | Cortex-A72 × 4 | 8 GB | 内置 802.11ac/n | ✅ **选定** |
-| NVIDIA Jetson Nano 4GB | Cortex-A57 × 4 | 4 GB | 外置 | 备选(GPU 加速时可用) |
-| RK3568 + RKNN | Cortex-A55 × 4 | 4-8 GB | 外置 | 候选人最熟,但生态弱于 CM4 |
+### AD9363 内部 RX 链(自带 LNA / DDC / ADC)
+
+| 块 | 参数 | 作用 |
+|---|---|---|
+| 内部 LNA | -3 ~ +14.5 dB 可调 | 第一级增益 |
+| 内部混频器 + IF VGA | 0 ~ 50 dB | 中频放大 |
+| 内部 ADC | 12-bit, 61.44 MSPS | 数字化 |
+| **内部 DDC + FIR** | 可配,带宽 200 kHz – 56 MHz | **替代我们外置 SAW BPF** |
+| 内部 NF | 2.5 dB @ 低频, 4-5 dB @ 高频 | — |
+
+**关键含义**:外置 SAW BPF 组(Stage 2)可以**降级为可选/取消**,因为 AD9361 内部 DDC + FIR 已经提供窄带选择性。
+
+### 主控:**取消 CM4,直接 LDSDR Ethernet → 笔记本/PC**(方案 A)
+
+| 原方案 | 方案 A(选定) | 节省 |
+|---|---|---|
+| LDSDR → CM4 → WiFi 6 → PC | LDSDR → 千兆 Ethernet → PC/笔记本 | ¥1,000(CM4 删除) |
+
+理由:
+- LDSDR 千兆 Ethernet 提供 800 Mbps 实际吞吐 → 双通道 IQ(384 Mbps)完全够
+- LDSDR 内部 Zynq PS 端跑 Linux,完全可以承担 CM4 角色
+- "无线"需求由 PC 笔记本自带的 WiFi 满足,**不需要额外硬件**
+- Phase 1 实验室场景下,PC + Ethernet 是标准工作流
+- Phase 2(便携场景)再考虑加 USB-WiFi dongle 到 LDSDR
+
+### LNA 设计微调:理由从"补 NF"变成"扩 IIP3"
+
+ERA-4SM+ × 2 外置 LNA(BYO,实测 +28 dB)仍保留,但作用重新定义:
+
+| 配置 | 链路 NF | AD9363 内部增益 | 系统 IIP3 |
+|---|---|---|---|
+| 仅 AD9363(最大增益) | 3-5 dB | 70 dB | -10 dBm |
+| **外置 ERA-4SM+ ×2 + AD9363(最小增益)** | 3.5 dB | 30 dB | **+10 dBm**(↑ 20 dB) |
+
+电源线场景带强干扰(AM/FM 等),**高 IIP3 是关键**,防止三阶交调污染目标频段。
 
 ---
 
-## 决策 6:无线传输 + 处理
+## 决策 6:数据传输(方案 A:千兆 Ethernet,无中间主控)
 
-**选定:v1 原始 IQ over WiFi 6**(板上幅度解调 v2 作为路线图)
+**选定:LDSDR 千兆 Ethernet → PC/笔记本(原始 IQ 直传,无线由 PC WiFi 承担)**
 
-带宽估算:
-- v1 原始 IQ:8 MSPS × 2(I+Q) × 12 bit = **192 Mbps**,WiFi 6 实测 200+ Mbps,**可行**
-- v2 板上 |I+jQ| 解调流:8 MSPS × 8 bit = **64 Mbps**,WiFi 4 实测 30 Mbps 不够,需要至少 WiFi 5
-- v3 板上完整重建,传图像:30 fps × 200 × 1000 × 1 byte = **48 Mbps**,WiFi 4 都够
+### 带宽估算(完全充足)
 
-| 方案 | 无线 BW | 上位机算力 | 算法灵活性 | 延迟 | 阶段 |
-|---|---|---|---|---|---|
-| WiFi 6 原始 IQ | 192 Mbps | 高 | 最大 | 高 | ✅ **v1** |
-| 板上幅度解调 + Tf/Tr 帧同步,传降速流 | 64 Mbps | 中 | 设计时锁定 | 低 | **v2 路线图** |
-| 板上完整 pix2pix 重建 | <10 Mbps | 低 | 设计时锁定 | 低 | v3 未来工作 |
+| 数据流 | 速率 | LDSDR Ethernet(800 Mbps) | 评价 |
+|---|---|---|---|
+| 单通道 IQ(8 MSPS × 2 × 12 bit) | 192 Mbps | ✅ 占用 24% | 余量充足 |
+| **双通道 IQ(2 × 8 MSPS × 2 × 12 bit)** | **384 Mbps** | ✅ 占用 48% | **支持 2RX 多频段融合** |
+| 单通道极限(56 MSPS) | 1344 Mbps | ❌ 超过 | 不会用到 |
+| 板上幅度解调流(双通道,8-bit) | 128 Mbps | ✅ 占用 16% | Phase 2 优化 |
 
-**v2 实现路径**(写进提案 Sidebar):
-- 利用 Pluto 内置 Zynq-7010 PL(Programmable Logic)实现:
-  - 模块 A:|I+jQ| 整数幅度计算(CORDIC 或近似 max+min/4)
-  - 模块 B:30 Hz 周期信号自相关,粗估 Tf
-  - 模块 C:输出 8-bit 解调流(192 → 64 Mbps,压缩 3×)
-- 主控 CM4 接管:精细 Tf/Tr 估计、行裁剪、多频段融合、pix2pix 推理
-- **候选人有 Pluto + Zynq HDL 经验**,可在 Phase 2(3 个月内)完成
+### 传输架构(方案 A)
+
+```
+[信号链] → [LDSDR AD9363 RX1+RX2] → [千兆以太网] → [PC/笔记本]
+                                                       │
+                                                       │ 跑 GNURadio / Python
+                                                       │ 算法管线:Tf/Tr 估计 + 融合 + pix2pix
+                                                       │
+                                                       └──→ "无线"由 PC 自带 WiFi 承担
+                                                            (Phase 1 不算独立需求)
+```
+
+### LDSDR 2T2R 的关键利用
+
+**EM Eye 论文 Eq. 3 多频段融合**原本需要时分采样不同频点。LDSDR 2RX 让我们可以**同时采样**两个目标频点:
+
+```
+LDSDR 内部 AD9361:
+   ┌── RX1 → LO = 204 MHz → 8 MSPS IQ 流 1 ──┐
+   │                                          ├─→ Ethernet → PC 并行融合
+   └── RX2 → LO = 255 MHz → 8 MSPS IQ 流 2 ──┘
+```
+
+这是论文也没做到的(他们用单 USRP 时分),**写进提案是 v1 baseline 亮点,不是 v2 路线图**。
+
+### Phase 2 板上加速路线图(候选人差异化亮点)
+
+利用 LDSDR Zynq-7010 PL 实现:
+- 模块 A:|I+jQ| 整数幅度计算(CORDIC)
+- 模块 B:30 Hz 周期自相关,粗估 Tf
+- 模块 C:输出双通道 8-bit 解调流(384 → 128 Mbps)
+- 主机端只做精修 + 重建,Python 算力轻量化
+
+**候选人 OFDM+LDPC LDSDR HDL 经验** = 直接对应该平台,**Phase 2(3 个月内)可完成**。
 
 ---
 
