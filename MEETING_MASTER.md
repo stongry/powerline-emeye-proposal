@@ -15,7 +15,8 @@
 - [🔴 必问的 4 个核心问题](#-必问的-4-个核心问题)
 - [💬 PhD 可能问你的 + 回答模板](#-phd-可能问你的--回答模板)
 - [✅ 仿真和 FPGA 实际状态](#-仿真和-fpga-实际状态)
-- [🧮 推导追问参考](#-推导追问参考)
+- [🧮 推导追问参考(RF/模拟)](#-推导追问参考rf模拟)
+- [🔧 FPGA 推导追问参考](#-fpga-推导追问参考)
 - [🚨 话术红线(不可说的)](#-话术红线不可说的)
 - [⏱️ 60 分钟时间分配](#️-60-分钟时间分配)
 - [📝 会后立即要做的](#-会后立即要做的)
@@ -355,7 +356,7 @@ vvp /tmp/tb_top.vvp | tail -10  # PASS
 
 ---
 
-## 🧮 推导追问参考
+## 🧮 推导追问参考(RF/模拟)
 
 ### 1. CT 转移函数
 
@@ -424,6 +425,148 @@ NF_total(dB) = 10·log(2.29) = 3.6 dB
 50Ω,fc = 30 MHz:
 - C₁ = 150 pF, L₂ = 150 nH, C₃ = 56 pF, L₄ = 330 nH
 - 50 Hz 衰减:理论 -462 dB,实际 -100 ~ -120 dB
+
+---
+
+## 🔧 FPGA 推导追问参考
+
+> 详见 `fpga_accel/doc/fpga_derivations.md`(530 行 8 章节)。这里是会议速查精简版。
+
+### F1. JPL 幅度近似
+
+**公式**:
+$$\text{mag}_{\text{JPL}} = \max(|I|, |Q|) + \frac{3}{8} \cdot \min(|I|, |Q|)$$
+
+**为什么 0.375 (= 3/8)**:
+- $\sqrt{1+r^2}$ 在 $r \in [0,1]$ 最优线性近似系数 ~0.4
+- 0.375 = **1/4 + 1/8 = (>>2) + (>>3)** → **纯移位 + 加法,零 DSP**
+
+**实测精度**(60 个测试向量):
+- 平均误差 **4.29%**
+- 峰值误差 **6.80%**(JPL 文献规格 ~7% 内)
+- HW vs SW 全部在 2 LSB 内(移位截断容差)
+
+**追问**:"为什么不用 CORDIC?"
+> "CORDIC 600 LUTs + 5 DSPs + 16 cycles,JPL 73 LUTs + 0 DSP + 3 cycles。EM Eye 不需要绝对精度(链路 NF 3.5 dB 已主导),JPL 23 dB SNR 在系统噪底之上不是瓶颈。"
+
+---
+
+### F2. Boxcar 抽取器传递函数
+
+**公式**:
+$$H(z) = \frac{1}{N} \cdot \frac{1 - z^{-N}}{1 - z^{-1}}, \quad |H(e^{j\omega})| = \frac{1}{N} \left|\frac{\sin(\omega N/2)}{\sin(\omega/2)}\right|$$
+
+**关键性质**(N=8, fs=8 MSPS, fo=1 MSPS):
+- 零点位置:$f_{\text{null}} = k \cdot f_s/N$ = **1, 2, 3, 4 MHz**
+- 通带 sinc droop @ fo/2: **−3.92 dB**
+- 实际混叠抑制(受 12-bit 量化限):约 **−50 dB**
+
+**追问**:"够不够?"
+> "对 EM Eye 信号窄带特性够用。如果需要更深抗混叠,升级到 3 阶 CIC,但代价 4× LUT。"
+
+---
+
+### F3. 帧同步 FSM
+
+**状态机**:
+```
+ACTIVE → BLANK: avg_amp < threshold 持续 64 次 (BLANK_MIN)
+BLANK → ACTIVE: avg_amp ≥ threshold(立即,触发 frame_start + idx++)
+```
+
+**关键参数**:
+- 运行平均窗口 W = 16(平滑短噪声)
+- BLANK_MIN = 64(确认 blanking,防误判)
+- 1 MSPS 抽取后:64 × 1μs = **64 μs 最小检测窗**
+
+**追问**:"假阳性率?"
+> "假阳性需要噪声平均值连续 64 个样本低于阈值,概率远小于帧率 30 Hz。Phase 0 实测后可调阈值。"
+
+---
+
+### F4. AXI-Stream Pending Buffer
+
+**问题**:`ch1_sync_valid` 和 `ch2_sync_valid` 都是 1-cycle 脉冲,**抽取边界对齐**,无 buffer 会丢一个。
+
+**修复**:每通道 1-entry pending buffer + 优先级 round-robin + 回退。
+
+**深度证明**:输入速率 1/(8 cycles) per channel,输出速率 1/cycle,**输出 >> 输入,1 深度够用**。
+
+**实测**(tb_emeye_accel):Phase 1 输入 1024 → 输出 128+128 = 256(完美 8× 抽取,**零丢失**)。
+
+---
+
+### F5. 流水线时延
+
+| 模块 | Cycles |
+|---|---|
+| magnitude_jpl | 3 (abs / max-min / arithmetic) |
+| cic_decimator | 2 + 抽取间隔(8) |
+| frame_sync | 1 |
+| AXI 输出 | 1 (pending buffer) |
+| **端到端** | **7 (最优) ~ 14 (最坏)** |
+
+在 8 MHz 时钟下:**875 ns ~ 1.75 μs**。相对帧周期 33.3 ms **可忽略**。
+
+---
+
+### F6. 资源估算(XC7Z010 -2)
+
+| 模块 | LUT | FF | BRAM | DSP |
+|---|---|---|---|---|
+| magnitude_jpl × 2 | 160 | 96 | 0 | 0 |
+| cic_decimator × 2 | 100 | 60 | 0 | 0 |
+| frame_sync × 2 | 240 | 120 | 0 | 0 |
+| AXI 输出 + buffer | 100 | 200 | 1 | 0 |
+| **总计** | **600** | **476** | **1** | **0** |
+| **占 XC7Z010** | **3.4%** | 1.3% | 1.7% | 0% |
+
+留 **95%+** 资源给 Phase 3 多频段融合、硬件自相关、ML 推理。
+
+**追问 LUT 数怎么算的**:`fpga_accel/doc/fpga_derivations.md §6` 有逐项分解。
+
+---
+
+### F7. 带宽压缩
+
+| 节点 | 速率 |
+|---|---|
+| AD9363 IQ(2 ch × 8 MSPS × 12 bit × 2 IQ) | 384 Mbps |
+| magnitude 后 | 192 Mbps |
+| 抽取 8× 后 | **24 Mbps** |
+| AXI-Stream packed(2 ch × 1 MSPS × 32 bit) | 32 Mbps |
+
+**压缩比**:**384 / 24 = 16×**(纯数据)或 **384 / 32 = 12×**(含 packing)
+
+**千兆 Ethernet 余量**:800 Mbps / 32 Mbps = **25× headroom**。
+
+---
+
+### F8. 仿真测试结果(全部 PASS)
+
+| 测试 | 结果 | 关键指标 |
+|---|---|---|
+| `tb_magnitude_jpl` | **60/60 PASS** | 平均 4.29%,峰值 6.80% |
+| `tb_cic_decimator` | **11/11 PASS** | constant / ramp / alternating 全精确 |
+| `tb_frame_sync` | **5/5 PASS** | 4 frame_start 触发,short blanking 正确忽略 |
+| `tb_emeye_accel`(顶层) | **PASS** | 1156 AXI 输出,4 frame_starts,**0 丢失** |
+
+仿真过程**发现并修复 1 个真实 bug**:顶层 round-robin 无缓冲 → 加 pending buffer 后 100% 通过。
+
+---
+
+### F9. 8 个最可能被追问的 FPGA 问题
+
+| 问题 | 一句话答案 |
+|---|---|
+| Q: 0.375 怎么来的? | 1/4+1/8 = 移位实现,零 DSP,JPL 文献最优系数 |
+| Q: CORDIC 不行吗? | 600 LUTs + 5 DSPs vs 我们 73 LUTs + 0 DSP,EM Eye 不需精度 |
+| Q: Boxcar 混叠抑制? | 零点 1-4 MHz,实际 -50 dB(12-bit 限制) |
+| Q: BLANK_MIN=64 怎么选? | 64 μs 检测窗,真实 blanking 50-200 μs,Phase 0 实测后微调 |
+| Q: 为什么要 buffer? | 1-cycle 脉冲在抽取边界冲突,1-depth pending 够用,**实测零丢失** |
+| Q: 端到端时延? | 7-14 cycles = 875 ns-1.75 μs,相对 Tf 33ms 可忽略 |
+| Q: 600 LUT 怎么算? | 160+100+240+100,逐项推导在 derivations.md §6 |
+| Q: JPL 23 dB SNR 够吗? | 链路 NF 3.5 dB 主导整链 SNR,JPL 在噪底之上不是瓶颈 |
 
 ---
 
