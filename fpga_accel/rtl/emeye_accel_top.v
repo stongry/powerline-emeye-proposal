@@ -174,35 +174,84 @@ module emeye_accel_top #(
     );
 
     // ============================================================
-    // Round-robin AXI-Stream output
-    // (interleaves ch1 and ch2 samples)
+    // Round-robin AXI-Stream output with 1-deep pending buffer
+    // per channel (avoids losing samples when both channels arrive
+    // simultaneously)
     // ============================================================
-    reg ch_select;  // 0 = ch1, 1 = ch2
+    reg [IQ_WIDTH-1:0]     ch1_pend_mag, ch2_pend_mag;
+    reg [FRAME_IDX_W-1:0]  ch1_pend_idx, ch2_pend_idx;
+    reg                    ch1_pend_start, ch2_pend_start;
+    reg                    ch1_pending, ch2_pending;
+    reg                    ch_select;  // 0 = next is ch1, 1 = next is ch2
 
     always @(posedge clk) begin
         if (!rst_n) begin
-            m_axis_tdata  <= 32'b0;
-            m_axis_tvalid <= 1'b0;
-            m_axis_tlast  <= 1'b0;
-            ch_select     <= 1'b0;
+            ch1_pending    <= 1'b0;
+            ch2_pending    <= 1'b0;
+            ch1_pend_mag   <= {IQ_WIDTH{1'b0}};
+            ch2_pend_mag   <= {IQ_WIDTH{1'b0}};
+            ch1_pend_idx   <= {FRAME_IDX_W{1'b0}};
+            ch2_pend_idx   <= {FRAME_IDX_W{1'b0}};
+            ch1_pend_start <= 1'b0;
+            ch2_pend_start <= 1'b0;
+            ch_select      <= 1'b0;
+            m_axis_tdata   <= 32'b0;
+            m_axis_tvalid  <= 1'b0;
+            m_axis_tlast   <= 1'b0;
         end else begin
+            // ----------------------------------------------------
+            // Capture from frame_sync outputs into pending buffer
+            // ----------------------------------------------------
+            if (ch1_sync_valid && !ch1_pending) begin
+                ch1_pend_mag   <= ch1_sync_mag;
+                ch1_pend_idx   <= ch1_frame_idx;
+                ch1_pend_start <= ch1_frame_start;
+                ch1_pending    <= 1'b1;
+            end
+            if (ch2_sync_valid && !ch2_pending) begin
+                ch2_pend_mag   <= ch2_sync_mag;
+                ch2_pend_idx   <= ch2_frame_idx;
+                ch2_pend_start <= ch2_frame_start;
+                ch2_pending    <= 1'b1;
+            end
+
+            // ----------------------------------------------------
+            // AXI-Stream output (round-robin with fallback)
+            // ----------------------------------------------------
             if (m_axis_tready) begin
                 m_axis_tvalid <= 1'b0;
                 m_axis_tlast  <= 1'b0;
 
-                if (ch_select == 1'b0 && ch1_sync_valid) begin
-                    // Pack: [31]=ch, [30:15]=frame_idx, [14]=frame_start, [11:0]=mag
-                    m_axis_tdata  <= {1'b0, ch1_frame_idx,
-                                      ch1_frame_start, 2'b0, ch1_sync_mag};
+                if (ch_select == 1'b0 && ch1_pending) begin
+                    // Send ch1 sample
+                    m_axis_tdata  <= {1'b0, ch1_pend_idx,
+                                      ch1_pend_start, 2'b0, ch1_pend_mag};
                     m_axis_tvalid <= 1'b1;
-                    m_axis_tlast  <= ch1_frame_start;
+                    m_axis_tlast  <= ch1_pend_start;
+                    ch1_pending   <= 1'b0;
                     ch_select     <= 1'b1;
-                end else if (ch_select == 1'b1 && ch2_sync_valid) begin
-                    m_axis_tdata  <= {1'b1, ch2_frame_idx,
-                                      ch2_frame_start, 2'b0, ch2_sync_mag};
+                end else if (ch_select == 1'b1 && ch2_pending) begin
+                    // Send ch2 sample
+                    m_axis_tdata  <= {1'b1, ch2_pend_idx,
+                                      ch2_pend_start, 2'b0, ch2_pend_mag};
                     m_axis_tvalid <= 1'b1;
-                    m_axis_tlast  <= ch2_frame_start;
+                    m_axis_tlast  <= ch2_pend_start;
+                    ch2_pending   <= 1'b0;
                     ch_select     <= 1'b0;
+                end else if (ch1_pending) begin
+                    // Fallback: send ch1 if ch2 not ready
+                    m_axis_tdata  <= {1'b0, ch1_pend_idx,
+                                      ch1_pend_start, 2'b0, ch1_pend_mag};
+                    m_axis_tvalid <= 1'b1;
+                    m_axis_tlast  <= ch1_pend_start;
+                    ch1_pending   <= 1'b0;
+                end else if (ch2_pending) begin
+                    // Fallback: send ch2 if ch1 not ready
+                    m_axis_tdata  <= {1'b1, ch2_pend_idx,
+                                      ch2_pend_start, 2'b0, ch2_pend_mag};
+                    m_axis_tvalid <= 1'b1;
+                    m_axis_tlast  <= ch2_pend_start;
+                    ch2_pending   <= 1'b0;
                 end
             end
         end

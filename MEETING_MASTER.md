@@ -300,21 +300,50 @@ Icarus Verilog 单元测试通过。
 ```bash
 cd simulation && python3 emeye_simulation.py
 # 2.8 秒后出 4 面板可视化(原图/IQ波形/自相关/重建图)
+
+# FPGA 单元测试现场跑(全部通过):
+cd fpga_accel
+iverilog -o /tmp/tb_mag.vvp rtl/magnitude_jpl.v sim/tb_magnitude_jpl.v
+vvp /tmp/tb_mag.vvp | tail -10  # PASS
+
+iverilog -o /tmp/tb_cic.vvp rtl/cic_decimator.v sim/tb_cic_decimator.v
+vvp /tmp/tb_cic.vvp | tail -10  # PASS
+
+iverilog -o /tmp/tb_fs.vvp rtl/frame_sync.v sim/tb_frame_sync.v
+vvp /tmp/tb_fs.vvp | tail -10   # PASS
+
+iverilog -o /tmp/tb_top.vvp rtl/magnitude_jpl.v rtl/cic_decimator.v \
+                           rtl/frame_sync.v rtl/emeye_accel_top.v \
+                           sim/tb_emeye_accel.v
+vvp /tmp/tb_top.vvp | tail -10  # PASS
 ```
 
-### FPGA RTL(`fpga_accel/`)— **跑过,PASS**
+### FPGA RTL(`fpga_accel/`)— **4 个测试全部跑过,全部 PASS**
 
-**Icarus Verilog 测试 `magnitude_jpl.v`**:
-- 60 个测试向量
-- 0 个 HW vs SW > 2 LSB 失败
-- 0 个 accuracy > 7% 失败
-- 平均误差 4.29%,峰值 6.80%(JPL 规格内)
+| 测试 | 模块 | 结果 |
+|---|---|---|
+| `tb_magnitude_jpl.v` | `|I+jQ|` JPL 近似 | **60/60 PASS**,平均误差 4.29%,峰值 6.80% |
+| `tb_cic_decimator.v` | 8× boxcar 抽取 | **11/11 PASS**(constant / ramp / alternating) |
+| `tb_frame_sync.v` | Blanking 帧同步 FSM | **5/5 PASS**(ACTIVE/BLANK 转换、frame_idx 递增、短 blanking 忽略) |
+| `tb_emeye_accel.v` | **顶层端到端集成** | **PASS** — 1156 AXI-Stream 输出,4 frame_starts 检测 |
+
+**仿真工具**:Icarus Verilog 13.0(开源,无需 Vivado license)
+
+**关键 bug 修复**:
+- 顶层 round-robin 输出原本没有缓冲,两通道同时输出时会丢样本
+- 修复:每通道加 1 深度 pending buffer + 优先级回退
+- 修复后:Phase 1 测试 1024 输入 → 128+128 = 256 输出(完美匹配 8× 抽取率)
 
 **整套 FPGA 资源估算**(XC7Z010 -2):
 - LUT: 600(3.4%)
 - BRAM: 1(1.7%)
 - DSP: 0
 - 留 95%+ 给 Phase 3
+
+**完整 FPGA 完成度**(诚实分层):
+- ✅ 50% — 4 个 RTL 模块全部写完 + 4 个测试全部 PASS
+- 🟡 还差 30%:Vivado 集成(.xdc/AXI-Lite/BD Tcl)、PS 侧 Linux 驱动、板级 bring-up
+- 🔴 还差 20%:Phase 3 高级功能(多频段融合、硬件自相关、ML 推理)
 
 ### 真实状态三层区分
 
