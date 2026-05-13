@@ -1,0 +1,99 @@
+=== Utilization Report (Synthesis) ===
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++---------------------+-----------------+------------+------------+---------+------+-----+--------+--------+------------+
+|       Instance      |      Module     | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | DSP Blocks |
++---------------------+-----------------+------------+------------+---------+------+-----+--------+--------+------------+
+| emeye_accel_top     |           (top) |        422 |        422 |       0 |    0 | 821 |      0 |      0 |          0 |
+|   (emeye_accel_top) |           (top) |         33 |         33 |       0 |    0 |  93 |      0 |      0 |          0 |
+|   u_dec_ch1         |   cic_decimator |         17 |         17 |       0 |    0 |  31 |      0 |      0 |          0 |
+|   u_dec_ch2         | cic_decimator_0 |         17 |         17 |       0 |    0 |  31 |      0 |      0 |          0 |
+|   u_mag_ch1         |   magnitude_jpl |         76 |         76 |       0 |    0 |  74 |      0 |      0 |          0 |
+|   u_mag_ch2         | magnitude_jpl_1 |         76 |         76 |       0 |    0 |  74 |      0 |      0 |          0 |
+|   u_sync_ch1        |      frame_sync |        101 |        101 |       0 |    0 | 259 |      0 |      0 |          0 |
+|   u_sync_ch2        |    frame_sync_2 |        102 |        102 |       0 |    0 | 259 |      0 |      0 |          0 |
++---------------------+-----------------+------------+------------+---------+------+-----+--------+--------+------------+
+
+
+# puts "============================================================"
+============================================================
+# puts "  TIMING SUMMARY (default 100 MHz clock)"
+  TIMING SUMMARY (default 100 MHz clock)
+# puts "============================================================"
+============================================================
+# create_clock -period 10.0 -name clk [get_ports clk]
+# report_timing_summary -delay_type min_max -max_paths 5
+INFO: [Timing 38-35] Done setting XDC timing constraints.
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 8 CPUs
+WARNING: [Timing 38-242] The property HD.CLK_SRC of clock port "clk" is not set. In out-of-context mode, this prevents timing estimation for clock delay/skew
+Resolution: Set the HD.CLK_SRC property of the out-of-context port to the location of the clock buffer instance in the top-level design
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+
+=== Post-Implementation Utilization ===
+|        Site Type        | Used | Fixed | Prohibited | Available | Util% |
++-------------------------+------+-------+------------+-----------+-------+
+| Slice LUTs              |  420 |     0 |          0 |     17600 |  2.39 |
+|   LUT as Logic          |  420 |     0 |          0 |     17600 |  2.39 |
+|   LUT as Memory         |    0 |     0 |          0 |      6000 |  0.00 |
+| Slice Registers         |  821 |     0 |          0 |     35200 |  2.33 |
+|   Register as Flip Flop |  821 |     0 |          0 |     35200 |  2.33 |
+|   Register as Latch     |    0 |     0 |          0 |     35200 |  0.00 |
+| F7 Muxes                |   48 |     0 |          0 |      8800 |  0.55 |
+| F8 Muxes                |   24 |     0 |          0 |      4400 |  0.55 |
++-------------------------+------+-------+------------+-----------+-------+
+* Warning! LUT value is adjusted to account for LUT combining.
+
+
+1.1 Summary of Registers by Type
+--------------------------------
+
++-------+--------------+-------------+--------------+
+| Total | Clock Enable | Synchronous | Asynchronous |
++-------+--------------+-------------+--------------+
+| 0     |            _ |           - |            - |
+| 0     |            _ |           - |          Set |
+| 0     |            _ |           - |        Reset |
+
+=== Timing Summary ===
+Pulse Width Checks
+--------------------------------------------------------------------------------------
+Clock Name:         clk
+Waveform(ns):       { 0.000 5.000 }
+Period(ns):         10.000
+Sources:            { clk }
+
+Check Type        Corner  Lib Pin  Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location  Pin
+Min Period        n/a     FDRE/C   n/a            1.000         10.000      9.000                ch1_pend_idx_reg[0]/C
+Min Period        n/a     FDRE/C   n/a            1.000         10.000      9.000                ch1_pend_idx_reg[10]/C
+Min Period        n/a     FDRE/C   n/a            1.000         10.000      9.000                ch1_pend_idx_reg[11]/C
+Min Period        n/a     FDRE/C   n/a            1.000         10.000      9.000                ch1_pend_idx_reg[12]/C
+Min Period        n/a     FDRE/C   n/a            1.000         10.000      9.000                ch1_pend_idx_reg[13]/C
+Low Pulse Width   Slow    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[0]/C
+Low Pulse Width   Fast    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[0]/C
+Low Pulse Width   Slow    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[10]/C
+Low Pulse Width   Fast    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[10]/C
+Low Pulse Width   Slow    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[11]/C
+High Pulse Width  Slow    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[0]/C
+High Pulse Width  Fast    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[0]/C
+High Pulse Width  Slow    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[10]/C
+High Pulse Width  Fast    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[10]/C
+High Pulse Width  Slow    FDRE/C   n/a            0.500         5.000       4.500                ch1_pend_idx_reg[11]/C
+
+
+
+report_timing_summary: Time (s): cpu = 00:00:09 ; elapsed = 00:00:09 . Memory (MB): peak = 2604.949 ; gain = 311.984 ; free physical = 18199 ; free virtual = 225647
+# write_checkpoint -force $proj_dir/post_synth.dcp
+INFO: [Timing 38-480] Writing timing data to binary archive.
+Write ShapeDB Complete: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00 . Memory (MB): peak = 2644.902 ; gain = 0.000 ; free physical = 18196 ; free virtual = 225644
+INFO: [Common 17-1381] The checkpoint '/home/eea/emeye_synth/emeye_accel_synth/post_synth.dcp' has been generated.
+# puts "============================================================"
+============================================================
+# puts "  DONE - synthesis successful"
+  DONE - synthesis successful
+# puts "============================================================"
+============================================================
+INFO: [Common 17-206] Exiting Vivado at Wed May 13 21:31:21 2026...

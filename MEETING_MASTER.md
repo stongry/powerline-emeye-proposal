@@ -342,11 +342,24 @@ vvp /tmp/tb_top.vvp | tail -10  # PASS
 - 修复:每通道加 1 深度 pending buffer + 优先级回退
 - 修复后:Phase 1 测试 1024 输入 → 128+128 = 256 输出(完美匹配 8× 抽取率)
 
-**整套 FPGA 资源估算**(XC7Z010 -2):
-- LUT: 600(3.4%)
-- BRAM: 1(1.7%)
-- DSP: 0
-- 留 95%+ 给 Phase 3
+**Vivado 2024.2 实际综合数据**(target XC7Z010CLG400-2,远程构建服务器):
+
+| 资源 | 估算 | **Vivado 实际** | XC7Z010 占用率 |
+|---|---|---|---|
+| Slice LUT | 600 | **420** | **2.39%** |
+| Slice FF | 476 | **821** | 2.33% |
+| BRAM | 1 | **0** | 0% |
+| DSP | 0 | **0** | 0% |
+
+**模块分解**(hierarchical):
+- magnitude_jpl × 2: 152 LUT / 148 FF
+- cic_decimator × 2: **34** LUT / 62 FF(估算 100,实际省 66%)
+- frame_sync × 2: 203 LUT / 518 FF
+- 顶层 + AXI buffer: 33 LUT / 93 FF
+
+**Timing**:Setup slack +0.242 ns @ 100 MHz(我们实际 8 MHz,余量 12.5×),Hold +0.523 ns。
+
+**综合 + Place&Route 全部 PASS**。完整 log: `fpga_accel/synthesis_reports/synth.log`
 
 **完整 FPGA 完成度**(诚实分层):
 - ✅ 50% — 4 个 RTL 模块全部写完 + 4 个测试全部 PASS
@@ -361,9 +374,19 @@ vvp /tmp/tb_top.vvp | tail -10  # PASS
 | 🟡 **仿真桩** | IQ 数据合成(LDSDR-side 模拟)、Vivado 综合 / bitstream 未做 |
 | ❌ **未实现** | 多频段融合(Eq.3)、pix2pix GAN、真实 RF 捕获、LDSDR PS C 程序、板级 bring-up |
 
-### 关于"能否现在烧板测试"
+### 关于"能否现在烧板测试"(2026-05-13 更新)
 
-**直接答案:不能**(无 LDSDR 物理硬件 + Vivado 工具链)。
+**Day 2 晚 已完成**:
+- ✅ 远程构建服务器(10.24.79.1)Vivado 2024.2 综合 + Place&Route **真实跑通**
+- ✅ 实际资源数字 420 LUT / 821 FF / 0 BRAM / 0 DSP(占 XC7Z010 2.39% LUT)
+- ✅ Timing 100 MHz 闭合(slack +0.242 ns)
+- ✅ Post-impl checkpoint saved
+
+**还差**(需要 LDSDR 实际接到能烧板的机器才能做):
+- Vivado BD 集成到 LDSDR ofdm_ldpc_ldsdr_rf 工程
+- 完整 pin 约束 .xdc(.我有 ldsdr_led.xdc 但只 1 个 LED 引脚)
+- bitstream 生成 + 烧板
+- LDSDR PS Linux TCP forwarder C 代码
 
 但已验证主机端代码 100% 工作:
 - `simulation/network_demo.py` 用 Python 线程模拟 LDSDR 整套(IQ+FPGA算法+TCP)
