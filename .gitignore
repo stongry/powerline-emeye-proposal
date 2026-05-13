@@ -20,3 +20,4 @@ Thumbs.db
 # 大文件不入库
 *.zip
 *.tar.gz
+*.vvp
