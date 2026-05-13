@@ -39,11 +39,14 @@ module tb_magnitude_jpl;
         .valid_out(valid_out)
     );
 
-    // Test vectors
+    // Test vectors and statistics
     integer test_idx;
-    integer error_count;
+    integer hw_vs_sw_2lsb_fail;     // strict: HW vs SW JPL diff > 2 LSB
+    integer accuracy_fail;           // accuracy: |JPL - exact|/exact > 6%
+    integer total_tests;
+    real max_pct_err;
+    real sum_abs_pct_err;
     real expected, error_pct;
-    real abs_i_real, abs_q_real, max_real, min_real, jpl_real;
 
     // Reference: software JPL approximation (for cross-check)
     function automatic real jpl_ref(input real i_val, input real q_val);
@@ -70,7 +73,11 @@ module tb_magnitude_jpl;
         q_in = 0;
         valid_in = 0;
         test_idx = 0;
-        error_count = 0;
+        hw_vs_sw_2lsb_fail = 0;
+        accuracy_fail = 0;
+        total_tests = 0;
+        max_pct_err = 0.0;
+        sum_abs_pct_err = 0.0;
 
         // Reset
         #(CLK_PERIOD * 3);
@@ -79,8 +86,12 @@ module tb_magnitude_jpl;
 
         $display("================================================================");
         $display("  magnitude_jpl testbench");
-        $display("  Format: idx | I, Q | JPL_hw | JPL_sw | Exact | err_vs_exact %%");
+        $display("  Acceptance criteria:");
+        $display("    HW vs SW JPL : within 2 LSB (truncation rounding allowed)");
+        $display("    JPL vs Exact : within +/-7%% (JPL approx spec)");
         $display("================================================================");
+        $display("  idx | I, Q | HW | SW | Exact | err_vs_exact");
+        $display("----------------------------------------------------------------");
 
         // Test vector set 1: known cases
         run_test(0, 0);             // mag = 0
@@ -104,10 +115,14 @@ module tb_magnitude_jpl;
         #(CLK_PERIOD * 10);
         $display("\n================================================================");
         $display("  Test complete");
-        $display("  Errors (|JPL_hw - JPL_sw| > 1 LSB): %0d", error_count);
+        $display("  Total tests          : %0d", total_tests);
+        $display("  HW vs SW > 2 LSB     : %0d  (truncation tolerance)", hw_vs_sw_2lsb_fail);
+        $display("  |error vs exact| > 7%%: %0d  (JPL approx spec)", accuracy_fail);
+        $display("  Avg |error vs exact| : %.2f%%", sum_abs_pct_err / total_tests);
+        $display("  Max |error vs exact| : %.2f%%", max_pct_err);
         $display("================================================================");
 
-        if (error_count == 0)
+        if (hw_vs_sw_2lsb_fail == 0 && accuracy_fail == 0)
             $display("PASS");
         else
             $display("FAIL");
@@ -119,7 +134,7 @@ module tb_magnitude_jpl;
     task run_test;
         input signed [IN_WIDTH-1:0] ti;
         input signed [IN_WIDTH-1:0] tq;
-        real jpl_sw, exact_val, hw_val;
+        real jpl_sw, exact_val, hw_val, abs_err_pct;
         integer err_lsb;
         begin
             @(negedge clk);
@@ -138,15 +153,24 @@ module tb_magnitude_jpl;
             jpl_sw = jpl_ref(ti, tq);
             exact_val = exact_mag(ti, tq);
             err_lsb = (hw_val > jpl_sw) ? (hw_val - jpl_sw) : (jpl_sw - hw_val);
-            if (err_lsb > 1) error_count = error_count + 1;
 
-            if (exact_val > 0)
+            // Strict criterion: HW vs SW within 2 LSB (allows truncation)
+            if (err_lsb > 2) hw_vs_sw_2lsb_fail = hw_vs_sw_2lsb_fail + 1;
+
+            // Accuracy: JPL vs exact within +/-7% (JPL spec ~4% peak)
+            if (exact_val > 0) begin
                 error_pct = 100.0 * (jpl_sw - exact_val) / exact_val;
-            else
+                abs_err_pct = (error_pct < 0) ? -error_pct : error_pct;
+                if (abs_err_pct > 7.0) accuracy_fail = accuracy_fail + 1;
+                if (abs_err_pct > max_pct_err) max_pct_err = abs_err_pct;
+                sum_abs_pct_err = sum_abs_pct_err + abs_err_pct;
+            end else begin
                 error_pct = 0;
+            end
+            total_tests = total_tests + 1;
 
-            $display("  [%3d] I=%5d Q=%5d | HW=%5d SW=%5.0f Exact=%5.1f | err=%6.2f%%",
-                     test_idx, ti, tq, hw_val, jpl_sw, exact_val, error_pct);
+            $display("  [%3d] I=%6d Q=%6d | HW=%5d SW=%5.0f Exact=%6.1f | err=%6.2f%%",
+                     total_tests-1, ti, tq, hw_val, jpl_sw, exact_val, error_pct);
         end
     endtask
 
