@@ -1,0 +1,517 @@
+% ============================================================================
+%  电源线侧信道采集设备 — 设计提案
+%  Power-Line Side-Channel Acquisition Device — Design Proposal
+%
+%  目标受众: U Michigan Yan Long Lab
+%  文档类型: 工程设计提案(中文)
+%  编译命令: xelatex -shell-escape proposal.tex (跑两遍以生成 TOC)
+% ============================================================================
+\documentclass[a4paper,11pt,oneside,UTF8,scheme=plain]{ctexart}
+
+% ---------- 几何与版式 ----------
+\usepackage[margin=2.5cm,top=2.5cm,bottom=2.5cm,headheight=14pt]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\parskip}{0.4em}
+
+% ---------- 字体配置 ----------
+% 用思源黑体/宋体作为中英文统一字体,避免 lmodern 在大字号下 fallback 失败
+\setCJKmainfont[BoldFont={Source Han Serif CN Bold}]{Source Han Serif CN}
+\setCJKsansfont[BoldFont={Source Han Sans CN Bold}]{Source Han Sans CN}
+\setCJKmonofont{Source Han Sans CN}
+
+% 拉丁字体: 思源宋体也覆盖拉丁字符,统一外观
+\setmainfont[BoldFont={Source Han Serif CN Bold}]{Source Han Serif CN}
+\setsansfont[BoldFont={Source Han Sans CN Bold}]{Source Han Sans CN}
+\setmonofont[Scale=0.88]{JetBrains Maple Mono}
+
+% ---------- 数学 ----------
+\usepackage{amsmath,amssymb,amsthm}
+% 数学字体保留 Latin Modern (有就用,没有就 fallback)
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% ---------- 表格 ----------
+\usepackage{booktabs}    % \toprule \midrule \bottomrule
+\usepackage{array}       % >{\centering\arraybackslash} 等
+\usepackage{tabularx}    % 可调宽表格
+\usepackage{longtable}   % 多页表格
+\usepackage{makecell}    % 表头换行
+\usepackage{multirow}
+\renewcommand{\arraystretch}{1.25}
+
+% ---------- 颜色 ----------
+\usepackage[table,dvipsnames]{xcolor}
+\definecolor{tablerule}{HTML}{2C3E50}
+\definecolor{tableheader}{HTML}{ECF0F1}
+\definecolor{accent}{HTML}{2980B9}
+\definecolor{statusok}{HTML}{27AE60}
+\definecolor{statuspartial}{HTML}{F39C12}
+\definecolor{statusplan}{HTML}{7F8C8D}
+\definecolor{codebg}{HTML}{F8F9FA}
+
+% ---------- 代码块 ----------
+\usepackage{listings}
+\lstdefinestyle{codestyle}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{gray!50},
+  showstringspaces=false,
+  breaklines=true,
+  tabsize=4,
+  captionpos=b,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{gray!80}\itshape,
+  stringstyle=\color{statusok!80!black},
+  xleftmargin=1.5em,
+  framexleftmargin=1.5em,
+  framexrightmargin=0pt,
+  framextopmargin=4pt,
+  framexbottommargin=4pt,
+}
+\lstset{style=codestyle}
+\lstdefinelanguage{verilog}{
+  keywords={module,endmodule,input,output,wire,reg,assign,always,posedge,negedge,if,else,begin,end,case,endcase,parameter,localparam,generate,endgenerate,for,signed,unsigned},
+  morecomment=[l]//,
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  sensitive=true,
+}
+\lstdefinelanguage{tcl}{
+  keywords={proc,set,if,else,foreach,for,while,return,puts,catch,error,source,open_project,open_bd_design,create_bd_port,connect_bd_net,launch_runs,wait_on_run,write_bitstream,read_xdc,get_bd_pins,get_bd_cells,get_bd_ports},
+  morecomment=[l]\#,
+  morestring=[b]",
+  sensitive=true,
+}
+
+% ---------- 超链接 ----------
+\usepackage[colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent,unicode=true,bookmarksopen=true,bookmarksnumbered=true]{hyperref}
+\usepackage{bookmark}
+
+% ---------- 页眉页脚 ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase\leftmark}
+\fancyhead[R]{\small 电源线侧信道采集设备}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ---------- 章节标题样式 ----------
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\sffamily\color{tablerule}}
+  {\thesection}{1em}{}
+  [\vspace{-0.3em}{\color{accent}\rule{\linewidth}{0.6pt}}]
+\titleformat{\subsection}
+  {\large\bfseries\sffamily\color{tablerule}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\sffamily\color{tablerule!80}}
+  {\thesubsubsection}{1em}{}
+
+% ---------- 浮动体 ----------
+\usepackage{float}
+\usepackage{graphicx}
+\graphicspath{{figures/}{../figures/}}
+\usepackage{caption}
+\captionsetup[table]{labelfont={bf,sf},textfont={sf},justification=centering,skip=4pt}
+\captionsetup[figure]{labelfont={bf,sf},textfont={sf},justification=centering,skip=4pt}
+
+% ---------- 状态徽章命令 ----------
+\newcommand{\statusok}{\textcolor{statusok}{\textbf{\checkmark\ 已完成}}}
+\newcommand{\statuspartial}{\textcolor{statuspartial}{\textbf{\textperiodcentered\ 部分完成}}}
+\newcommand{\statusplan}{\textcolor{statusplan}{\textbf{\textopenbullet\ 计划中}}}
+
+% ---------- 信息高亮框 ----------
+\usepackage[most]{tcolorbox}
+\newtcolorbox{infobox}[1][]{
+  colback=accent!5,
+  colframe=accent!50,
+  fonttitle=\bfseries,
+  arc=2mm,
+  boxrule=0.5pt,
+  #1
+}
+\newtcolorbox{warnbox}[1][]{
+  colback=statuspartial!10,
+  colframe=statuspartial!60,
+  fonttitle=\bfseries,
+  arc=2mm,
+  boxrule=0.5pt,
+  #1
+}
+
+% ---------- 标题信息 ----------
+\title{\vspace{-2em}\sffamily\bfseries 电源线侧信道采集设备\\[0.3em]\large 设计提案 v1.0}
+\author{}
+\date{}
+
+% ============================================================================
+\begin{document}
+% ============================================================================
+
+% ---------- 封面页 ----------
+\thispagestyle{empty}
+\vspace*{2cm}
+
+\begin{center}
+{\sffamily\bfseries\Huge 电源线侧信道采集设备}\\[0.6em]
+{\sffamily\Large 设\ 计\ 提\ 案}\\[1.5em]
+{\large Power-Line Side-Channel Acquisition Device}\\[0.3em]
+{\normalsize Design Proposal v1.0}\\[2em]
+
+\rule{0.6\textwidth}{0.4pt}\\[1em]
+
+{\large\sffamily 将 EM Eye 攻击从空中辐射通道延伸至电源线传导通道}\\[3em]
+
+\begin{tabularx}{0.85\textwidth}{rX}
+\sffamily\bfseries 申请岗位 & RA, Yan Long Lab \\
+\sffamily\bfseries 申请单位 & University of Michigan \\
+\sffamily\bfseries 候选人  & \textit{(待填写)} \\
+\sffamily\bfseries 文档日期 & 2026 年 5 月 14 日 \\
+\sffamily\bfseries GitHub  & \url{https://github.com/stongry/powerline-emeye-proposal} \\
+\sffamily\bfseries 版本   & v1.0 (LaTeX 终稿) \\
+\end{tabularx}
+
+\vfill
+
+\begin{infobox}[title=工程基础]
+本提案的所有工程论断均以候选人在过去 3 天(2026-05-12 至 2026-05-14)内独立完成的工作为支撑：5 份端到端 Python 仿真、4 份 RTL testbench(全部 PASS)、Vivado 综合 + 实现 + bitstream 真目标(\texttt{xc7z010clg400-2}) 烧录、AD9361 RF 链路实测(RX\_LO 204 MHz、RSSI 93.75 dB、16 KB 真实 IQ 数据)。详见附录 B。
+\end{infobox}
+
+\vspace{1em}
+\end{center}
+
+\newpage
+
+% ---------- 目录 ----------
+\tableofcontents
+\newpage
+
+% ============================================================================
+\section*{摘要}
+\addcontentsline{toc}{section}{摘要}
+% ============================================================================
+
+\begin{infobox}[title=核心论点]
+CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\textbf{会以共模电流的形式沿电源线传导}，在远离目标设备的电源插座、电源排插甚至建筑配电线网的任意一点都可以被拾取，从而把 EM Eye 风险从“近场 5 米”扩展到“配电网任意位置数十米”。
+\end{infobox}
+
+本提案描述一款微型化电源线侧信道电磁泄漏采集设备的工程设计，目标是将 Long 等 (NDSS 2024) 在 EM Eye 论文中演示的“电磁旁路图像还原攻击”，从原来的空中辐射场景延伸到电源线传导泄漏场景。
+
+\paragraph{关键技术决策}（详见正文相应章节）：
+
+\begin{table}[H]
+\centering
+\caption{六项核心决策一览}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X}
+\toprule
+\rowcolor{tableheader} \textbf{维度} & \textbf{决策} \\
+\midrule
+形态     & 便携集成式（\(150 \times 80 \times 50\) mm），BYO LDSDR 7010 模块，Phase 2 演进插头式 \\
+耦合     & 主路宽带 CT（Tekbox TBCP2-1000，1 MHz – 1 GHz），辅路 HV 电容（覆盖 \(>\) 500 MHz） \\
+模拟前端 & 候选人 BYO 自研 ERA-4SM+ \(\times\) 2 级联 LNA（VNA 实测 +28 dB @ 100 MHz） \\
+采集     & LDSDR 7010（AD9363 \(\to\) AD9361 解锁，70 MHz – 6 GHz，12-bit IQ \(\times\) 2 RX，30 MSPS） \\
+传输     & 千兆以太网直连主机，32 Mbps 双通道压缩流（板上 FPGA \texttt{emeye\_accel} 加速） \\
+主控     & 直接使用 LDSDR 板内 Zynq-7010 PS，无需外接 RPi CM4（简化系统 + 降本约 ¥1000） \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{核心差异化} 候选人已在 Pluto Zynq-7010 平台完成 OFDM + LDPC 全链路 HDL 收发机（BER = 0 板级验证），具备在 LDSDR 内部 FPGA 实现 EM Eye 重建管线硬件加速的能力。这一加速路线图本提案已经完成 Pre-Phase 0 阶段的 RTL 设计、单元测试、Vivado 实现、真硬件 bitstream 烧录与 RF 链路实测（详见附录 B）。
+
+\paragraph{交付计划}（6 个月，1 RA 全职）：
+
+\begin{table}[H]
+\centering
+\caption{分阶段交付里程碑}
+\begin{tabularx}{\textwidth}{lcX}
+\toprule
+\rowcolor{tableheader} \textbf{阶段} & \textbf{周期} & \textbf{关键交付} \\
+\midrule
+Phase 0     & 3 周    & LISN + RPi V1 复现 EM Eye + 电源线传导验证 → \textbf{Go/No-Go 决策门} \\
+Phase 1     & 3 个月  & 耦合网络 + 模拟前端 + 集成原型 + Phase 0 修订 \\
+Phase 2     & 2 个月  & 板上 FPGA \texttt{emeye\_accel} 加速 + 多设备验证 + 终版报告 \\
+Phase 3（可选） & —      & 多频段相干融合 + HDMI TEMPEST 泛化 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{预算概要}单台原型 BOM \(\approx\) ¥4{,}350（BYO 资产省 ¥3{,}000+）· NRE \(\approx\) ¥5{,}300 · 总预算 \(\approx\) ¥31{,}500。
+
+\begin{infobox}[title=诚实声明]
+本提案中所有声称“\statusok”的工作均有可复现的 git commit、文件、log 或 SSH session 输出佐证；“\statuspartial”与“\statusplan”严格区分；反对纸面工程。
+\end{infobox}
+
+\newpage
+
+% ============================================================================
+\section{总体形态、尺寸与系统框图}
+\label{sec:overview}
+% ============================================================================
+
+\subsection{形态决策：Route A vs Route B}
+\label{sec:form-factor}
+
+功能需求书规定设备最大尺寸 \(\le 150 \times 80 \times 50\) mm，并暗示了两种可行的物理形态。本提案在 Day 1 阶段已锁定 \textbf{Route A 便携集成式} 为 Phase 1 主交付形态，Route B 插头适配式作为 Phase 2 演进方向。
+
+\begin{table}[H]
+\centering
+\caption{Route A vs Route B 形态对比}
+\label{tab:routea-vs-b}
+\small
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\rowcolor{tableheader}
+\textbf{维度} & \textbf{Route A 便携集成式（Phase 1）} & \textbf{Route B 插头适配式（Phase 2）} \\
+\midrule
+供电方式       & USB-C 5 V（移动电源 / 笔记本 / 充电器） & 内含 AC-DC，直插市电 \\
+与市电关系      & \textbf{电气完全隔离}（仅 CT 磁耦合）   & 直接接触 220 V \\
+触电风险       & 归零                                 & 高，需 IEC 61010 + EMC Class B 认证 \\
+保护链复杂度    & TVS + DC 隔直 + LC HPF（约 ¥11）       & 全套 GDT/MOV/共模扼流/TVS（约 ¥80+） \\
+BOM 净成本     & \(\sim\) ¥820                        & \(\sim\) ¥1{,}300+ \\
+开发周期       & 3 周 Phase 0 + 12 周 Phase 1          & + 4 周安规认证准备 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{选定 Route A 的核心理由}：
+
+\begin{enumerate}
+\item \textbf{安全性}：RA 提案阶段不应让候选人承担市电直接接触的设计责任，Route A 的整机与市电零电气连接，触电风险归零。
+\item \textbf{快速交付}：Phase 1 三个月可出可用原型，Phase 2 再演进到插头形态。
+\item \textbf{形态自由}：USB 供电不绑定场景，实验室桌面与现场便携两个场景均覆盖。
+\end{enumerate}
+
+\subsection{尺寸预算}
+\label{sec:dim-budget}
+
+外壳目标 \(100 \times 60 \times 30\) mm（留 50\% 边距，极限可压到 \(80 \times 50 \times 25\) mm），内部子模块布局如表 \ref{tab:dim-budget}。
+
+\begin{table}[H]
+\centering
+\caption{Route A 内部尺寸分配}
+\label{tab:dim-budget}
+\small
+\begin{tabularx}{\textwidth}{lccX}
+\toprule
+\rowcolor{tableheader}
+\textbf{模块} & \textbf{尺寸 (mm)} & \textbf{占比} & \textbf{备注} \\
+\midrule
+模拟前端板（CT 二次侧 → LNA 输出） & \(80 \times 60 \times 8\) & 35\% & 4 层 PCB，RF 路径 Rogers RO4350B，LNA 屏蔽腔 \\
+LDSDR 7010 rev2.1 SOM            & \(90 \times 50 \times 12\) & 38\% & 候选人 BYO，标准 Pluto 衍生板形态 \\
+USB-C + ESD + TPS7A47 LDO        & \(30 \times 20 \times 6\)  & 5\%  & 模拟域净化电源 \\
+Tekbox TBCP2-1000 CT             & 外挂 OD 约 100 & — & RG-316 短同轴接入，\textbf{不入主壳} \\
+Ethernet 输出 RJ45               & \(16 \times 13 \times 6\)  & 4\%  & 千兆 \(\to\) PC \\
+散热与屏蔽间隙                    & — & 18\% & 顶/底盖空隙 + EMI 衬垫 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{系统总框图}
+\label{sec:block-diagram}
+
+完整系统由 7 个功能模块串联组成（图 \ref{fig:block-diagram} 占位，由后续 SVG 替换）：
+
+\begin{figure}[H]
+\centering
+\framebox[0.95\textwidth]{
+\begin{minipage}{0.92\textwidth}
+\centering\ttfamily\small
+DUT(220V) → Tekbox CT → TVS+隔直 → LC HPF (30 MHz) → ERA-4SM+ x2 LNA (+28 dB)\\
+→ LDSDR 7010 (AD9363 70M-6G, 2RX, 千兆 Eth) → PS Linux → PC\\[0.4em]
+\rmfamily 7 个模块: 耦合 · 保护 · 滤波 · 放大 · 采集 · 主控 · 传输
+\end{minipage}
+}
+\caption{系统总框图（v1.0 占位，待 SVG 替换）}
+\label{fig:block-diagram}
+\end{figure}
+
+7 个核心模块的简要说明：
+
+\begin{enumerate}
+\item \textbf{耦合}：Tekbox TBCP2-1000 商用宽带 CT，L+N 同向穿芯测共模电流，DM 抑制估计 30–40 dB
+\item \textbf{保护}：Bourns CDSOT23-T05LC 低 C TVS（\(C < 1\) pF @ 1 GHz）+ Murata NP0 1 nF DC 隔直
+\item \textbf{滤波}：LC 4 阶 Butterworth HPF，\(f_c = 30\) MHz，通带损耗 \(< 1\) dB，50 Hz 衰减 \(> 100\) dB
+\item \textbf{放大}：候选人 BYO ERA-4SM+ \(\times 2\) 级联 LNA，VNA 实测 +28 dB @ 100 MHz（详见附录 B）
+\item \textbf{采集}：LDSDR 7010 rev2.1，70 MHz – 6 GHz，12-bit IQ，2 RX 并行
+\item \textbf{主控}：直接用 LDSDR 板内 Zynq-7010 PS，无需外接 RPi CM4
+\item \textbf{传输}：千兆以太网原始 IQ 直传，Phase 2 演进为板上加速 + 8-bit 解调流
+\end{enumerate}
+
+\subsection{Phase 2 向插头形态演进路线}
+\label{sec:phase2-route-b}
+
+Route B 是终态隐蔽攻击形态，但 Phase 1 不强求。Phase 2 集成阶段如果时间允许，演进路径如下：
+
+\begin{table}[H]
+\centering
+\caption{Route B 演进步骤与工时}
+\label{tab:route-b-steps}
+\small
+\begin{tabularx}{\textwidth}{cXc}
+\toprule
+\rowcolor{tableheader}
+\textbf{步骤} & \textbf{工作内容} & \textbf{工时} \\
+\midrule
+1 & 设计内部 AC-DC（Mean Well IRM-10-5），替代 USB 输入 & 2 周 \\
+2 & 补全市电保护链（GDT + MOV + 共模扼流圈）           & 1 周 \\
+3 & 自研小型化 CT（Fair-Rite \#43+\#61 复合磁芯），压到 OD \(\le 20\) mm，集成进壳内 & 3 周 \\
+4 & 6 层 PCB 重新布板，IEC 61010 间距规则，加铜罩屏蔽 & 2 周 \\
+5 & EMC Class B 预测试                                & 1 周 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Phase 2 总工时约 9 周，在 8 周（Week 17–24）预算内紧凑可行。\textbf{Phase 2 是工程加分项，不是 Phase 1 的硬交付。}
+
+% ============================================================================
+\section{电源线高频泄漏耦合与提取}
+\label{sec:ch2}
+% ============================================================================
+
+\begin{infobox}[title=本章定位]
+本章是整份提案的技术心脏。审稿人（EM Eye 论文作者团队）主要靠这一章判断候选人对侧信道电磁物理的理解深度。
+\end{infobox}
+
+\subsection{物理机制}
+\label{sec:ch2-phy}
+
+\subsubsection{CMOS + MIPI 总线产生共模电流的物理过程}
+
+EM Eye 论文 §III 明确指出：在嵌入式视觉系统中，图像传感器与 ISP 之间的 MIPI CSI-2 串行链路传输 sub-ns 边沿的高速数据，这些数据信号天然耦合到外围金属结构，使得连接电缆本身成为非预期发射天线（\textit{unintentional transmission antenna}）。
+
+物理机制可分为三阶段：
+
+\begin{enumerate}
+\item \textbf{源}：MIPI CSI-2 D-PHY 物理层以 byte clock（RPi V1 为 \(51\,\mathrm{MHz} \times 4 = 204\,\mathrm{MHz}\) 单 lane 速率）切换驱动差分对。每次比特跳变产生 \(\mathrm{d}V/\mathrm{d}t \sim 1\,\mathrm{V/ns}\) 的电压沿，通过共模电感（数据线对参考地）耦合产生\textbf{共模电流分量}。
+\item \textbf{传播}：共模电流沿数据线 → 进入主板地参考 → 通过 PCB 寄生电容传导到电源输入端 → 经稳压模块的寄生回路渗透到外部电源线（L + N + PE）。
+\item \textbf{泄漏频段}：由于驱动信号本身是 byte clock 谐波富集，泄漏在频谱上呈现强谐波线条，典型 100 MHz – 1 GHz 段，与论文 Table II 测得的 12 款 COTS 设备（155 MHz – 1740 MHz）一致。
+\end{enumerate}
+
+\subsubsection{电源线作为“非预期传输天线”的延伸}
+
+EM Eye 原论文使用近场磁探头（Beehive 100C）或 LPDA 远场天线在\textbf{空气}中拾取这些泄漏。本提案的扩展：对同一源信号，共模电流也会沿电源线传导出来，因为：
+
+\begin{itemize}
+\item 电源线本身在 100 MHz – 1 GHz 段电气长度已远大于 1/4 波长（0.5 m 线在 500 MHz 处 \(\approx 0.83\lambda\)），表现为分布参数传输线。
+\item 共模电流不会被电源滤波器有效抑制（电源滤波器是为 EMC Class B 设计的传导骚扰抑制，典型工作到 30 MHz 即截止）。
+\item 在 100 MHz 以上，设备内部的 X1/Y2 安全电容失去作用（寄生电感主导），共模电流可以“穿过”电源进入外部电源线。
+\end{itemize}
+
+\textbf{数量级估算}：
+
+\begin{table}[H]
+\centering
+\caption{电源线传导泄漏数量级估算}
+\label{tab:order-of-magnitude}
+\small
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\rowcolor{tableheader}
+\textbf{参数} & \textbf{数值} & \textbf{推导依据} \\
+\midrule
+RPi V1 MIPI byte clock     & 51 MHz                       & 论文 Table II \\
+主泄漏频点（204 / 255 MHz） & byte clock 的 4 倍 / 5 倍谐波  & 论文 Table II \\
+估算 CM 电流 \(I_\mathrm{CM}\) & 1–10 \(\mu\)A（待 PhD 校准） & 类比空气场强 \(-80\) dBm + 寄生电感模型 \\
+Tekbox CT 二次侧电压         & \(V_2 = Z_T \cdot I_\mathrm{CM}\)，\(Z_T \approx 5\,\Omega\) & Tekbox 数据手册 \\
+等效功率 @ 50 \(\Omega\)     & \(-77 \sim -57\) dBm           & 假设 \(I_\mathrm{CM} \in [1, 10]\,\mu\)A \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{关键不确定性}：\(I_\mathrm{CM}\) 的绝对值是 Phase 0 必须实测验证的核心数字，也是要向 PhD 优先求证的问题。
+
+\subsection{耦合方式权衡}
+\label{sec:ch2-coupling}
+
+\begin{table}[H]
+\centering
+\caption{三种耦合方式权衡（5 列）}
+\label{tab:coupling-tradeoff}
+\small
+\begin{tabularx}{\textwidth}{lXccc}
+\toprule
+\rowcolor{tableheader}
+\textbf{方式} & \textbf{频响 \& 隔离} & \textbf{体积} & \textbf{安全性} & \textbf{选择} \\
+\midrule
+宽带 CT (Tekbox TBCP2-1000) & 100 kHz – 1 GHz, \(\pm 2\) dB，磁耦合电气完全隔离 & OD \(\approx 100\) mm 夹式 & 高 & \textbf{主路} \\
+HV 陶瓷电容 (1 kV/4.7 pF NP0) & 100 MHz – 数 GHz，电容短路风险，需双重串联 + LC HPF & 0805 SMD & 中 & \textbf{辅路} \\
+微型 LISN (TBL5016-1) & 9 kHz – 30 MHz，自带隔离 & \(150 \times 100 \times 80\) mm & 标准 & \textbf{否决} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{选择理由}：
+
+\begin{enumerate}
+\item \textbf{主路 Tekbox CT 解决 80\% 问题}：100 kHz – 1 GHz 平坦覆盖 EM Eye Table II 12/12 设备的全部主泄漏频点，NIST 可追溯校准，Phase 0 第 1 周即可投入。
+\item \textbf{辅路 HV 电容补足 \(>\)500 MHz}：CT 在 500 MHz 以上磁导率下降，HV 陶瓷电容在 500 MHz – 2 GHz 段呈现低阻抗、低损耗，正好接力。LDSDR 2 RX 通道允许双路同时采样、PC 端融合。
+\end{enumerate}
+
+\subsection{选定架构}
+\label{sec:ch2-arch}
+
+% ... 后续章节同样的格式继续 ...
+
+\paragraph{占位说明} 由于完整提案达 1080 行 markdown，本 LaTeX 模板演示了：
+\begin{itemize}
+\item 封面 + 目录 + 摘要
+\item 第一章完整内容
+\item 第二章前半部分（物理机制 + 耦合权衡 + 选定架构开头）
+\end{itemize}
+
+剩余章节（§2.3 选定架构续、§2.4 保护链、§2.5–§2.6 风险与 Go/No-Go、§3 模拟前端、§4 数据采集与传输、§5 BOM、§6 成本与交付计划、附录 A/B/C、结语）按相同模板继续。请用 \texttt{md\_to\_latex\_section.py} 工具（与本模板同目录）从 \texttt{PROPOSAL\_zh.md} 自动转换。
+
+% ---------- 占位段落让 PDF 至少能编译 ----------
+
+\section{模拟前端设计}
+\label{sec:ch3}
+\textit{(LaTeX 模板演示版本 — 详细内容参见 \texttt{PROPOSAL\_zh.md} §3。后续 commit 将填充完整 LaTeX 章节。)}
+
+\section{数据采集与无线传输}
+\label{sec:ch4}
+\textit{(同上)}
+
+\section{主要器件选型 BOM}
+\label{sec:ch5}
+\textit{(同上)}
+
+\section{整体成本估算与交付计划}
+\label{sec:ch6}
+\textit{(同上)}
+
+\appendix
+
+\section{候选人工程经验与能力支撑}
+\label{sec:appA}
+\textit{(详细 7 个项目 + 能力映射表，详见 PROPOSAL\_zh.md 附录 A。)}
+
+\section{Pre-Phase 0 已完成工作}
+\label{sec:appB}
+\textit{(详细仿真 + RTL + Vivado + 烧录 + RF 实测记录，详见 PROPOSAL\_zh.md 附录 B。)}
+
+\section{风险与未决问题清单}
+\label{sec:appC}
+\textit{(10 条风险 + 2 条 Go/No-Go 触发条件，详见 PROPOSAL\_zh.md 附录 C。)}
+
+\section*{结语}
+\addcontentsline{toc}{section}{结语}
+
+\textbf{6 个月承诺}：候选人保证 6 个月期间全职投入，每周 GitHub commit 节奏，每月一次实验室进度汇报，每 phase 末由 PI / Co-PI 评估通过后才进入下一 phase。
+
+\textbf{12 个月技术支持窗口期}：所有源码与实测数据将作为开源资产留在实验室仓库，即使 Phase 3 由后继者完成，本人也将提供 12 个月的技术支持窗口期。
+
+\vspace{2em}
+\hrule
+\vspace{0.5em}
+\noindent\small\textit{致谢}：感谢 Long Y. \textit{et al.} (NDSS 2024) 提供的 EM Eye 论文方法，其精巧的“自相关 30 Hz 帧同步 + amplitude reshape”算法是本提案的科学基础。本提案在不改变其核心算法的前提下，将其物理通道从空中辐射换成电源线传导，并通过 BYO 硬件 + 6 个月工程冲刺将其工程化为一台可重复部署的实验设备。
+
+\end{document}
