@@ -15,59 +15,55 @@
 \setlength{\parskip}{0.4em}
 
 % ---------- 字体配置 ----------
-% 用思源黑体/宋体作为中英文统一字体,避免 lmodern 在大字号下 fallback 失败
+% 中文用思源宋体(标题用黑体),拉丁字符在大字号下也用思源宋体覆盖避免 fallback 缺失
 \setCJKmainfont[BoldFont={Source Han Serif CN Bold}]{Source Han Serif CN}
 \setCJKsansfont[BoldFont={Source Han Sans CN Bold}]{Source Han Sans CN}
 \setCJKmonofont{Source Han Sans CN}
 
-% 拉丁字体: 思源宋体也覆盖拉丁字符,统一外观
 \setmainfont[BoldFont={Source Han Serif CN Bold}]{Source Han Serif CN}
 \setsansfont[BoldFont={Source Han Sans CN Bold}]{Source Han Sans CN}
 \setmonofont[Scale=0.88]{JetBrains Maple Mono}
 
 % ---------- 数学 ----------
 \usepackage{amsmath,amssymb,amsthm}
-% 数学字体保留 Latin Modern (有就用,没有就 fallback)
 \usepackage{unicode-math}
 \setmathfont{Latin Modern Math}
 
 % ---------- 表格 ----------
 \usepackage{booktabs}    % \toprule \midrule \bottomrule
-\usepackage{array}       % >{\centering\arraybackslash} 等
-\usepackage{tabularx}    % 可调宽表格
-\usepackage{longtable}   % 多页表格
-\usepackage{makecell}    % 表头换行
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{makecell}
 \usepackage{multirow}
-\renewcommand{\arraystretch}{1.25}
+\renewcommand{\arraystretch}{1.20}
 
-% ---------- 颜色 ----------
-\usepackage[table,dvipsnames]{xcolor}
-\definecolor{tablerule}{HTML}{2C3E50}
-\definecolor{tableheader}{HTML}{ECF0F1}
-\definecolor{accent}{HTML}{2980B9}
-\definecolor{statusok}{HTML}{27AE60}
-\definecolor{statuspartial}{HTML}{F39C12}
-\definecolor{statusplan}{HTML}{7F8C8D}
-\definecolor{codebg}{HTML}{F8F9FA}
+% ---------- 颜色(严肃学术: 仅保留黑/灰 + 极淡蓝灰,无强色) ----------
+\usepackage[table]{xcolor}
+% 统一一种深灰色作为标题/规则线颜色; 表头用极浅灰
+\definecolor{rulegray}{HTML}{2D2D2D}      % 深灰,代替原先的 accent 蓝
+\definecolor{tableheader}{HTML}{F5F5F5}   % 极浅灰表头
+\definecolor{linkgray}{HTML}{555555}      % 超链接深灰
+\definecolor{codebg}{HTML}{FAFAFA}        % 代码块极浅灰背景
 
-% ---------- 代码块 ----------
+% ---------- 代码块(去除花哨颜色) ----------
 \usepackage{listings}
 \lstdefinestyle{codestyle}{
   backgroundcolor=\color{codebg},
   basicstyle=\ttfamily\footnotesize,
   numbers=left,
-  numberstyle=\tiny\color{gray},
+  numberstyle=\tiny\color{gray!60},
   numbersep=8pt,
   frame=single,
   framerule=0.4pt,
-  rulecolor=\color{gray!50},
+  rulecolor=\color{gray!40},
   showstringspaces=false,
   breaklines=true,
   tabsize=4,
   captionpos=b,
-  keywordstyle=\color{accent}\bfseries,
-  commentstyle=\color{gray!80}\itshape,
-  stringstyle=\color{statusok!80!black},
+  keywordstyle=\bfseries,
+  commentstyle=\color{gray!60}\itshape,
+  stringstyle=\itshape,
   xleftmargin=1.5em,
   framexleftmargin=1.5em,
   framexrightmargin=0pt,
@@ -89,8 +85,8 @@
   sensitive=true,
 }
 
-% ---------- 超链接 ----------
-\usepackage[colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent,unicode=true,bookmarksopen=true,bookmarksnumbered=true]{hyperref}
+% ---------- 超链接(深灰,无明显颜色) ----------
+\usepackage[colorlinks=true,linkcolor=linkgray,urlcolor=linkgray,citecolor=linkgray,unicode=true,bookmarksopen=true,bookmarksnumbered=true]{hyperref}
 \usepackage{bookmark}
 
 % ---------- 页眉页脚 ----------
@@ -103,17 +99,16 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 
-% ---------- 章节标题样式 ----------
+% ---------- 章节标题样式(去掉规则线,黑字加粗,标准学术报告) ----------
 \usepackage{titlesec}
 \titleformat{\section}
-  {\Large\bfseries\sffamily\color{tablerule}}
+  {\Large\bfseries}
   {\thesection}{1em}{}
-  [\vspace{-0.3em}{\color{accent}\rule{\linewidth}{0.6pt}}]
 \titleformat{\subsection}
-  {\large\bfseries\sffamily\color{tablerule}}
+  {\large\bfseries}
   {\thesubsection}{1em}{}
 \titleformat{\subsubsection}
-  {\normalsize\bfseries\sffamily\color{tablerule!80}}
+  {\normalsize\bfseries}
   {\thesubsubsection}{1em}{}
 
 % ---------- 浮动体 ----------
@@ -121,30 +116,32 @@
 \usepackage{graphicx}
 \graphicspath{{figures/}{../figures/}}
 \usepackage{caption}
-\captionsetup[table]{labelfont={bf,sf},textfont={sf},justification=centering,skip=4pt}
-\captionsetup[figure]{labelfont={bf,sf},textfont={sf},justification=centering,skip=4pt}
+\captionsetup[table]{labelfont={bf},textfont={normalfont},justification=centering,skip=4pt}
+\captionsetup[figure]{labelfont={bf},textfont={normalfont},justification=centering,skip=4pt}
 
-% ---------- 状态徽章命令 ----------
-\newcommand{\statusok}{\textcolor{statusok}{\textbf{\checkmark\ 已完成}}}
-\newcommand{\statuspartial}{\textcolor{statuspartial}{\textbf{\textperiodcentered\ 部分完成}}}
-\newcommand{\statusplan}{\textcolor{statusplan}{\textbf{\textopenbullet\ 计划中}}}
+% ---------- 状态徽章命令(去除颜色,纯文字) ----------
+\newcommand{\statusok}{\textbf{[已完成]}}
+\newcommand{\statuspartial}{\textbf{[部分完成]}}
+\newcommand{\statusplan}{\textbf{[计划中]}}
 
-% ---------- 信息高亮框 ----------
+% ---------- 信息框(浅灰边框,无填充色) ----------
 \usepackage[most]{tcolorbox}
 \newtcolorbox{infobox}[1][]{
-  colback=accent!5,
-  colframe=accent!50,
+  colback=white,
+  colframe=gray!50,
   fonttitle=\bfseries,
-  arc=2mm,
+  arc=0mm,
   boxrule=0.5pt,
+  left=4pt,right=4pt,top=4pt,bottom=4pt,
   #1
 }
 \newtcolorbox{warnbox}[1][]{
-  colback=statuspartial!10,
-  colframe=statuspartial!60,
+  colback=white,
+  colframe=gray!70,
   fonttitle=\bfseries,
-  arc=2mm,
-  boxrule=0.5pt,
+  arc=0mm,
+  boxrule=0.6pt,
+  left=4pt,right=4pt,top=4pt,bottom=4pt,
   #1
 }
 
