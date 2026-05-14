@@ -180,7 +180,7 @@
 \vfill
 
 \begin{infobox}[title=工程基础]
-本提案的所有工程论断均以候选人在过去 3 天(2026-05-12 至 2026-05-14)内独立完成的工作为支撑：5 份端到端 Python 仿真、4 份 RTL testbench(全部 PASS)、Vivado 综合 + 实现 + bitstream 真目标(\texttt{xc7z010clg400-2}) 烧录、AD9361 RF 链路实测(RX\_LO 204 MHz、RSSI 93.75 dB、16 KB 真实 IQ 数据)。详见附录 B。
+Pre-Phase 0（2026-05-12 至 2026-05-14）已完成：5 份 Python 仿真、4 份 RTL testbench 全 PASS、Vivado synth+impl+bitstream（\texttt{xc7z010clg400-2}）真目标烧录、AD9361 RF 实测（RX\_LO 204 MHz, RSSI 93.75 dB, 16 KB IQ）。详见附录 B。
 \end{infobox}
 
 \vspace{1em}
@@ -198,12 +198,10 @@
 % ============================================================================
 
 \begin{infobox}[title=核心论点]
-CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\textbf{会以共模电流的形式沿电源线传导}，在远离目标设备的电源插座、电源排插甚至建筑配电线网的任意一点都可以被拾取，从而把 EM Eye 风险从“近场 5 米”扩展到“配电网任意位置数十米”。
+CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\textbf{以共模电流的形式沿电源线传导}，在远离目标设备的电源插座、电源排插甚至建筑配电线网的任意一点都可被拾取，将 EM Eye 风险从"近场 5 米"扩展到"配电网任意位置数十米"。
 \end{infobox}
 
-本提案描述一款微型化电源线侧信道电磁泄漏采集设备的工程设计，目标是将 Long 等 (NDSS 2024) 在 EM Eye 论文中演示的“电磁旁路图像还原攻击”，从原来的空中辐射场景延伸到电源线传导泄漏场景。
-
-\paragraph{关键技术决策}（详见正文相应章节）：
+\paragraph{关键技术决策}
 
 \begin{table}[H]
 \centering
@@ -222,9 +220,9 @@ CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\te
 \end{tabularx}
 \end{table}
 
-\paragraph{核心差异化} 候选人已在 Pluto Zynq-7010 平台完成 OFDM + LDPC 全链路 HDL 收发机（BER = 0 板级验证），具备在 LDSDR 内部 FPGA 实现 EM Eye 重建管线硬件加速的能力。这一加速路线图本提案已经完成 Pre-Phase 0 阶段的 RTL 设计、单元测试、Vivado 实现、真硬件 bitstream 烧录与 RF 链路实测（详见附录 B）。
+\paragraph{核心差异化} 候选人已在 Pluto Zynq-7010 平台完成 OFDM + LDPC 全链路 HDL 收发机（BER = 0 板级验证 \statusok），并在 Pre-Phase 0 阶段完成 RTL 设计、单元测试、Vivado 实现、真硬件 bitstream 烧录与 RF 链路实测（详见附录 B）。
 
-\paragraph{交付计划}（6 个月，1 RA 全职）：
+\paragraph{交付计划}（6 个月，1 RA 全职）
 
 \begin{table}[H]
 \centering
@@ -233,19 +231,47 @@ CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\te
 \toprule
 \rowcolor{tableheader} \textbf{阶段} & \textbf{周期} & \textbf{关键交付} \\
 \midrule
-Phase 0     & 3 周    & LISN + RPi V1 复现 EM Eye + 电源线传导验证 → \textbf{Go/No-Go 决策门} \\
+Phase 0     & 3 周    & LISN + RPi V1 复现 EM Eye + 电源线传导验证 \(\to\) \textbf{Go/No-Go 决策门} \\
 Phase 1     & 3 个月  & 耦合网络 + 模拟前端 + 集成原型 + Phase 0 修订 \\
 Phase 2     & 2 个月  & 板上 FPGA \texttt{emeye\_accel} 加速 + 多设备验证 + 终版报告 \\
-Phase 3（可选） & —      & 多频段相干融合 + HDMI TEMPEST 泛化 \\
+\rowcolor{gray!10} Phase 3 & {\color{gray}不在 6 个月预算内} & {\color{gray}多频段相干融合 + HDMI TEMPEST 泛化} \\
 \bottomrule
-\end{tabularx}
+\end{tabularx}\\
+\footnotesize\textit{所有 \statusok 项目均有 git commit / 文件 / log / SSH session 输出佐证。}
 \end{table}
 
 \paragraph{预算概要}单台原型 BOM \(\approx\) ¥4{,}350（BYO 资产省 ¥3{,}000+）· NRE \(\approx\) ¥5{,}300 · 总预算 \(\approx\) ¥31{,}500。
 
-\begin{infobox}[title=诚实声明]
-本提案中所有声称“\statusok”的工作均有可复现的 git commit、文件、log 或 SSH session 输出佐证；“\statuspartial”与“\statusplan”严格区分；反对纸面工程。
-\end{infobox}
+\newpage
+
+% ============================================================================
+\section*{Pre-Phase 0 已完成工作速览}
+\addcontentsline{toc}{section}{Pre-Phase 0 已完成工作速览}
+% ============================================================================
+
+本提案不是纸面方案。表 \ref{tab:prephase0-summary} 列出截至 2026-05-14 已经独立完成、可复现的工程工作清单。完整记录（代码、log、bitstream、SSH session 输出）详见附录 B。
+
+\begin{table}[H]
+\centering
+\caption{Pre-Phase 0 已完成工作（2026-05-12 至 2026-05-14）}
+\label{tab:prephase0-summary}
+\small
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+\rowcolor{tableheader}
+\textbf{类别} & \textbf{产物 \& 关键数字} & \textbf{状态} \\
+\midrule
+Python 仿真 & EM Eye + HDMI TEMPEST 双场景，SSIM 0.98 / 0.99，1.2 s 运行 & \statusok \\
+Verilog RTL & 4 模块 + 4 testbench 全 PASS，1156 输出 0 丢样 & \statusok \\
+Vivado 流程 & xc7z010clg400-2 真目标 synth + impl + bitstream（2.0 MB） & \statusok \\
+真硬件烧录 & LDSDR rev2.1 fpga\_manager 烧 .bin 成功，FPGA Manager operating & \statusok \\
+RF 链路实测 & RX\_LO 204 MHz，RSSI 93.75 dB，16 KB IQ 真实采集 & \statusok \\
+BD 改造     & ad9361\_phy\_0 ADC 端口暴露 + GPIO\_I 反馈通路 & \statusok \\
+Phase 2 草稿 & BD tap + AXI-DMA + PS TCP forwarder 1{,}096 行文档 \& C 代码 & \statusok \\
+\bottomrule
+\end{tabularx}\\
+\footnotesize\textit{GitHub：\url{https://github.com/stongry/powerline-emeye-proposal}}
+\end{table}
 
 \newpage
 
@@ -257,7 +283,7 @@ Phase 3（可选） & —      & 多频段相干融合 + HDMI TEMPEST 泛化 \\
 \subsection{形态决策：Route A vs Route B}
 \label{sec:form-factor}
 
-功能需求书规定设备最大尺寸 \(\le 150 \times 80 \times 50\) mm，并暗示了两种可行的物理形态。本提案在 Day 1 阶段已锁定 \textbf{Route A 便携集成式} 为 Phase 1 主交付形态，Route B 插头适配式作为 Phase 2 演进方向。
+约束：设备最大尺寸 \(\le 150 \times 80 \times 50\) mm。本提案锁定 \textbf{Route A 便携集成式}为 Phase 1 主交付形态，Route B 插头适配式作为 Phase 2 演进方向。
 
 \begin{table}[H]
 \centering
@@ -279,13 +305,7 @@ BOM 净成本     & \(\sim\) ¥820                        & \(\sim\) ¥1{,}300+ 
 \end{tabularx}
 \end{table}
 
-\textbf{选定 Route A 的核心理由}：
-
-\begin{enumerate}
-\item \textbf{安全性}：RA 提案阶段不应让候选人承担市电直接接触的设计责任，Route A 的整机与市电零电气连接，触电风险归零。
-\item \textbf{快速交付}：Phase 1 三个月可出可用原型，Phase 2 再演进到插头形态。
-\item \textbf{形态自由}：USB 供电不绑定场景，实验室桌面与现场便携两个场景均覆盖。
-\end{enumerate}
+\textbf{选定 Route A 理由}：(1) 安全性：整机与市电零电气连接，触电风险归零；(2) 快速交付：Phase 1 三个月可出原型；(3) 形态自由：USB 供电覆盖实验室与现场便携。
 
 \subsection{尺寸预算}
 \label{sec:dim-budget}
@@ -331,22 +351,12 @@ DUT(220V) → Tekbox CT → TVS+隔直 → LC HPF (30 MHz) → ERA-4SM+ x2 LNA (
 \label{fig:block-diagram}
 \end{figure}
 
-7 个核心模块的简要说明：
-
-\begin{enumerate}
-\item \textbf{耦合}：Tekbox TBCP2-1000 商用宽带 CT，L+N 同向穿芯测共模电流，DM 抑制估计 30–40 dB
-\item \textbf{保护}：Bourns CDSOT23-T05LC 低 C TVS（\(C < 1\) pF @ 1 GHz）+ Murata NP0 1 nF DC 隔直
-\item \textbf{滤波}：LC 4 阶 Butterworth HPF，\(f_c = 30\) MHz，通带损耗 \(< 1\) dB，50 Hz 衰减 \(> 100\) dB
-\item \textbf{放大}：候选人 BYO ERA-4SM+ \(\times 2\) 级联 LNA，VNA 实测 +28 dB @ 100 MHz（详见附录 B）
-\item \textbf{采集}：LDSDR 7010 rev2.1，70 MHz – 6 GHz，12-bit IQ，2 RX 并行
-\item \textbf{主控}：直接用 LDSDR 板内 Zynq-7010 PS，无需外接 RPi CM4
-\item \textbf{传输}：千兆以太网原始 IQ 直传，Phase 2 演进为板上加速 + 8-bit 解调流
-\end{enumerate}
+7 个模块：(1) \textbf{耦合} Tekbox TBCP2-1000 商用宽带 CT，L+N 同向穿芯，DM 抑制 30–40 dB；(2) \textbf{保护} Bourns CDSOT23-T05LC 低 C TVS（\(C < 1\) pF）+ Murata NP0 1 nF DC 隔直；(3) \textbf{滤波} LC 4 阶 Butterworth HPF，\(f_c = 30\) MHz，通带损耗 \(< 1\) dB，50 Hz 衰减 \(> 100\) dB；(4) \textbf{放大} BYO ERA-4SM+ \(\times 2\)，+28 dB @ 100 MHz 实测 \statusok；(5) \textbf{采集} LDSDR 7010 rev2.1，70 MHz – 6 GHz，12-bit IQ，2 RX 并行；(6) \textbf{主控} LDSDR 板内 Zynq-7010 PS（不外接 CM4）；(7) \textbf{传输} 千兆以太网原始 IQ 直传，Phase 2 演进为板上加速 + 8-bit 解调流。
 
 \subsection{Phase 2 向插头形态演进路线}
 \label{sec:phase2-route-b}
 
-Route B 是终态隐蔽攻击形态，但 Phase 1 不强求。Phase 2 集成阶段如果时间允许，演进路径如下：
+Route B 为终态隐蔽攻击形态，Phase 2 集成阶段演进路径如下：
 
 \begin{table}[H]
 \centering
@@ -367,43 +377,37 @@ Route B 是终态隐蔽攻击形态，但 Phase 1 不强求。Phase 2 集成阶�
 \end{tabularx}
 \end{table}
 
-Phase 2 总工时约 9 周，在 8 周（Week 17–24）预算内紧凑可行。\textbf{Phase 2 是工程加分项，不是 Phase 1 的硬交付。}
+Phase 2 总工时约 9 周，在 8 周（Week 17–24）预算内紧凑可行。
 
 % ============================================================================
 \section{电源线高频泄漏耦合与提取}
 \label{sec:ch2}
 % ============================================================================
 
-\begin{infobox}[title=本章定位]
-本章是整份提案的技术心脏。审稿人（EM Eye 论文作者团队）主要靠这一章判断候选人对侧信道电磁物理的理解深度。
-\end{infobox}
-
 \subsection{物理机制}
 \label{sec:ch2-phy}
 
 \subsubsection{CMOS + MIPI 总线产生共模电流的物理过程}
 
-EM Eye 论文 §III 明确指出：在嵌入式视觉系统中，图像传感器与 ISP 之间的 MIPI CSI-2 串行链路传输 sub-ns 边沿的高速数据，这些数据信号天然耦合到外围金属结构，使得连接电缆本身成为非预期发射天线（\textit{unintentional transmission antenna}）。
-
-物理机制可分为三阶段：
+EM Eye 论文 §III：MIPI CSI-2 串行链路传输 sub-ns 边沿的高速数据，数据信号耦合到外围金属结构，连接电缆本身成为非预期发射天线（\textit{unintentional transmission antenna}）。物理机制三阶段：
 
 \begin{enumerate}
-\item \textbf{源}：MIPI CSI-2 D-PHY 物理层以 byte clock（RPi V1 为 \(51\,\mathrm{MHz} \times 4 = 204\,\mathrm{MHz}\) 单 lane 速率）切换驱动差分对。每次比特跳变产生 \(\mathrm{d}V/\mathrm{d}t \sim 1\,\mathrm{V/ns}\) 的电压沿，通过共模电感（数据线对参考地）耦合产生\textbf{共模电流分量}。
-\item \textbf{传播}：共模电流沿数据线 → 进入主板地参考 → 通过 PCB 寄生电容传导到电源输入端 → 经稳压模块的寄生回路渗透到外部电源线（L + N + PE）。
-\item \textbf{泄漏频段}：由于驱动信号本身是 byte clock 谐波富集，泄漏在频谱上呈现强谐波线条，典型 100 MHz – 1 GHz 段，与论文 Table II 测得的 12 款 COTS 设备（155 MHz – 1740 MHz）一致。
+\item \textbf{源}：MIPI CSI-2 D-PHY 以 byte clock（RPi V1 \(51\,\mathrm{MHz}\)）切换差分对，每次比特跳变 \(\mathrm{d}V/\mathrm{d}t \sim 1\,\mathrm{V/ns}\) \(\to\) 共模电感耦合产生共模电流分量。
+\item \textbf{传播}：共模电流沿数据线 \(\to\) 主板地参考 \(\to\) PCB 寄生电容 \(\to\) 电源输入端 \(\to\) 稳压模块寄生回路 \(\to\) 外部电源线（L+N+PE）。
+\item \textbf{泄漏频段}：byte clock 谐波富集，典型 100 MHz – 1 GHz 段，与论文 Table II 12 款 COTS 设备（155–1740 MHz）一致。
 \end{enumerate}
 
 \subsubsection{电源线作为“非预期传输天线”的延伸}
 
-EM Eye 原论文使用近场磁探头（Beehive 100C）或 LPDA 远场天线在\textbf{空气}中拾取这些泄漏。本提案的扩展：对同一源信号，共模电流也会沿电源线传导出来，因为：
+EM Eye 原论文使用近场磁探头（Beehive 100C）或 LPDA 远场天线在空气中拾取泄漏。共模电流同样沿电源线传导，依据如下：
 
 \begin{itemize}
-\item 电源线本身在 100 MHz – 1 GHz 段电气长度已远大于 1/4 波长（0.5 m 线在 500 MHz 处 \(\approx 0.83\lambda\)），表现为分布参数传输线。
-\item 共模电流不会被电源滤波器有效抑制（电源滤波器是为 EMC Class B 设计的传导骚扰抑制，典型工作到 30 MHz 即截止）。
-\item 在 100 MHz 以上，设备内部的 X1/Y2 安全电容失去作用（寄生电感主导），共模电流可以“穿过”电源进入外部电源线。
+\item 电源线在 100 MHz – 1 GHz 段电气长度远大于 1/4 波长（0.5 m 线在 500 MHz 处 \(\approx 0.83\lambda\)），表现为分布参数传输线。
+\item EMC Class B 电源滤波器典型工作到 30 MHz 即截止，对 100 MHz 以上共模电流无抑制。
+\item 100 MHz 以上设备内部 X1/Y2 安全电容失效（寄生电感主导），共模电流穿过电源进入外部电源线。
 \end{itemize}
 
-\textbf{数量级估算}：
+\textbf{数量级估算}
 
 \begin{table}[H]
 \centering
@@ -424,7 +428,7 @@ Tekbox CT 二次侧电压         & \(V_2 = Z_T \cdot I_\mathrm{CM}\)，\(Z_T \a
 \end{tabularx}
 \end{table}
 
-\textbf{关键不确定性}：\(I_\mathrm{CM}\) 的绝对值是 Phase 0 必须实测验证的核心数字，也是要向 PhD 优先求证的问题。
+\textbf{关键不确定性}：\(I_\mathrm{CM}\) 的绝对值是 Phase 0 必须实测验证的核心数字。
 
 \subsection{耦合方式权衡}
 \label{sec:ch2-coupling}
@@ -446,83 +450,57 @@ HV 陶瓷电容 (1 kV/4.7 pF NP0) & 100 MHz – 数 GHz，电容短路风险，�
 \end{tabularx}
 \end{table}
 
-\textbf{选择理由}：
+\textbf{选择理由}
 
 \begin{enumerate}
 \item \textbf{主路 Tekbox CT 解决 80\% 问题}：100 kHz – 1 GHz 平坦覆盖 EM Eye Table II 12/12 设备的全部主泄漏频点，NIST 可追溯校准，Phase 0 第 1 周即可投入。
-\item \textbf{辅路 HV 电容补足 \(>\)500 MHz}：CT 在 500 MHz 以上磁导率下降，HV 陶瓷电容在 500 MHz – 2 GHz 段呈现低阻抗、低损耗，正好接力。LDSDR 2 RX 通道允许双路同时采样、PC 端融合。
+\item \textbf{辅路 HV 电容补足 \(>\)500 MHz}：CT 在 500 MHz 以上磁导率下降，HV 陶瓷电容在 500 MHz – 2 GHz 段呈现低阻抗、低损耗。LDSDR 2 RX 通道允许双路同时采样、PC 端融合。
 \end{enumerate}
 
 \subsection{选定架构}
 \label{sec:ch2-arch}
 
-\paragraph{主路（CT）}
+\paragraph{主路（CT）} Tekbox TBCP2-1000 商用宽带电流探头，100 kHz – 1 GHz 平坦 \(\pm 2\) dB，\(Z_T \approx 5\,\Omega\)（等效插损 \(-20\) dB），一次侧最大 30 A AC；L+N 同向穿芯（PE 独立走线在 CT 外），磁通 \(\Phi_\mathrm{CT} \propto I_L + I_N = 2 I_\mathrm{CM}\)，DM 抑制估算 30–40 dB；W1 制作 2 芯延长线工装，\(\delta_\mathrm{offset} \leq 0.5\,\mathrm{mm}\)。
 
-\begin{itemize}
-\item \textbf{型号}：Tekbox TBCP2-1000 商用宽带电流探头
-\item \textbf{频段}：100 kHz – 1 GHz，平坦 \(\pm 2\) dB，转移阻抗 \(Z_T \approx 5\,\Omega\)（等效插损 \(-20\) dB）
-\item \textbf{一次侧最大通过电流}：30 A AC
-\item \textbf{穿芯方式}：\textbf{L + N 同向穿芯}，PE 独立走线在 CT 之外。磁通 \(\Phi_\mathrm{CT} \propto I_L + I_N = 2 I_\mathrm{CM}\)，差模电流完全抵消，共模电流加倍叠加。DM 抑制经验估计 30–40 dB。
-\item \textbf{工装}：Week 1 制作 2 芯延长线工装，机械保证 L+N 几何对齐，\(\delta_\mathrm{offset} \leq 0.5\,\mathrm{mm}\)
-\end{itemize}
-
-\paragraph{辅路（HV 电容）}
-
-\begin{itemize}
-\item \textbf{元件}：Murata GA355DR7GF472KY02（4.7 pF / 1 kV NP0）\(\times 2\) 串联（双重失效保护）
-\item \textbf{接入点}：DUT 电源线 L 线对地，经 LC HPF（\(f_c = 200\) MHz）+ 50 \(\Omega\) 端接 \(\to\) SMA \(\to\) LDSDR RX2
-\item \textbf{频段}：200 MHz – 2 GHz，补足 CT 高频段
-\item \textbf{安全}：即使一颗电容击穿短路，另一颗仍保持 \(> 500\) V 工作电压余量
-\end{itemize}
+\paragraph{辅路（HV 电容）} Murata GA355DR7GF472KY02（4.7 pF / 1 kV NP0）\(\times 2\) 串联（双重失效保护）；接入 DUT 电源线 L 对地 \(\to\) LC HPF（\(f_c = 200\) MHz）+ 50 \(\Omega\) 端接 \(\to\) SMA \(\to\) LDSDR RX2；200 MHz – 2 GHz 补足 CT 高频段；任一电容击穿，另一颗仍保持 \(> 500\) V 余量。
 
 \paragraph{双路融合策略（LDSDR 2T2R 同时采样）}
 
 \begin{itemize}
 \item LDSDR RX1 \(\to\) CT 主路 \(\to\) LO 锁 RPi V1 @ 204 MHz（byte clock 4 次谐波）
 \item LDSDR RX2 \(\to\) HV 电容辅路 \(\to\) LO 锁 @ 1.485 GHz（HDMI 扩展）或 900 MHz（EM Eye Table II 中段）
-\item PC 端按 EM Eye 论文 Eq.3 做相干合成，SNR 提升估算 +3 dB
+\item PC 端按 EM Eye 论文 Eq.3 做相干合成，SNR 提升估算 +3 dB \statusplan
 \end{itemize}
 
-与论文原方案的差异化：论文用单 USRP \textbf{时分}采样不同频段；本方案用 LDSDR 2 RX \textbf{同时}采样，这是 v1 baseline 就具备的硬件优势。
+差异化：论文用单 USRP 时分采样不同频段；本方案用 LDSDR 2 RX 同时采样。
 
 \subsection{保护与工频隔离链}
 \label{sec:ch2-protect}
 
-完整保护链结构（占位图：\texttt{figures/proposal\_protection\_chain.png}）：
+完整保护链 \(\to\) 表 \ref{tab:protection-chain}（占位图 \texttt{figures/proposal\_protection\_chain.png}）。
 
-\begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
-[Tekbox CT 二次侧 BNC 输出 50 Ohm]
-        |  RG-316 短同轴 (< 20 cm)
-        v
-[SMA 母座 PCB 入口] -- 单点接地 (铜罩 -> PCB 模拟地)
-        |
-        v
-[低 C TVS: Bourns CDSOT23-T05LC]   <-- ESD/瞬态钳位, C < 1 pF @ 1 GHz
-   V_RWM = +/- 5 V, V_C @ 1A = +/- 8 V, 响应 < 1 ns, ESD +/- 15 kV
-        |
-        v
-[DC 隔直: Murata GRM18 NP0 1 nF / 100 V]   <-- 阻 DC, 通 RF
-   50 Hz 容抗 3.18 MOhm / 30 MHz 容抗 5.3 Ohm / 1 GHz 容抗 0.16 Ohm
-        |
-        v
-[LC HPF 4 阶 Butterworth 50 Ohm, fc = 30 MHz]
-   C1=150 pF NP0, L2=150 nH Coilcraft 0603HP (Q>50@100MHz),
-   C3=56 pF NP0,  L4=330 nH
-   50 Hz 衰减 > 100 dB (实测目标), 通带 30 MHz - 3 GHz 损耗 < 1 dB
-        |
-        v
-[LNA 输入端 -> ERA-4SM+ x 2 级联板]
-\end{lstlisting}
+\begin{table}[H]
+\centering
+\caption{保护链级联（Tekbox CT 二次侧 \(\to\) LNA 输入）}
+\label{tab:protection-chain}
+\small
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\rowcolor{tableheader}
+\textbf{级} & \textbf{元件 / 配置} & \textbf{关键参数} \\
+\midrule
+入口 & SMA 母座 + RG-316 \(< 20\) cm + 铜罩单点接地 & 50 \(\Omega\) \\
+TVS & Bourns CDSOT23-T05LC（低 C 型） & \(C < 1\) pF @ 1 GHz, V\_RWM \(\pm 5\) V, ESD \(\pm 15\) kV \\
+DC 隔直 & Murata GRM18 NP0 1 nF/100 V & 50 Hz 容抗 3.18 M\(\Omega\) / 1 GHz 容抗 0.16 \(\Omega\) \\
+LC HPF & 4 阶 Butterworth, \(f_c = 30\) MHz, 50 \(\Omega\) & C1=150 pF, L2=150 nH, C3=56 pF, L4=330 nH \\
+输出 & ERA-4SM+ \(\times 2\) 级联板 & 50 Hz 衰减 \(> 100\) dB（目标），通带 \(< 1\) dB \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\textbf{Phase 2（Route B 演进）新增市电入口保护}：GDT（Bourns 2026-23-SM）\(\to\) MOV（Littelfuse V275LA20A）\(\to\) 共模扼流圈（Würth 744232222），用于内含 AC-DC 的插头形态。Phase 1 USB 供电时这些元件不需要。
+\textbf{Phase 2 Route B 市电入口保护}：GDT（Bourns 2026-23-SM）\(\to\) MOV（Littelfuse V275LA20A）\(\to\) 共模扼流圈（Würth 744232222），仅插头形态需要。
 
-\paragraph{关键工程规则}
-
-\begin{enumerate}
-\item \textbf{信号路径绝对不加共模扼流圈}：本设备的"目标信号"就是共模电流本体，信号侧加共模扼流圈等于扼掉信号。
-\item \textbf{TVS 选低 C 型号}：普通 TVS（SMAJ12A）寄生电容 \(\sim 200\) pF，在 1 GHz 容抗仅 0.8 \(\Omega\) 几乎短路；必须用 \(C < 1\) pF 的 RF 专用 TVS。
-\item \textbf{隔直电容选 NP0/C0G 介质}：温度系数 \(\pm 30\) ppm/°C，Q 值高，无压电效应；X7R 介质机械振动会产生附加噪声，在 \(\mu\)V 级信号上不可接受。
-\end{enumerate}
+\paragraph{关键工程规则} (1) 信号路径不加共模扼流圈（目标信号即共模电流本体）；(2) TVS 选低 C 型号（普通 SMAJ12A 寄生 \(\sim 200\) pF，1 GHz 容抗 0.8 \(\Omega\) 近似短路，需 \(C < 1\) pF RF 专用 TVS）；(3) 隔直电容选 NP0/C0G（\(\pm 30\) ppm/°C，Q 高，无压电；X7R 机械振动产生 \(\mu\)V 级噪声不可接受）。
 
 \subsection{已知风险与缓解措施}
 \label{sec:ch2-risks}
@@ -552,15 +530,7 @@ R2-6 & 不同 DUT CM 阻抗差异大（20–500 \(\Omega\)） & 多设备对比�
 
 Week 1–3 内完成 5 项实验，作为是否进入 Phase 1 的硬决策门。
 
-\paragraph{实验流程}
-
-\begin{enumerate}
-\item \textbf{W1}：Tekbox CT 到货 \(\to\) 实验室 VNA + 频谱仪验证 S21 频响，扫频 100 kHz – 1.5 GHz，要求 100 kHz – 1 GHz 平坦 \(\pm 3\) dB
-\item \textbf{W1}：候选人 BYO ERA-4SM+ \(\times 2\) LNA 与 LDSDR 集成，验证整链注入校准（信号发生器 \(-80\) dBm \(\to\) LDSDR RSSI \(-20\) dBm，匹配 +60 dB 增益）
-\item \textbf{W2}：RPi 4B + Camera V1.3 通电（论文同款 DUT），Tekbox 夹电源线，频谱仪扫 50 MHz – 1 GHz，搜索 30 Hz 周期性载波，\textbf{目标频点 204 / 255 MHz}
-\item \textbf{W2–W3}：LDSDR 8 MSPS IQ 采集，Python 端幅度解调 + 30 Hz 自相关 \(\to\) Tf/Tr 估计 \(\to\) 像素重排
-\item \textbf{W3}：扩展到 3 个 COTS 设备（Wyze Cam Pan 2 / Xiaomi Dafang / 360 行车记录仪），重复 (3)(4)
-\end{enumerate}
+\paragraph{实验流程} W1 Tekbox CT VNA + 频谱仪 S21 频响 100 kHz – 1.5 GHz 扫频（要求 100 kHz – 1 GHz \(\pm 3\) dB 平坦）+ ERA-4SM+ \(\times 2\) LNA 与 LDSDR 整链注入校准（信号发生器 \(-80\) dBm \(\to\) LDSDR RSSI \(-20\) dBm，匹配 +60 dB 增益）；W2 RPi 4B + Camera V1.3 通电，Tekbox 夹电源线，频谱仪扫 50 MHz – 1 GHz 搜 30 Hz 周期性载波（目标 204 / 255 MHz）；W2–W3 LDSDR 8 MSPS IQ 采集 + Python 幅度解调 + 30 Hz 自相关 \(\to\) Tf/Tr \(\to\) 像素重排；W3 扩展到 3 COTS（Wyze/Dafang/360）。
 
 \begin{infobox}[title=Go 条件（任一满足）]
 \begin{itemize}
@@ -586,7 +556,7 @@ Week 1–3 内完成 5 项实验，作为是否进入 Phase 1 的硬决策门。
 \subsection{架构：候选人 BYO 的 ERA-4SM+ \texorpdfstring{$\times 2$}{x2} 级联}
 \label{sec:ch3-arch}
 
-候选人在加入项目之前\textbf{已完成} ERA-4SM+ \(\times 2\) 级联 LNA 模块的设计、加工与 VNA 实测验证（详见附录 B）。本提案的模拟前端直接复用该模块，不需要额外开发。
+候选人 BYO ERA-4SM+ \(\times 2\) 级联 LNA 模块 \statusok（设计、加工与 VNA 实测均已完成，详见附录 B），模拟前端直接复用。
 
 \begin{table}[H]
 \centering
@@ -656,30 +626,6 @@ NF_\mathrm{total} = 2.24 + \frac{1.24}{25.1} + \frac{2.16}{630.5} = 2.29 \Righta
 
 \paragraph{SNR 估算} 信号 \(-77\) dBm 经 \(-20\) dB CT \(\to -97\) dBm 等效到 LNA 输入，加 28 dB LNA \(\to -69\) dBm @ LDSDR 输入，噪底折算 \(-108\) dBm，\textbf{SNR \(\approx 39\) dB}（舒适余量）。若实际 \(I_\mathrm{CM}\) 弱 30 dB，SNR 降到 9 dB 仍勉强可重建；再弱 10 dB 需启用备用 PGA-103+ 第三级（+22 dB）。
 
-\subsection{可切换 BPF 组（可选，Phase 1）}
-\label{sec:ch3-bpf}
-
-Phase 0 实测后决定是否启用。如测出 LNA 带外干扰 \(> -30\) dBm（接近饱和）、目标频点 SNR \(< 10\) dB 或重建图像有明显条纹，则启用 Stage 2 三段 SAW BPF + RF 开关切换。
-
-\begin{table}[H]
-\centering
-\caption{Stage 2 BPF 配置}
-\label{tab:bpf-stage2}
-\small
-\begin{tabularx}{\textwidth}{cXXXX}
-\toprule
-\rowcolor{tableheader}
-\textbf{段} & \textbf{中心/带宽 (MHz)} & \textbf{SAW 型号} & \textbf{IL/抑制 (dB)} & \textbf{覆盖目标} \\
-\midrule
-Band 1 & 200 / 150–250 & Murata SAFEB200MAF0F & 2.5 / 40 & RPi V1 (204), Xiaodu (204) \\
-Band 2 & 450 / 350–550 & Murata SAFEA450MAA0F & 3.0 / 45 & Pixel 3 (515), 360 (450), Dafang (322) \\
-Band 3 & 900 / 800–1000 & Murata SAFFB942MAA0F & 2.8 / 42 & WyzeCam (890), Dafang (890) \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\textbf{RF 开关}：Peregrine PE42423 SP4T，DC – 6 GHz，IL \(< 0.7\) dB，隔离 \(> 50\) dB，切换 \(< 1\,\mu\)s。候选人在 XCZU3EG PL LPR CNN 项目已有 PE42423 PCB 布板与 SPI 控制经验。\textbf{Stage 2 BOM}：¥ 350（3 SAW + 1 开关 + 偏置），作为应急储备。
-
 \subsection{PCB 与屏蔽}
 \label{sec:ch3-pcb}
 
@@ -703,18 +649,9 @@ L4 & 数字控制（I\textsuperscript{2}C、SPI 偏置） & FR-4 & 0.508 mm \\
 
 Rogers RO4350B：\(\varepsilon_r = 3.66\,@\,1\,\mathrm{GHz}\)，损耗角正切 0.0037，50 \(\Omega\) 微带线宽 30 mil。
 
-\paragraph{屏蔽与接地}
+\paragraph{屏蔽与接地} 模拟前端板装铜罩（顶+底），罩接 L2 模拟地，单点接地到 LDSDR SOM 入口；LNA 单独子腔屏蔽避免反馈振荡；模拟/数字地通过单 0 \(\Omega\) 跳线（Star Ground）；SMA PCB 直焊，via stitching 间距 \(\leq 1/10\) 波长（@ 1 GHz 即 30 mm）。
 
-\begin{itemize}
-\item 模拟前端板装铜罩（顶 + 底），罩接 L2 模拟地，\textbf{单点接地}到 LDSDR SOM 入口
-\item \textbf{LNA 单独子腔屏蔽}，与滤波/耦合区物理隔离，避免反馈振荡
-\item 模拟域与数字域接地通过单个 0 \(\Omega\) 跳线（Star Ground）
-\item SMA 接头 PCB 直焊，via stitching 间距 \(\leq 1/10\) 波长（@ 1 GHz 即 30 mm）
-\end{itemize}
-
-\paragraph{电源去耦} LNA 偏置 5 V \(\to\) TI TPS7A47（4 nV/\(\sqrt{\mathrm{Hz}}\) LDO）\(\to\) 0.1 \(\mu\)F + 10 \(\mu\)F MLCC + 100 \(\mu\)F 钽近端布置；LDSDR USB 5 V \(\to\) TPS54320（5 V \(\to\) 1.8 V 数字）+ 独立 LDO 给 AD9363 RF 电源。
-
-\paragraph{预期 EMI 屏蔽效能} 铝合金外壳 + 铜罩 = 40 – 60 dB @ 1 GHz（覆盖 WiFi 2.4G / FM / GSM 900 等外部干扰源）。
+\paragraph{电源去耦 \& EMI} LNA 偏置 5 V \(\to\) TPS7A47 LDO（4 nV/\(\sqrt{\mathrm{Hz}}\)）+ 0.1/10/100 \(\mu\)F 近端去耦；LDSDR 5 V \(\to\) TPS54320 \(\to\) 1.8 V 数字 + 独立 LDO 给 AD9363；铝合金外壳 + 铜罩屏蔽效能 40 – 60 dB @ 1 GHz。
 
 % ============================================================================
 \section{数据采集与无线传输}
@@ -724,7 +661,7 @@ Rogers RO4350B：\(\varepsilon_r = 3.66\,@\,1\,\mathrm{GHz}\)，损耗角正切 
 \subsection{SDR 选型：LDSDR 7010 rev2.1}
 \label{sec:ch4-sdr}
 
-候选人 BYO 的 \textbf{LDSDR 7010 rev2.1} 取代原计划的 ADALM-Pluto。
+候选人 BYO \textbf{LDSDR 7010 rev2.1} \statusok（取代原计划 ADALM-Pluto）。
 
 \begin{table}[H]
 \centering
@@ -747,12 +684,12 @@ RF 端口 & \textbf{2 TX + 2 RX（2T2R）} & 1 TX + 1 RX & \textbf{双 RX 通道
 \end{tabularx}
 \end{table}
 
-\textbf{关键差异化点}：候选人在 LDSDR 同款 Zynq-7010 上已实现 OFDM + LDPC 完整 HDL 收发机，BER = 0 板级验证（详见附录 B）。这意味着：
+\textbf{关键差异化点}：候选人 LDSDR 同款 Zynq-7010 上已实现 OFDM + LDPC 完整 HDL 收发机，BER = 0 \statusok（附录 B）。直接复用项：
 
 \begin{itemize}
-\item LDSDR Buildroot rootfs（Linux 5.15）、iio\_attr 用户态控制、Vivado 工程结构、AD9363 SPI 配置流程\textbf{全部已通}
-\item Phase 2 \texttt{emeye\_accel} RTL 开发\textbf{直接复用} OFDM 项目的 AXI-Stream / AXI-Lite / IRQ 框架
-\item XCZU3EG HLS LPR CNN 项目（87.94 \% / 675 ms 端到端）同样适用于 LDSDR 板上 pix2pix 加速备份方案
+\item LDSDR Buildroot rootfs（Linux 5.15）、iio\_attr 用户态控制、Vivado 工程结构、AD9363 SPI 配置流程 \statusok
+\item Phase 2 \texttt{emeye\_accel} RTL 复用 OFDM 项目的 AXI-Stream / AXI-Lite / IRQ 框架
+\item XCZU3EG HLS LPR CNN 项目（87.94\% / 675 ms 端到端）适用于 LDSDR 板上 pix2pix 加速备份方案
 \end{itemize}
 
 \subsection{采样策略}
@@ -783,16 +720,7 @@ Google Pixel 3（对照） & 128.75 & \textbf{515} & 0.34 \\
 
 \subsubsection{频点跟踪算法}
 
-\paragraph{开机扫描（Phase 1 完成后）}
-
-\begin{enumerate}
-\item \textbf{快扫}：50 MHz – 1 GHz 以 1 MHz 步长扫频，每点 100 ms，记录功率谱
-\item \textbf{粗候选}：挑出 top-5 强谱线（信号 \(>\) 噪底 + 15 dB）
-\item \textbf{细识别}：对每个候选频点做 IQ 采集 1 秒，FFT + 30 Hz 周期性自相关识别真实 EM Eye 泄漏（其他干扰如 FM 广播无 30 Hz 周期性）
-\item \textbf{锁定 + 漂移补偿}：选 SNR 最高的频点持续锁定；LDSDR AD9363 TCXO \(\pm 25\) ppm，叠加 PC 端软件 PLL 补偿 \(\pm 50\) ppm 范围
-\end{enumerate}
-
-频点漂移来源：DUT 内部 PLL 与攻击设备 LO 频率差，典型 \(< 50\) ppm，在 1 GHz 处即 \(\pm 50\) kHz，远小于 8 MSPS 带宽，软件补偿无压力。
+\paragraph{开机扫描（Phase 1 完成后）} (1) 快扫 50 MHz – 1 GHz 步长 1 MHz，每点 100 ms 记录功率谱；(2) 粗候选 top-5 强谱线（信号 \(>\) 噪底 + 15 dB）；(3) 细识别每个候选 IQ 采集 1 s，FFT + 30 Hz 自相关识别 EM Eye 泄漏（FM 广播等无 30 Hz 周期）；(4) 锁定 + 漂移补偿（TCXO \(\pm 25\) ppm + PC 端软件 PLL \(\pm 50\) ppm）。频点漂移 \(< 50\) ppm @ 1 GHz 即 \(\pm 50\) kHz，远小于 8 MSPS 带宽。
 
 \subsection{传输方案决策表}
 \label{sec:ch4-transport}
@@ -846,16 +774,12 @@ BOM / PCB & 0（已含） & ¥ 1000 + \(80 \times 60 \times 12\) mm & \textbf{�
 
 \textbf{唯一代价}：PS 端需跑数据搬运（从 PL 取 IQ \(\to\) 千兆 PHY DMA），Zynq-7010 PS 算力实测可承担。
 
-\subsubsection{软件栈}
+\textbf{软件栈}：LDSDR PS 端（Buildroot Linux 5.15）用 \texttt{iio\_attr} 配置 AD9361 LO/增益/采样率/滤波器，libiio-dame 服务端通过千兆 socket 把 IQ 流推送到 PC，Python 端 GNURadio + pyadi-iio 实时采集；PC 端接收双 RX IQ 流（对齐时戳）\(\to\) 频点跟踪 + AGC 反馈 \(\to\) 幅度解调 + 30 Hz 自相关 \(\to\) Tf/Tr 估计 \(\to\) 像素重排 + pix2pix GAN 精修（GPU 加速）。
 
-\textbf{LDSDR PS 端}（Buildroot Linux 5.15，候选人 BYO）：\texttt{iio\_attr} 配置 AD9361 LO/增益/采样率/滤波器；libiio-dame 服务端通过千兆 socket 把 IQ 流推送到 PC；Python 端 GNURadio + pyadi-iio 实时采集。
-
-\textbf{PC 端}（笔记本）：接收双 RX IQ 流（对齐时戳）\(\to\) 频点跟踪 + AGC 反馈 \(\to\) 幅度解调 + 30 Hz 自相关 \(\to\) Tf/Tr 估计 \(\to\) 像素重排 + pix2pix GAN 精修（GPU 加速）。
-
-\subsection{Sidebar — 板上 FPGA 加速路线图（Phase 2）}
+\subsection{板上 FPGA 加速路线图（Phase 2）}
 \label{sec:ch4-accel}
 
-利用 LDSDR Zynq-7010 PL 实现 EM Eye 重建管线热路径硬件加速：
+LDSDR Zynq-7010 PL 实现 EM Eye 重建管线热路径加速。
 
 \begin{table}[H]
 \centering
@@ -878,7 +802,7 @@ BOM / PCB & 0（已含） & ¥ 1000 + \(80 \times 60 \times 12\) mm & \textbf{�
 
 \textbf{预期效果}：输出数据率 192 \(\to\) 32 Mbps（12 倍压缩）；端到端延迟 100 ms \(\to < 10\) ms；千兆占用 48 \% \(\to\) 4 \%。
 
-\textbf{候选人能力背书}：\texttt{emeye\_accel} RTL 候选人已在 Pre-Phase 0 完成首版 Vivado 工程（详见附录 B），仿真通过；LDPC 项目 BER = 0 板级验证证明 PS-PL 协同链路稳定；XCZU3EG HLS LPR 项目 675 ms 端到端记录证明可在 FPGA 上跑接近 pix2pix 复杂度的网络。
+\textbf{能力背书}：\texttt{emeye\_accel} RTL 首版 Vivado 工程仿真通过 \statusok（附录 B）；LDPC BER = 0 \(\to\) PS-PL 协同链路；XCZU3EG HLS LPR 675 ms \(\to\) FPGA 跑 pix2pix 级复杂度网络可行。
 
 % ============================================================================
 \section{主要器件选型 BOM}
@@ -998,26 +922,12 @@ Phase 1 单台原型 BOM 合计 \textbf{¥ 5{,}245}（含 Tekbox CT）或 \textb
 
 \textbf{1 RA \(\times 6\) 个月全职}（132 个工作日）。
 
-\paragraph{Phase 0 — 可行性验证（W1–W3，3 周）} Tekbox CT 标定 + RPi V1 复现 + COTS 设备扫描 + Go/No-Go 决策门；交付 Phase 0 实验报告 + Phase 1 设计修正建议。
+\paragraph{Phase 0（W1–W3）} Tekbox CT 标定 + RPi V1 复现 + COTS 设备扫描 + Go/No-Go 决策门；交付 Phase 0 实验报告 + Phase 1 设计修正建议。
 
-\paragraph{Phase 1 — 工程原型（W4–W15，12 周）}
+\paragraph{Phase 1（W4–W15）} W4–W7 模拟前端板设计 + PCB 打样 v1 + LNA/滤波链联调；W8–W11 LDSDR Buildroot rootfs + emeye 算法 Python + 多频段双 RX 融合；W12–W14 PCB 打样 v2 + 3D 外壳 + 整机集成 + 多 DUT 验证；W15 Phase 1 评审，出 v1 完整工程原型。
 
-\begin{itemize}
-\item W4–W7：模拟前端板设计 + PCB 打样 v1 + LNA / 滤波链联调
-\item W8–W11：LDSDR Buildroot rootfs + emeye 算法 Python + 多频段双 RX 融合
-\item W12–W14：PCB 打样 v2 + 3D 外壳 + 整机集成 + 多 DUT 验证
-\item W15：Phase 1 评审，出 v1 完整工程原型
-\end{itemize}
+\paragraph{Phase 2（W16–W24）} W16–W19 \texttt{emeye\_accel} RTL 板上集成 + PS-PL 联调（OFDM 经验直接迁移）；W20–W22 6 层集成 PCB + CNC 外壳 + 自研小型化 CT 验证；W23–W24 多设备 + 多场景验证 + 终版报告。
 
-\paragraph{Phase 2 — 集成 + 验证（W16–W24，9 周）}
-
-\begin{itemize}
-\item W16–W19：\texttt{emeye\_accel} RTL 板上集成 + PS-PL 联调（OFDM 经验直接迁移）
-\item W20–W22：6 层集成 PCB + CNC 外壳 + 自研小型化 CT 验证
-\item W23–W24：多设备 + 多场景验证 + 终版报告
-\end{itemize}
-
-\paragraph{Phase 3（可选，W25+）} Route B 插头形态 + EMC Class B 预测试 + IEC 61010 安规。\textbf{不在本提案 6 个月预算内}。
 
 \subsection{Gantt 表（文字版）}
 \label{sec:ch6-gantt}
@@ -1033,12 +943,12 @@ Phase 2                                                  ================       
                                                                          =====  (多设备验证 + 终版报告)
 \end{lstlisting}
 
-\subsection{总预算汇总}
+\subsection{总预算汇总与应急储备}
 \label{sec:ch6-budget}
 
 \begin{table}[H]
 \centering
-\caption{6 个月项目总预算}
+\caption{6 个月项目总预算（含应急储备）}
 \label{tab:total-budget}
 \small
 \begin{tabularx}{\textwidth}{lrX}
@@ -1051,6 +961,7 @@ Phase 0 采购（实际，借用大头） & 3{,}160 & 完整 \(\sim 8{,}860\) \\
 Phase 1 BOM（单台原型） & 5{,}245 & 含 Tekbox \\
 Phase 1 NRE & 5{,}100 & \\
 Phase 2 采购 + NRE & 6{,}000 & 含备用 LDSDR + 自研 CT \\
+应急预备金（PGA-103+ + 辅路 + 备板） & \(\sim 6{,}350\) & 占总硬件 \(\sim 30\,\%\) \\
 项目硬件 + NRE 合计 & \(\sim\) \textbf{19{,}505} & 最低 \(\sim 14{,}000\) \\
 RA 津贴（¥ 2{,}000 / 月 \(\times 6\)） & 12{,}000 & 校内 RA 标准 \\
 \textbf{项目总成本} & \(\sim\) \textbf{31{,}500} & 区间 26{,}000 – 36{,}000 \\
@@ -1058,29 +969,7 @@ RA 津贴（¥ 2{,}000 / 月 \(\times 6\)） & 12{,}000 & 校内 RA 标准 \\
 \end{tabularx}
 \end{table}
 
-\textbf{预算合理性}：(1) BYO 资产省去 SDR + LNA 大头（否则 \(\sim\) ¥ 4{,}500 + 自研 LNA 工时）；(2) Phase 0 Go/No-Go 限制沉没成本（即使 No-Go 投入 \(<\) ¥ 10{,}000 即可终止）；(3) Phase 2 学术探索与 Phase 1 主路径解耦；(4) LISN/频谱仪/VNA 假设实验室公共资源借用。
-
-\subsection{风险驱动的预算保留}
-\label{sec:ch6-reserves}
-
-\begin{table}[H]
-\centering
-\caption{Phase 0 后可能触发的应急预算}
-\label{tab:reserve-budget}
-\small
-\begin{tabularx}{\textwidth}{XXrX}
-\toprule
-\rowcolor{tableheader}
-\textbf{风险} & \textbf{触发条件} & \textbf{应急 (¥)} & \textbf{应对} \\
-\midrule
-电源线传导损耗 \(> 60\) dB & Phase 0 测目标 SNR \(< 5\) dB & 3{,}000 & 第三级 LNA（PGA-103+ + PCB） \\
-Tekbox \(>500\) MHz 性能不足 & VNA 实测 \(-3\) dB 在 600 MHz 之前 & 1{,}500 & 启用辅路 HV 电容 + 软件融合 \\
-LDSDR 单板故障 & 任意时点 & 1{,}500 & 备用 LDSDR \\
-Stage 2 BPF 必须启用 & Phase 0 测出 LNA 接近饱和 & 350 & SAW + RF 开关 \\
-\textbf{应急预备金合计} & & \(\sim\) \textbf{6{,}350} & 占总硬件预算 \(\sim 30\,\%\) \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\textbf{预算合理性}：BYO 资产省去 SDR + LNA 大头；Phase 0 Go/No-Go 限制沉没成本（即使 No-Go 投入 \(<\) ¥ 10{,}000 即可终止）；LISN/频谱仪/VNA 实验室公共资源借用。
 
 % ============================================================================
 \appendix
@@ -1089,50 +978,34 @@ Stage 2 BPF 必须启用 & Phase 0 测出 LNA 接近饱和 & 350 & SAW + RF 开�
 \section{候选人工程经验与能力支撑}
 \label{sec:appA}
 
-候选人过去 3 年内已完成的、与本提案直接相关的 7 个端到端项目。所有数字均来自候选人本人板级实测或归档记录。
+候选人项目清单（7 项，均含实测数字与代码归档）。
 
 \subsection{OFDM + LDPC PlutoSDR Zynq-7010 全链路收发机}
 \label{sec:appA-1}
 
-\begin{itemize}
-\item \textbf{平台}：Analog Devices PlutoSDR / LDSDR（同款 \texttt{xc7z010clg225-1}）
-\item \textbf{角色 / 时间}：单人独立完成 PHY + Baseband 全部 HDL 设计与板级联调 / 约 8 个月
-\item \textbf{业务}：自研收发机验证 OFDM-LDPC 联合编码在低成本 SDR 上的工程可行性
-\end{itemize}
+平台 PlutoSDR / LDSDR（\texttt{xc7z010clg225-1}）/ 单人独立 PHY+Baseband HDL+板级联调 / 8 个月。
 
 \paragraph{关键技术} 完整 OFDM 链路 HDL（FFT/IFFT、循环前缀、导频插入、信道估计、均衡）；LDPC 编解码器 HDL（码字可配置，min-sum 迭代译码 + 比特节点并行）；时频同步（Schmidl-Cox 粗同步 + 导频辅助 CFO）；Pluto Zynq-7010 PL 综合通过，时序闭环 30.72 MHz；GNURadio 上位机 baseband I/Q 实时收发与 BER 统计。
 
 \paragraph{关键结果} \textbf{板级实测 BER = 0}（SNR \(\geq 10\) dB，\(10^6\) bit 连续传输零误码）；Vivado 资源 LUT 38\% / BRAM 52\% / DSP 24\%（xc7z010）；端到端吞吐 1.5 Mbps（QPSK, 1/2 LDPC）。
 
-\paragraph{对本提案的能力支撑} 本项目是候选人\textbf{能改 Pluto/LDSDR Zynq-7010 内部 HDL 并通过 bitstream 板级验证}的直接证据，是 Sidebar B"板上 FPGA 加速"路径的核心能力前置。详见 §A.8 映射表。
-
-\paragraph{工具链} Vivado HLS 2020.2 / Verilog/SystemVerilog / GNURadio 3.8（私有仓库，可在面试时演示）。
+\paragraph{对本提案的能力支撑} Pluto/LDSDR Zynq-7010 内部 HDL 修改 + bitstream 板级验证经验 \(\to\) 直接支撑"板上 FPGA 加速"路径。详见 §A.8 映射表。工具链 Vivado HLS 2020.2 / Verilog / GNURadio 3.8（私有仓库）。
 
 \subsection{XCZU3EG PL CNN 车牌识别端到端部署}
 \label{sec:appA-2}
 
-\begin{itemize}
-\item \textbf{平台}：Xilinx Zynq UltraScale+ MPSoC XCZU3EG（FZ3A 板，APU A53 \(\times 4\) + RPU R5 + PL）
-\item \textbf{角色 / 时间}：单人完成 CNN 模型选型、HLS 实现、PL 部署、Petalinux 集成 / 约 6 个月
-\item \textbf{业务}：边缘端 LPR demo，验证 HLS 在中等算力 PL fabric 上的可部署性
-\end{itemize}
+平台 XCZU3EG MPSoC（FZ3A 板，A53\(\times\)4 + R5 + PL）/ 单人 CNN+HLS+PL+Petalinux / 6 个月。
 
 \paragraph{关键技术} LPRNet 轻量化 CNN + CTC loss，参数量约 0.5 M；Vivado HLS（卷积 line-buffer + 行流水，激活 LUT 化，定点 INT8）；PL/PS 协同（AXI4-Stream DMA 送图，中断回收结果）；多级流水线 Conv-BN-ReLU 三段融合，pipeline II=1，时序闭环 200 MHz；Petalinux 自定义 image。
 
 \paragraph{关键结果} \textbf{字符识别准确率 87.94\%}（2000 张测试集）；\textbf{端到端延迟 675 ms}（含 PS\(\leftrightarrow\)PL DMA + PL 推理 + PS CTC 解码）；PL 资源 LUT 71\% / DSP 83\% / BRAM 64\%。
 
-\paragraph{对本提案的能力支撑} \textbf{Vivado HLS 多级流水线设计 + RTL 级时序闭环 + PS/PL 协同}经验，可直接迁移到 \texttt{emeye\_accel} IP 设计与板上 PS Linux + PL IP 通信架构。
-
-\paragraph{仓库} \href{https://github.com/stongry/FPGA-ZYNQ}{github.com/stongry/FPGA-ZYNQ}；工具链 Vivado HLS / Petalinux / Vitis AI 1.4。
+\paragraph{对本提案的能力支撑} PS/PL 协同 \(\to\) 适用 \texttt{emeye\_accel} PL IP + PS Linux 通信。仓库 \href{https://github.com/stongry/FPGA-ZYNQ}{github.com/stongry/FPGA-ZYNQ}；工具链 Vivado HLS / Petalinux / Vitis AI 1.4。
 
 \subsection{QSM368ZP RK3568 Ubuntu 22.04 移植与 RKNN NPU 部署}
 \label{sec:appA-3}
 
-\begin{itemize}
-\item \textbf{平台}：Rockchip RK3568（4\(\times\)A55 + Mali-G52 + 0.8 TOPS NPU）/ QSM368ZP 工业模块
-\item \textbf{角色 / 时间}：单人完成从 Buildroot 到 Ubuntu 22.04 的全量移植 + RKNN 推理生态 / 约 4 个月
-\item \textbf{业务}：客户出货级 Buildroot 替换为标准 Ubuntu 便于二次开发，同时对接 NPU 推理生态
-\end{itemize}
+平台 RK3568（A55\(\times\)4 + Mali-G52 + 0.8 TOPS NPU）/ QSM368ZP 工业模块 / 单人 Buildroot \(\to\) Ubuntu 22.04 全量移植 + RKNN / 4 个月。
 
 \paragraph{关键技术} U-Boot + Linux 5.10（Rockchip BSP）+ DTS 适配 QSM368ZP 引脚 mux；Ubuntu 22.04 server rootfs + systemd + Rockchip GPU/NPU blob；DSI 触摸控制器驱动调试；RKNN Toolkit 2.3.2 + librknnrt + ONNX\(\to\)RKNN 流水线；RetinaFace 端到端 USB camera \(\to\) RGA \(\to\) NPU \(\to\) NMS 全链路打通。
 
@@ -1143,19 +1016,13 @@ Stage 2 BPF 必须启用 & Phase 0 测出 LNA 接近饱和 & 350 & SAW + RF 开�
 \subsection{EC800M LTE Cat-1 模块语音 AI 对话集成}
 \label{sec:appA-4}
 
-\begin{itemize}
-\item \textbf{平台}：Quectel EC800M（MDM9205，LTE Cat-1 + 自带 TTS/Audio）
-\item \textbf{角色 / 时间}：单人完成 QuecPython 应用 + LTE 拨号 + 云端语音 AI 链路 / 约 3 个月
-\item \textbf{业务}：客户"插卡即用"语音 AI 对话硬件，出货级模块
-\end{itemize}
+平台 Quectel EC800M（MDM9205，LTE Cat-1 + TTS/Audio）/ 单人 QuecPython + LTE 拨号 + 云端语音 AI / 3 个月。
 
 \paragraph{关键技术} QuecPython 纯 Python 业务栈；LTE Cat-1 PPP 拨号 + TCP/TLS 长连接到云端 ASR/LLM/TTS；板载 audio codec 16 kHz PCM；低延迟流式 TTS + 半双工抢答；AT 命令 OTA。
 
 \paragraph{关键结果} \textbf{出货级语音 AI 模块批量出货}；从 SIM 注网到首字延迟约 800 ms。
 
-\paragraph{对本提案的能力支撑} Phase 3（可选扩展）远程 telemetry / 长距离回传场景，具备 LTE 集成 + 云端长连接 + OTA 经验；AT 命令调试与 TLS 客户端对 PS 侧网络栈调试有间接帮助。\textbf{与本提案主线关系较间接，列此处体现出货级嵌入式产品交付经验}。
-
-\paragraph{仓库} \href{https://github.com/stongry/2026yiyuan}{github.com/stongry/2026yiyuan}（\texttt{darken\_neko/ec800m-voice-chat}）。
+\paragraph{对本提案的能力支撑} 出货级嵌入式产品交付经验 + LTE 集成 + 云端长连接 + OTA。仓库 \href{https://github.com/stongry/2026yiyuan}{github.com/stongry/2026yiyuan}（\texttt{darken\_neko/ec800m-voice-chat}）。
 
 \subsection{Smart Home Slint UI 全量移植（Flutter \texorpdfstring{$\to$}{->} Slint）}
 \label{sec:appA-5}
@@ -1170,7 +1037,7 @@ Stage 2 BPF 必须启用 & Phase 0 测出 LNA 接近饱和 & 350 & SAW + RF 开�
 
 \paragraph{关键结果} \textbf{62.97 fps，达到面板硬件 60 Hz vsync 上限}（始终不掉帧）；二进制体积比原 Flutter 下降约 70\%。
 
-\paragraph{对本提案的能力支撑} Phase 2/3 若需重建 EM Eye 实时可视化上位机（帧显示 + SSIM 曲线 + 频谱图），具备 Rust + Slint 高性能 UI 工程能力；GPU/Wayland 合成栈理解可迁移到 Qt/Dear ImGui。工具链 Rust 1.75 / Slint 1.4 / Wayland。
+\paragraph{对本提案的能力支撑} 上位机可视化（帧显示 + SSIM 曲线 + 频谱图）Rust + Slint 高性能 UI 能力。工具链 Rust 1.75 / Slint 1.4 / Wayland。
 
 \subsection{RetinaFace NPU 性能 Benchmark（RK3568 vs RK3588）}
 \label{sec:appA-6}
@@ -1185,25 +1052,20 @@ Stage 2 BPF 必须启用 & Phase 0 测出 LNA 接近饱和 & 350 & SAW + RF 开�
 
 \paragraph{关键结果} \textbf{NPU 单帧} RK3568 = 15 ms，RK3588 = 7.75 ms（\(\sim\) 2\(\times\) 加速）；\textbf{端到端 fps} RK3568 = 20.7，RK3588 = 41.7。结论已写入内部选型报告。
 
-\paragraph{对本提案的能力支撑} Phase 0/1 大量 A/B 实测（基线 vs 改进）严谨方法学，完整实验设计 + 数据采集 + 统计报告能力。
+\paragraph{对本提案的能力支撑} Phase 0/1 A/B 实测严谨方法学 \(\to\) 完整实验设计 + 数据采集 + 统计报告。
 
 \subsection{本提案 Pre-Phase 0 已完成工作}
 \label{sec:appA-7}
 
-\begin{itemize}
-\item \textbf{平台}：本提案目标平台（LDSDR + 自研耦合电路 + PC 仿真）
-\item \textbf{角色 / 时间}：候选人自费在面试前完成的预研工作 / 约 6 周
-\end{itemize}
-
-\paragraph{关键交付件}
+平台 LDSDR + 自研耦合电路 + PC 仿真 / 6 周 / 自费预研。关键交付件：
 
 \begin{itemize}
-\item \textbf{5 个 Python 端到端仿真}：覆盖 EM Eye 信号建模、HDMI TMDS bit-level 仿真、TCP demo，\textbf{帧级 SSIM = 0.99}
-\item \textbf{4 个 RTL testbench 全部 PASS}：Verilator / Vivado Simulator 双重验证
-\item \textbf{LDSDR 真目标 bitstream 已生成 + 烧录 + RF 实测}：在 Zynq-7010 上启动正常，采集真实 RF 数据回放
+\item 5 个 Python 端到端仿真：EM Eye 信号建模、HDMI TMDS bit-level、TCP demo，帧级 SSIM = 0.99 \statusok
+\item 4 个 RTL testbench 全 PASS：Verilator + Vivado Simulator 双验证 \statusok
+\item LDSDR 真目标 bitstream 生成 + 烧录 + RF 实测：Zynq-7010 启动正常，采真实 RF 数据 \statusok
 \end{itemize}
 
-详见附录 B。\textbf{§A.7 不是"过去的项目"，而是候选人对本提案诚意与执行力的直接证据}：在尚未拿到 RA offer 前已自费 6 周完成 Pre-Phase 0，入职即可直接进入 Phase 1。
+详见附录 B。
 
 \subsection{能力 — 提案任务映射表}
 \label{sec:appA-8}
@@ -1267,12 +1129,12 @@ UI 框架 & Slint (Rust)、Flutter & 熟练 / 有经验 \\
 \section{Pre-Phase 0 已完成工作（2026-05-12 至 2026-05-14）}
 \label{sec:appB}
 
-本附录列举本提案提交之前候选人独立完成的工程工作，所有材料均可在公开 GitHub 仓库与本地工程目录中复现、可审计。
+公开 GitHub 仓库与本地工程目录可复现、可审计。
 
 \subsection{一句话总览}
 \label{sec:appB-0}
 
-在提案撰写阶段（共 6 天工程冲刺），候选人已完成：
+6 天工程冲刺完成：
 
 \begin{enumerate}
 \item \textbf{2 份端到端 Python 仿真}（EM Eye 复现 SSIM 0.98 + HDMI TEMPEST 扩展 SSIM 0.9907）+ \textbf{1 份 LDSDR \(\to\) 主机 TCP demo}
@@ -1287,7 +1149,7 @@ UI 框架 & Slint (Rust)、Flutter & 熟练 / 有经验 \\
 \subsection{端到端 Python 仿真：EM Eye 论文复现到 HDMI TEMPEST 泛化}
 \label{sec:appB-1}
 
-候选人没有从板子开始，而是先在 Python 上把整条链路跑通，后续 FPGA RTL 输出对错有了 golden reference。
+Python 端到端链路打通后，FPGA RTL 输出有 golden reference 对比。
 
 \subsubsection{EM Eye 论文方法完整复现（Long et al., NDSS 2024）}
 
@@ -1316,7 +1178,7 @@ UI 框架 & Slint (Rust)、Flutter & 熟练 / 有经验 \\
 
 \subsubsection{HDMI TEMPEST 扩展（原创泛化验证）}
 
-文件 \texttt{simulation/hdmi\_simulation.py}（423 行）证明：\textbf{论文方法不是 EM Eye 专用工具，而是通用 EM 侧信道重建平台}。
+文件 \texttt{simulation/hdmi\_simulation.py}（423 行）证明：论文方法是通用 EM 侧信道重建平台。
 
 \begin{table}[H]
 \centering
@@ -1340,9 +1202,7 @@ UI 框架 & Slint (Rust)、Flutter & 熟练 / 有经验 \\
 
 \subsubsection{LDSDR \(\to\) 主机 TCP 网络管线 demo}
 
-文件 \texttt{simulation/network\_demo.py}（405 行）：Python 模拟 FPGA 加速器输出 + TCP 传输 + 主机重建，\textbf{主机侧代码全部预先验证完毕}，Phase 2 真硬件 bring-up 时只需把 Python mock 换成真 socket。
-
-与 §B.5 PS 用户态 TCP forwarder 骨架协议兼容（同帧头格式 + 同 byte order），Phase 2 W2 即可对接。
+文件 \texttt{simulation/network\_demo.py}（405 行）：Python 模拟 FPGA 加速器输出 + TCP 传输 + 主机重建。Phase 2 真硬件 bring-up 时把 Python mock 换成真 socket 即可。与 §B.5 PS 用户态 TCP forwarder 骨架协议兼容（同帧头 + 同 byte order）。
 
 \subsection{FPGA 加速器 RTL 与单元测试}
 \label{sec:appB-2}
@@ -1398,7 +1258,7 @@ wire [W+1:0] mag = max_ab + (min_ab >> 2) + (min_ab >> 3);
 \end{tabularx}
 \end{table}
 
-\texttt{tb\_emeye\_accel} 在仿真期发现并修复了一个\textbf{真实 RTL bug}：顶层 round-robin 输出无缓冲导致样本丢失。修复方案是加 pending buffer + 优先级回退。这一条单独足以证明候选人不是"跑通即提交"。
+\texttt{tb\_emeye\_accel} 在仿真期发现并修复了一个真实 RTL bug：顶层 round-robin 输出无缓冲导致样本丢失。修复方案是加 pending buffer + 优先级回退。
 
 \subsubsection{设计推导文档}
 
@@ -1407,7 +1267,7 @@ wire [W+1:0] mag = max_ab + (min_ab >> 2) + (min_ab >> 3);
 \subsection{Vivado 工程化与真目标 bitstream 生成}
 \label{sec:appB-3}
 
-\textbf{目标器件：\texttt{xc7z010clg400-2}（LDSDR rev2.1 真硬件）}。不是 PlutoSDR 衍生 z020，候选人专门核对过 LDSDR 原理图。
+\textbf{目标器件：\texttt{xc7z010clg400-2}（LDSDR rev2.1 真硬件，非 PlutoSDR z020）}。
 
 \subsubsection{完整流程时间线}
 
@@ -1456,7 +1316,7 @@ BRAM & 1 / 60 & 1.67\% & 平均窗口环形缓冲 \\
 \end{tabularx}
 \end{table}
 
-\textbf{关键结论}：Phase 3 多频段融合需要至多再加 3-4 路并行处理通道，\textbf{当前 86\%+ 资源余量完全 cover 得住}。这是"多频段融合可行"claim 的硬证据。
+\textbf{关键结论}：86\%+ 资源余量可容纳 3-4 路并行处理通道，多频段融合可行。
 
 \subsubsection{时序结果}
 
@@ -1476,14 +1336,14 @@ BRAM & 1 / 60 & 1.67\% & 平均窗口环形缓冲 \\
 \end{tabularx}
 \end{table}
 
-跨时钟域 WNS 负值不是候选人 RTL 引入的，是 LDSDR\_2TR 模板把 \texttt{rx\_clk} 直接打到 AXI 寄存器读侧的历史遗留。Phase 1 W1 计划的缓解措施二选一：
+跨时钟域 WNS 负值源于 LDSDR\_2TR 模板将 \texttt{rx\_clk} 直接打到 AXI 寄存器读侧（候选人 RTL 未引入）。Phase 1 W1 缓解措施二选一：
 
 \begin{itemize}
 \item \textbf{方案 A}：\texttt{set\_false\_path -from [get\_clocks rx\_clk] -to [get\_clocks clk\_fpga\_0]} + 加 2-FF 同步器
 \item \textbf{方案 B}：在跨域路径上插 async FIFO（Xilinx FIFO Generator IP）
 \end{itemize}
 
-候选人评估认为方案 A 更轻量，因为 AXI 寄存器读侧本就只要求最终一致性。
+选定方案 A（AXI 寄存器读侧仅要求最终一致性）。
 
 \subsubsection{Bitstream \(\to\) BIN 后处理工具}
 
@@ -1491,8 +1351,6 @@ BRAM & 1 / 60 & 1.67\% & 平均窗口环形缓冲 \\
 
 \subsection{真 LDSDR 板烧录与 AD9361 RF 链路实测}
 \label{sec:appB-4}
-
-这一节是本附录的"杀手锏"：Phase 0 阶段就已经把 bitstream 真烧进 LDSDR，并让 AD9361 在 EM Eye 论文真实频点上跑起来了。
 
 \subsubsection{板级环境}
 
@@ -1529,7 +1387,7 @@ $ dmesg | tail -2
 
 \subsubsection{AD9361 RF 链路验证（204 MHz EM Eye 频点）}
 
-候选人\textbf{没有停在"烧录成功"这一步}，而是继续把 AD9361 配到 EM Eye 论文方法关心的 byte-clock 谐波频段并真实接收 RF：
+AD9361 配置到 EM Eye byte-clock 谐波频段并真实接收 RF：
 
 \begin{table}[H]
 \centering
@@ -1556,58 +1414,24 @@ IIO buffer 采集 \textbf{16 KB 真实 IQ 数据}（signed 12-bit ADC），前 1
 f0ff d5ff e4ff ffff ebff 1f00 ecff e1ff ...
 \end{lstlisting}
 
-非零，典型空气接收 baseline 噪声 + 信号（signed 12-bit little-endian：\texttt{0xfff0} \(\to -16\)，\texttt{0xffd5} \(\to -43\)，等等）。\textbf{这意味着 RX path 是真的导通的，不是空采}。工具链全部用 \texttt{iio\_attr} + sysfs 直接读写，无需 libiio C API 介入。
+非零，典型空气接收 baseline 噪声 + 信号（signed 12-bit little-endian：\texttt{0xfff0} \(\to -16\)，\texttt{0xffd5} \(\to -43\)）。RX path 真实导通。工具链 \texttt{iio\_attr} + sysfs 直接读写。
 
-\subsubsection{这一步对提案的意义}
-
-把这一步在提案阶段做完，意味着 \textbf{Phase 1 W1 的硬件 bring-up 风险被前置消除}：LDSDR 进 lab 当天就可直接进入 Phase 1 Day 3（emeye\_accel IQ tap 接线），省 1-2 周。
+\textbf{提案意义}：Phase 1 W1 硬件 bring-up 风险被前置消除，LDSDR 进 lab 当天直接进入 Phase 1 Day 3（emeye\_accel IQ tap 接线），省 1-2 周。
 
 \subsection{Phase 2 准备文档（提前完成）}
 \label{sec:appB-5}
 
-为让 Phase 2 不在文档阶段卡壳，候选人已写完两份 451 + 251 + 394 = \textbf{1{,}096 行}工程预案。
+工程预案合计 1{,}096 行（451 + 251 + 394）。
 
 \subsubsection{Phase 2 IQ Tap 方案}
 
-\texttt{fpga\_accel/doc/phase2\_iq\_tap.md}（451 行）：
-
-\begin{itemize}
-\item BD（Block Design）中把 \texttt{axi\_ad9361} ADC AXI-Stream tap 到 \texttt{emeye\_accel\_top} 的两套方案对比：
-  \begin{itemize}
-  \item \textbf{方案 A}（顶层手动接）：优点直观，缺点改顶层 verilog 工程文件混乱
-  \item \textbf{方案 B}（BD 内 IP block 包装）：优点工程整洁，缺点要写 IP packaging。候选人推荐方案 B
-  \end{itemize}
-\item \textbf{5 项待验证清单}（Day 1-2 必做）：时钟域、stream 位宽、tready 反压、空 idle 处理、reset 序列
-\item Phase 2 第一周 \textbf{Day by Day 任务拆解}（D1: tap \(\to\) D2: 单通 \(\to\) D3: 双通 \(\to\) D4: 同步触发 \(\to\) D5: 联调）
-\end{itemize}
+\texttt{fpga\_accel/doc/phase2\_iq\_tap.md}（451 行）：BD 中 \texttt{axi\_ad9361} ADC AXI-Stream tap 到 \texttt{emeye\_accel\_top} 两方案对比（A 顶层手动接 / B BD 内 IP block 包装，推荐 B）；5 项待验证（时钟域、stream 位宽、tready 反压、空 idle、reset 序列）；Phase 2 W1 Day-by-Day（D1 tap \(\to\) D2 单通 \(\to\) D3 双通 \(\to\) D4 同步触发 \(\to\) D5 联调）。
 
 \subsubsection{Phase 2 PS 用户态 TCP Forwarder}
 
-\texttt{fpga\_accel/doc/phase2\_tcp\_forwarder.md}（251 行）+ \texttt{phase2\_tcp\_forwarder.c}（394 行 C 骨架）：
+\texttt{phase2\_tcp\_forwarder.md}（251 行）+ \texttt{.c}（394 行骨架）：AXI-DMA S2MM 寄存器全部标注 PG021 出处；UIO + mmap 用户态访问 AXI 寄存器（不写 kernel driver）；ping-pong buffer（2\(\times\)4 MB）避免 DMA 等 socket；TCP\_NODELAY + SO\_SNDBUF=4 MB；与 \texttt{simulation/network\_demo.py} 协议兼容（32-byte 帧头 + little-endian payload）。
 
-\begin{itemize}
-\item \textbf{AXI-DMA S2MM 寄存器}全部标注 Xilinx \textbf{PG021} 出处（MM2S\_DMACR / SA / LENGTH / S2MM\_DMASR 等）
-\item 关键设计点：\textbf{UIO + mmap} 用户态访问 AXI 寄存器（不写 kernel driver）；\textbf{ping-pong buffer}（2\(\times\)4MB）避免 DMA 等 socket；\textbf{TCP\_NODELAY + SO\_SNDBUF=4MB} 优化吞吐；跟 \texttt{simulation/network\_demo.py} 客户端协议兼容（同 32-byte 帧头 + little-endian payload）
-\end{itemize}
-
-\begin{lstlisting}[language=c]
-// AXI-DMA S2MM 寄存器 offset (PG021 §2.2)
-#define S2MM_DMACR     0x30
-#define S2MM_DMASR     0x34
-#define S2MM_DA        0x48
-#define S2MM_LENGTH    0x58
-
-// ping-pong DMA buffer
-static uint8_t *buf[2];   // 2 x 4MB, bus-aligned
-static int active = 0;
-
-void dma_kick(int idx) {
-    write32(s2mm_base + S2MM_DA,     bus_addr[idx]);
-    write32(s2mm_base + S2MM_LENGTH, BUF_LEN);
-}
-\end{lstlisting}
-
-Phase 2 W2 主机侧只要把 \texttt{simulation/network\_demo.py} 的 mock socket 接到这个 forwarder，管线就闭环。
+Phase 2 W2 主机侧把 \texttt{simulation/network\_demo.py} 的 mock socket 接到 forwarder \(\to\) 管线闭环。
 
 \subsection{工作量与产物清单}
 \label{sec:appB-6}
@@ -1678,9 +1502,7 @@ Ch4 §4.2 Phase 2 Day-by-Day 不卡壳 & §B.5.1 IQ tap 方案 + 5 项待验证�
 \subsection{小结}
 \label{sec:appB-8}
 
-\textbf{本提案不是规划书，是已经动工的工程报告}。Phase 0 关键工程风险（论文方法理解、RTL 可综合性、目标器件资源容量、真板可控性、RF 链路在论文频点的可用性、Phase 2 主机管线协议）在提案提交之前已被逐一前置消除。
-
-候选人请求 RA 录用后，\textbf{Phase 1 W1 第 1 天可以直接进入 \texttt{emeye\_accel} 与 \texttt{axi\_ad9361} IQ tap 的真板联调}，而不是再花 1-2 周做 bring-up。
+Phase 0 关键工程风险（论文方法理解、RTL 可综合性、目标器件资源容量、真板可控性、RF 链路在论文频点的可用性、Phase 2 主机管线协议）在提案提交之前已逐一前置消除。Phase 1 W1 第 1 天可直接进入 \texttt{emeye\_accel} 与 \texttt{axi\_ad9361} IQ tap 真板联调。
 
 \section{风险与未决问题清单}
 \label{sec:appC}
