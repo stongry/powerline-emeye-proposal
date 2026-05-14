@@ -201,8 +201,8 @@ CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\te
 耦合     & 主路宽带 CT（Tekbox TBCP2-1000，1 MHz – 1 GHz），辅路 HV 电容（覆盖 \(>\) 500 MHz） \\
 模拟前端 & 候选人 BYO 自研 ERA-4SM+ \(\times\) 2 级联 LNA（VNA 实测 +28 dB @ 100 MHz） \\
 采集     & LDSDR 7010（AD9363 \(\to\) AD9361 解锁，70 MHz – 6 GHz，12-bit IQ \(\times\) 2 RX，30 MSPS） \\
-传输     & 千兆以太网直连主机，32 Mbps 双通道压缩流（板上 FPGA \texttt{emeye\_accel} 加速） \\
-主控     & 直接使用 LDSDR 板内 Zynq-7010 PS，无需外接 RPi CM4（简化系统 + 降本约 ¥1000） \\
+传输     & LDSDR 千兆以太网原始 IQ 直传 \(\to\) Radxa Cubie A7Z 板载主机；Phase 2 板上 \texttt{emeye\_accel} 加速后 32 Mbps 解调流 \\
+主控     & 重建主机使用 Radxa Cubie A7Z（Allwinner A733 八核：2×A76 + 6×A55 + 3 TOPS NPU，65×30 mm）；LDSDR 板内 Zynq-7010 PS 仅做 IQ 数据转发，不外接 RPi CM4 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -218,7 +218,7 @@ CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\te
 \addcontentsline{toc}{section}{Pre-Phase 0 已完成工作速览}
 % ============================================================================
 
-本提案不是纸面方案。表 \ref{tab:prephase0-summary} 列出截至 2026-05-14 已经独立完成、可复现的工程工作清单。完整记录（代码、log、bitstream、SSH session 输出）详见附录 B。
+PhD 提出的核心可行性问题——"用 SDR 捕获并重建 HDMI 屏幕内容"——本提案已推进 70\% 以上：仿真链路打通、RTL 综合并烧入真 LDSDR rev2.1、AD9361 RF 接收实测均已完成；剩余 30\% 是真机 HDMI 设备 EM 信号采集 + 重建图像还原（Phase 0 W2 完成）。表 \ref{tab:prephase0-summary} 列出已落地的可复现产物。
 
 \begin{table}[H]
 \centering
@@ -277,22 +277,25 @@ Phase 2 演进步骤 & — & AC-DC（2w）+ 保护链（1w）+ 自研小 CT（3w
 \subsection{尺寸预算}
 \label{sec:dim-budget}
 
+实测主要模块物理尺寸如表 \ref{tab:dim-budget}。BYO LDSDR、LNA、Cubie A7Z 三块板可\textbf{多层堆叠}于同一壳内（LNA 与 A7Z 均小于 LDSDR 占地面积，可直接叠加于其上方/下方），整机外壳目标 \(105 \times 65 \times 35\) mm。
+
 \begin{table}[H]
 \centering
-\caption{Route A 内部尺寸分配（目标外壳 \(100 \times 60 \times 30\) mm）}
+\caption{Route A 内部模块实测尺寸与堆叠策略}
 \label{tab:dim-budget}
 \footnotesize
-\begin{tabularx}{\textwidth}{lccX}
+\begin{tabularx}{\textwidth}{lcX}
 \toprule
 \rowcolor{tableheader}
-\textbf{模块} & \textbf{尺寸 (mm)} & \textbf{占比} & \textbf{备注} \\
+\textbf{模块} & \textbf{实测尺寸 (mm)} & \textbf{堆叠/放置策略} \\
 \midrule
-模拟前端板（CT 二次侧 → LNA 输出） & \(80 \times 60 \times 8\) & 35\% & 4 层 PCB，RF 路径 Rogers RO4350B，LNA 屏蔽腔 \\
-LDSDR 7010 rev2.1 SOM            & \(90 \times 50 \times 12\) & 38\% & 候选人 BYO，标准 Pluto 衍生板形态 \\
-USB-C + ESD + TPS7A47 LDO        & \(30 \times 20 \times 6\)  & 5\%  & 模拟域净化电源 \\
-Tekbox TBCP2-1000 CT             & 外挂 OD 约 100 & — & RG-316 短同轴接入，\textbf{不入主壳} \\
-Ethernet 输出 RJ45               & \(16 \times 13 \times 6\)  & 4\%  & 千兆 \(\to\) PC \\
-散热与屏蔽间隙                    & — & 18\% & 顶/底盖空隙 + EMI 衬垫 \\
+LDSDR 7010 rev2.1 SOM            & \(101 \times 61.8 \times 11\) & 底层基板（BYO，最大占地） \\
+ERA-4SM+ \(\times 2\) LNA 模块   & \(62 \times 24.3 \times 6.5\) & 叠于 LDSDR 之上（覆盖约 25\% 面积） \\
+Radxa Cubie A7Z 主控板           & \(65 \times 30 \times 10\)    & 叠于 LDSDR 之上（与 LNA 并列，剩余空间） \\
+近场磁探头（贴片式，外挂）         & \(\le 101 \times 61.8 \times 2\) & 柔性贴片，尺寸最大可与 SDR 同（与 PhD 沟通确认） \\
+保护 + LC HPF + 隔离链            & 集成于 LDSDR 输入侧前级小板  & SMA 同轴接入，不占主壳 \\
+USB-C + LDO 电源                 & \(30 \times 20 \times 6\)     & 侧边布局 \\
+Ethernet 输出 RJ45               & \(16 \times 13 \times 6\)     & A7Z 主控板载，不重复占位 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -302,7 +305,7 @@ Ethernet 输出 RJ45               & \(16 \times 13 \times 6\)  & 4\%  & 千兆 
 
 \begin{table}[H]
 \centering
-\caption{7 模块功能链（耦合 → 保护 → 滤波 → 放大 → 采集 → 主控 → 传输）}
+\caption{8 模块功能链（耦合 → 保护 → 滤波 → 放大 → 采集 → 转发 → 重建 → 传输）}
 \label{tab:block-diagram}
 \footnotesize
 \begin{tabularx}{\textwidth}{clXl}
@@ -310,13 +313,14 @@ Ethernet 输出 RJ45               & \(16 \times 13 \times 6\)  & 4\%  & 千兆 
 \rowcolor{tableheader}
 \textbf{\#} & \textbf{模块} & \textbf{型号/配置} & \textbf{数据率} \\
 \midrule
-1 & 耦合 & Tekbox TBCP2-1000 商用宽带 CT，L+N 同向穿芯，DM 抑制 30–40 dB & — \\
-2 & 保护 & Bourns CDSOT23-T05LC 低 C TVS（\(C < 1\) pF）+ Murata NP0 1 nF DC 隔直 & — \\
-3 & 滤波 & LC 4 阶 Butterworth HPF，\(f_c = 30\) MHz，通带损耗 \(<\) 1 dB & — \\
-4 & 放大 & BYO ERA-4SM+ \(\times 2\)，+28 dB @ 100 MHz 实测 \statusok & — \\
-5 & 采集 & LDSDR 7010 rev2.1，70 MHz – 6 GHz，12-bit IQ，2 RX 并行 & 双 RX 384 Mbps \\
-6 & 主控 & LDSDR 板内 Zynq-7010 PS（不外接 CM4） & — \\
-7 & 传输 & 千兆以太网原始 IQ；Phase 2 板上加速 \(\to\) 8-bit 解调流 & 32 Mbps (P2) \\
+1 & 耦合     & 近场磁探头（贴片式，可定制尺寸至 SDR 同大）+ Tekbox TBCP2-1000 商用宽带 CT 备份；L+N 同向穿芯，DM 抑制 30–40 dB & — \\
+2 & 保护     & Bourns CDSOT23-T05LC 低 C TVS（\(C < 1\) pF）+ Murata NP0 1 nF DC 隔直 & — \\
+3 & 滤波     & LC 4 阶 Butterworth HPF，\(f_c = 30\) MHz，通带损耗 \(<\) 1 dB & — \\
+4 & 放大     & BYO ERA-4SM+ \(\times 2\)，+28 dB @ 100 MHz 实测 \statusok & — \\
+5 & 采集     & LDSDR 7010 rev2.1，70 MHz – 6 GHz，12-bit IQ，2 RX 并行 & 双 RX 384 Mbps \\
+6 & IQ 转发  & LDSDR 板内 Zynq-7010 PS Linux：从 PL emeye\_accel 取流 \(\to\) 千兆 Eth 转发，零图像处理 & 32 Mbps \\
+7 & 重建主机 & Radxa Cubie A7Z（A733 八核 + 3 TOPS NPU）：IQ \(\to\) magnitude \(\to\) reshape \(\to\) 帧重建；NPU 可加载 SSIM/超分模型 & 帧流 \(\sim\) 30 fps \\
+8 & 传输     & A7Z \(\to\) PC（USB CDC 或 Wi-Fi 6 板载）；现场调试经 micro-HDMI 直出 & — \\
 \bottomrule
 \end{tabularx}
 \end{table}
