@@ -580,7 +580,7 @@ P1dB（级联估算） & +15 dBm & 留 IIP3 余量给强干扰 \\
 \end{tabularx}
 \end{table}
 
-\textbf{论文对标}：EM Eye 论文 Appendix H 使用 Foresight FST-RFAMP06（40 dB 单级），候选人 ERA-4SM+ \(\times 2 = 28\) dB，\textbf{差 12 dB}。这 12 dB 由 LDSDR AD9363 内部 LNA + IF VGA（最高 30 dB）弥补，且 AD9363 内部级联点在 LNA 之后，\textbf{对系统 NF 影响 \(< 0.1\) dB}（Friis 公式）。
+\textbf{论文对标}：EM Eye 论文 Appendix H 使用 Foresight FST-RFAMP06（40 dB 单级），本方案 ERA-4SM+ \(\times 2 = 28\) dB（差 12 dB），由 LDSDR AD9363 内部 LNA + IF VGA（最高 30 dB）弥补；AD9363 级联点在 LNA 之后，对系统 NF 影响 \(< 0.1\) dB（Friis）。
 
 \subsection{链路预算表}
 \label{sec:ch3-budget}
@@ -684,13 +684,7 @@ RF 端口 & \textbf{2 TX + 2 RX（2T2R）} & 1 TX + 1 RX & \textbf{双 RX 通道
 \end{tabularx}
 \end{table}
 
-\textbf{关键差异化点}：候选人 LDSDR 同款 Zynq-7010 上已实现 OFDM + LDPC 完整 HDL 收发机，BER = 0 \statusok（附录 B）。直接复用项：
-
-\begin{itemize}
-\item LDSDR Buildroot rootfs（Linux 5.15）、iio\_attr 用户态控制、Vivado 工程结构、AD9363 SPI 配置流程 \statusok
-\item Phase 2 \texttt{emeye\_accel} RTL 复用 OFDM 项目的 AXI-Stream / AXI-Lite / IRQ 框架
-\item XCZU3EG HLS LPR CNN 项目（87.94\% / 675 ms 端到端）适用于 LDSDR 板上 pix2pix 加速备份方案
-\end{itemize}
+\textbf{关键差异化点}：LDSDR 同款 Zynq-7010 上已实现 OFDM + LDPC 完整 HDL 收发机 BER = 0 \statusok。直接复用：(1) LDSDR Buildroot rootfs（Linux 5.15）+ iio\_attr 用户态控制 + Vivado 工程结构 + AD9363 SPI 配置流程 \statusok；(2) Phase 2 \texttt{emeye\_accel} RTL 复用 OFDM 项目 AXI-Stream / AXI-Lite / IRQ 框架；(3) XCZU3EG HLS LPR CNN（87.94\% / 675 ms）适用于 LDSDR 板上 pix2pix 加速备份方案。
 
 \subsection{采样策略}
 \label{sec:ch4-sample}
@@ -743,14 +737,14 @@ LDSDR USB 2.0 OTG & 限 \(\sim 10\) MSPS / 30 MB/s & — & — & — & 否决 \\
 \end{tabularx}
 \end{table}
 
-\textbf{选定路径}：\textbf{v1 千兆 Ethernet 原始 IQ 直传}（双 RX 384 Mbps，占用千兆 \(\sim 48\,\%\)），Phase 2 在板上做 \texttt{emeye\_accel} 加速。v1 让算法快速迭代（Python 改一行立即测试），v2 在算法稳定后把热路径下沉到 FPGA，数据率降低 12 倍（384 \(\to\) 32 Mbps），为 Phase 3 无线版本铺路。
+\textbf{选定路径}：v1 千兆 Ethernet 原始 IQ 直传（双 RX 384 Mbps，占千兆 \(\sim 48\,\%\)），Phase 2 板上 \texttt{emeye\_accel} 加速将数据率降 12 倍（384 \(\to\) 32 Mbps）。
 
 \subsection{主控 SoC：直接用 LDSDR PS}
 \label{sec:ch4-soc}
 
 \subsubsection{决策：不外接 RPi CM4}
 
-原计划在 LDSDR 后接 Raspberry Pi CM4 8 GB Lite 作为主控。Day 1 重新评估后\textbf{取消该决策}，直接用 LDSDR 板内 Zynq-7010 PS。
+LDSDR 板内 Zynq-7010 PS 直接作主控，取消外接 Raspberry Pi CM4。
 
 \begin{table}[H]
 \centering
@@ -985,74 +979,54 @@ RA 津贴（¥ 2{,}000 / 月 \(\times 6\)） & 12{,}000 & 校内 RA 标准 \\
 
 平台 PlutoSDR / LDSDR（\texttt{xc7z010clg225-1}）/ 单人独立 PHY+Baseband HDL+板级联调 / 8 个月。
 
-\paragraph{关键技术} 完整 OFDM 链路 HDL（FFT/IFFT、循环前缀、导频插入、信道估计、均衡）；LDPC 编解码器 HDL（码字可配置，min-sum 迭代译码 + 比特节点并行）；时频同步（Schmidl-Cox 粗同步 + 导频辅助 CFO）；Pluto Zynq-7010 PL 综合通过，时序闭环 30.72 MHz；GNURadio 上位机 baseband I/Q 实时收发与 BER 统计。
+\paragraph{技术 \& 结果} 完整 OFDM 链路 HDL（FFT/IFFT、循环前缀、导频插入、信道估计、均衡）+ LDPC 编解码器 HDL（min-sum 迭代 + 比特节点并行）+ 时频同步（Schmidl-Cox + 导频辅助 CFO）+ Zynq-7010 PL 综合时序闭环 30.72 MHz + GNURadio baseband 实时收发。\textbf{板级实测 BER = 0} \statusok（SNR \(\geq 10\) dB, \(10^6\) bit 零误码）；Vivado LUT 38\% / BRAM 52\% / DSP 24\%；吞吐 1.5 Mbps（QPSK, 1/2 LDPC）。
 
-\paragraph{关键结果} \textbf{板级实测 BER = 0}（SNR \(\geq 10\) dB，\(10^6\) bit 连续传输零误码）；Vivado 资源 LUT 38\% / BRAM 52\% / DSP 24\%（xc7z010）；端到端吞吐 1.5 Mbps（QPSK, 1/2 LDPC）。
-
-\paragraph{对本提案的能力支撑} Pluto/LDSDR Zynq-7010 内部 HDL 修改 + bitstream 板级验证经验 \(\to\) 直接支撑"板上 FPGA 加速"路径。详见 §A.8 映射表。工具链 Vivado HLS 2020.2 / Verilog / GNURadio 3.8（私有仓库）。
+\paragraph{对本提案支撑} Pluto/LDSDR Zynq-7010 内部 HDL 修改 + bitstream 板级验证 \(\to\) "板上 FPGA 加速"路径（详见 §A.8）。工具链 Vivado HLS 2020.2 / Verilog / GNURadio 3.8。
 
 \subsection{XCZU3EG PL CNN 车牌识别端到端部署}
 \label{sec:appA-2}
 
 平台 XCZU3EG MPSoC（FZ3A 板，A53\(\times\)4 + R5 + PL）/ 单人 CNN+HLS+PL+Petalinux / 6 个月。
 
-\paragraph{关键技术} LPRNet 轻量化 CNN + CTC loss，参数量约 0.5 M；Vivado HLS（卷积 line-buffer + 行流水，激活 LUT 化，定点 INT8）；PL/PS 协同（AXI4-Stream DMA 送图，中断回收结果）；多级流水线 Conv-BN-ReLU 三段融合，pipeline II=1，时序闭环 200 MHz；Petalinux 自定义 image。
+\paragraph{技术 \& 结果} LPRNet（CTC loss，0.5 M 参数）+ Vivado HLS（line-buffer 行流水，激活 LUT 化，INT8）+ PL/PS 协同（AXI4-Stream DMA + 中断）+ Conv-BN-ReLU pipeline II=1 时序闭环 200 MHz + Petalinux。\textbf{字符识别 87.94\%} \statusok（2000 张测试集），\textbf{端到端 675 ms}，PL LUT 71\% / DSP 83\% / BRAM 64\%。
 
-\paragraph{关键结果} \textbf{字符识别准确率 87.94\%}（2000 张测试集）；\textbf{端到端延迟 675 ms}（含 PS\(\leftrightarrow\)PL DMA + PL 推理 + PS CTC 解码）；PL 资源 LUT 71\% / DSP 83\% / BRAM 64\%。
-
-\paragraph{对本提案的能力支撑} PS/PL 协同 \(\to\) 适用 \texttt{emeye\_accel} PL IP + PS Linux 通信。仓库 \href{https://github.com/stongry/FPGA-ZYNQ}{github.com/stongry/FPGA-ZYNQ}；工具链 Vivado HLS / Petalinux / Vitis AI 1.4。
+\paragraph{对本提案支撑} PS/PL 协同 \(\to\) \texttt{emeye\_accel} PL IP + PS Linux 通信。仓库 \href{https://github.com/stongry/FPGA-ZYNQ}{github.com/stongry/FPGA-ZYNQ}。
 
 \subsection{QSM368ZP RK3568 Ubuntu 22.04 移植与 RKNN NPU 部署}
 \label{sec:appA-3}
 
 平台 RK3568（A55\(\times\)4 + Mali-G52 + 0.8 TOPS NPU）/ QSM368ZP 工业模块 / 单人 Buildroot \(\to\) Ubuntu 22.04 全量移植 + RKNN / 4 个月。
 
-\paragraph{关键技术} U-Boot + Linux 5.10（Rockchip BSP）+ DTS 适配 QSM368ZP 引脚 mux；Ubuntu 22.04 server rootfs + systemd + Rockchip GPU/NPU blob；DSI 触摸控制器驱动调试；RKNN Toolkit 2.3.2 + librknnrt + ONNX\(\to\)RKNN 流水线；RetinaFace 端到端 USB camera \(\to\) RGA \(\to\) NPU \(\to\) NMS 全链路打通。
+\paragraph{技术 \& 结果} U-Boot + Linux 5.10（Rockchip BSP）+ DTS 适配 + Ubuntu 22.04 server rootfs + systemd + DSI 触摸驱动 + RKNN Toolkit 2.3.2 + RetinaFace USB camera \(\to\) RGA \(\to\) NPU \(\to\) NMS 全链路。\textbf{生产级嵌入式 Linux 已交付客户} \statusok；RetinaFace 端到端 41.7 fps @ RK3568 NPU，单帧 15 ms。
 
-\paragraph{关键结果} \textbf{生产级嵌入式 Linux 已交付客户}；\textbf{RetinaFace 端到端 41.7 fps @ RK3568 NPU}；NPU 单帧推理 15 ms（见 §A.6）。
-
-\paragraph{对本提案的能力支撑} Phase 2 板上 PS Linux 侧 TCP forwarder / 帧 IQ 落盘服务（设备树修改 + udev rules + systemd）+ 若需 SSIM offload 到 NPU 的 RKNN 流水线经验。工具链 Buildroot / Yocto / Rockchip BSP / RKNN Toolkit 2.3.2（私有仓库）。
+\paragraph{对本提案支撑} Phase 2 板上 PS Linux 侧 TCP forwarder + IQ 落盘服务（设备树 + udev + systemd）+ NPU RKNN 流水线（如需 SSIM offload）。
 
 \subsection{EC800M LTE Cat-1 模块语音 AI 对话集成}
 \label{sec:appA-4}
 
 平台 Quectel EC800M（MDM9205，LTE Cat-1 + TTS/Audio）/ 单人 QuecPython + LTE 拨号 + 云端语音 AI / 3 个月。
 
-\paragraph{关键技术} QuecPython 纯 Python 业务栈；LTE Cat-1 PPP 拨号 + TCP/TLS 长连接到云端 ASR/LLM/TTS；板载 audio codec 16 kHz PCM；低延迟流式 TTS + 半双工抢答；AT 命令 OTA。
+\paragraph{技术 \& 结果} QuecPython 纯 Python 业务栈 + LTE Cat-1 PPP 拨号 + TCP/TLS 长连接到云端 ASR/LLM/TTS + 板载 audio codec 16 kHz PCM + 流式 TTS 半双工抢答 + AT 命令 OTA。\textbf{出货级语音 AI 模块批量出货} \statusok；SIM 注网到首字延迟 \(\approx 800\) ms。
 
-\paragraph{关键结果} \textbf{出货级语音 AI 模块批量出货}；从 SIM 注网到首字延迟约 800 ms。
-
-\paragraph{对本提案的能力支撑} 出货级嵌入式产品交付经验 + LTE 集成 + 云端长连接 + OTA。仓库 \href{https://github.com/stongry/2026yiyuan}{github.com/stongry/2026yiyuan}（\texttt{darken\_neko/ec800m-voice-chat}）。
+\paragraph{对本提案支撑} 出货级嵌入式产品交付 + LTE 集成 + 云端长连接 + OTA。仓库 \href{https://github.com/stongry/2026yiyuan}{github.com/stongry/2026yiyuan}。
 
 \subsection{Smart Home Slint UI 全量移植（Flutter \texorpdfstring{$\to$}{->} Slint）}
 \label{sec:appA-5}
 
-\begin{itemize}
-\item \textbf{平台}：RK3588 显控面板（LubanCat-5，4\(\times\)A76 + 4\(\times\)A55，Mali-G610）
-\item \textbf{角色 / 时间}：单人完成 Flutter \(\to\) Slint 全量重写 / 约 2 个月
-\item \textbf{业务}：原 Flutter 帧率不稳 + GPU compositor 重，换轻量原生 UI 释放 GPU
-\end{itemize}
+平台 RK3588 显控面板（LubanCat-5，A76\(\times\)4 + A55\(\times\)4，Mali-G610）/ 单人 Flutter \(\to\) Slint 全量重写 / 2 个月。
 
-\paragraph{关键技术} Slint UI 框架（Rust）+ 自定义 widget 库；交叉编译 \texttt{aarch64-unknown-linux-gnu}；Wayland + EGL 后端规避 X11 合成；Rust 异步（tokio）+ Slint 属性桥接；layout 抖动消除 + GPU 状态切换优化。
+\paragraph{技术 \& 结果} Slint UI（Rust）+ 自定义 widget + 交叉编译 \texttt{aarch64-unknown-linux-gnu} + Wayland + EGL 后端 + tokio 异步 + Slint 属性桥接 + GPU 状态切换优化。\textbf{62.97 fps 达 60 Hz vsync 硬件上限} \statusok；二进制体积比 Flutter 下降 \(\sim 70\)\%。
 
-\paragraph{关键结果} \textbf{62.97 fps，达到面板硬件 60 Hz vsync 上限}（始终不掉帧）；二进制体积比原 Flutter 下降约 70\%。
-
-\paragraph{对本提案的能力支撑} 上位机可视化（帧显示 + SSIM 曲线 + 频谱图）Rust + Slint 高性能 UI 能力。工具链 Rust 1.75 / Slint 1.4 / Wayland。
+\paragraph{对本提案支撑} 上位机可视化（帧显示 + SSIM 曲线 + 频谱图）Rust + Slint 高性能 UI。
 
 \subsection{RetinaFace NPU 性能 Benchmark（RK3568 vs RK3588）}
 \label{sec:appA-6}
 
-\begin{itemize}
-\item \textbf{平台}：对比 RK3568（QSM368ZP）与 RK3588（LubanCat-5）
-\item \textbf{角色 / 时间}：单人设计 benchmark 方法学并执行 A/B 实测 / 约 2 周
-\item \textbf{业务}：内部选型决策，严格量化两代 Rockchip NPU 端到端性能差距
-\end{itemize}
+对比 RK3568（QSM368ZP）vs RK3588（LubanCat-5）/ 单人 benchmark 方法学 + A/B 实测 / 2 周。
 
-\paragraph{关键技术} 严格 A/B 控制（同 ONNX + 同 RKNN 转换 + 同测试集 + 同推理代码）；测量分离（纯 NPU kernel \texttt{rknn\_run} / PS\(\leftrightarrow\)NPU 数据搬运 / 前后处理 CPU）；每平台 1000 帧重复，中位数 + p95 + p99；CPU performance governor 固定 + 单线程绑定。
+\paragraph{技术 \& 结果} 严格 A/B 控制（同 ONNX + 同 RKNN + 同测试集 + 同推理代码）+ 测量分离（NPU kernel / PS\(\leftrightarrow\)NPU DMA / CPU 前后处理）+ 每平台 1000 帧 + p50/p95/p99 + CPU governor 固定 + 单线程绑定。\textbf{NPU 单帧} RK3568 = 15 ms，RK3588 = 7.75 ms（\(\sim\) 2\(\times\)）；\textbf{端到端 fps} 20.7 / 41.7 \statusok。
 
-\paragraph{关键结果} \textbf{NPU 单帧} RK3568 = 15 ms，RK3588 = 7.75 ms（\(\sim\) 2\(\times\) 加速）；\textbf{端到端 fps} RK3568 = 20.7，RK3588 = 41.7。结论已写入内部选型报告。
-
-\paragraph{对本提案的能力支撑} Phase 0/1 A/B 实测严谨方法学 \(\to\) 完整实验设计 + 数据采集 + 统计报告。
+\paragraph{对本提案支撑} Phase 0/1 A/B 实测严谨方法学 \(\to\) 完整实验设计 + 数据采集 + 统计报告。
 
 \subsection{本提案 Pre-Phase 0 已完成工作}
 \label{sec:appA-7}
@@ -1096,7 +1070,7 @@ Phase 3（可选）：远程 telemetry & LTE 集成 + 云端长连接 & §A.4 & 
 \end{tabularx}
 \end{table}
 
-\textbf{经验等级说明}：\textbf{熟练} = 作为主负责人独立完成过端到端项目并交付板级或客户出货结果；\textbf{有经验} = 参与过相关项目部分模块，理解关键工程难点；\textbf{入门} = 理解原理可指导下完成，无独立交付经验。
+\footnotesize\textit{经验等级：熟练 = 独立完成过端到端项目并交付板级/客户出货结果；有经验 = 参与过相关项目部分模块；入门 = 理解原理可指导下完成。}\normalsize
 
 \subsection{工具链与开发环境}
 \label{sec:appA-9}
@@ -1124,7 +1098,7 @@ UI 框架 & Slint (Rust)、Flutter & 熟练 / 有经验 \\
 \end{tabularx}
 \end{table}
 
-上述 6 个已交付项目 + 1 项 Pre-Phase 0，总投入约 23 个月有效工时，覆盖本提案 Phase 0/1/2 几乎所有关键技术栈。
+合计 6 个已交付项目 + 1 项 Pre-Phase 0，约 23 个月有效工时，覆盖 Phase 0/1/2 关键技术栈。
 
 \section{Pre-Phase 0 已完成工作（2026-05-12 至 2026-05-14）}
 \label{sec:appB}
@@ -1134,17 +1108,7 @@ UI 框架 & Slint (Rust)、Flutter & 熟练 / 有经验 \\
 \subsection{一句话总览}
 \label{sec:appB-0}
 
-6 天工程冲刺完成：
-
-\begin{enumerate}
-\item \textbf{2 份端到端 Python 仿真}（EM Eye 复现 SSIM 0.98 + HDMI TEMPEST 扩展 SSIM 0.9907）+ \textbf{1 份 LDSDR \(\to\) 主机 TCP demo}
-\item \textbf{4 个可综合 Verilog 模块} + \textbf{4 个 testbench 全部 PASS}（Icarus Verilog，无 Vivado license 依赖）
-\item \textbf{完整 Vivado 流程}到 \texttt{write\_bitstream}，目标真器件 \textbf{XC7Z010-CLG400-2}（LDSDR rev2.1），产物 \texttt{.bit} MD5 已固定
-\item \textbf{真板烧录 + AD9361 RF 实测}：千兆 GbE 在线，FPGA Manager \texttt{operating}，RX\_LO 配到 \textbf{204 MHz}，RSSI \textbf{93.75 dB}，采集 16 KB 真实 IQ，dmesg 零错误
-\item \textbf{Phase 2 提前规划文档}（AXI-Stream tap 方案 + PS 用户态 TCP forwarder 骨架共 1096 行）
-\end{enumerate}
-
-工程产物总计 \textbf{约 6{,}000 行}（Python + Verilog + C + Markdown），全部在本地 \texttt{/home/ysara/work/powerline-emeye-proposal/} 下。
+6 天工程冲刺完成 5 类产物：(1) 2 份 Python 仿真（EM Eye SSIM 0.98 + HDMI TEMPEST SSIM 0.9907）+ 1 份 LDSDR \(\to\) 主机 TCP demo；(2) 4 个可综合 Verilog 模块 + 4 个 testbench 全 PASS（Icarus Verilog，无 Vivado license 依赖）；(3) 完整 Vivado 流程到 \texttt{write\_bitstream}，目标真器件 XC7Z010-CLG400-2（LDSDR rev2.1），\texttt{.bit} MD5 已固定；(4) 真板烧录 + AD9361 RF 实测（千兆 GbE 在线，FPGA Manager \texttt{operating}，RX\_LO 204 MHz, RSSI 93.75 dB, 16 KB IQ, dmesg 零错误）；(5) Phase 2 规划文档 1{,}096 行（AXI-Stream tap + PS TCP forwarder 骨架）。工程产物合计约 6{,}000 行。
 
 \subsection{端到端 Python 仿真：EM Eye 论文复现到 HDMI TEMPEST 泛化}
 \label{sec:appB-1}
@@ -1533,32 +1497,22 @@ Phase 0 关键工程风险（论文方法理解、RTL 可综合性、目标器�
 \end{tabularx}
 \end{table}
 
-\paragraph{Go/No-Go \#1 触发条件} Phase 0 W2 末若 LISN 实测电源线在 100 MHz–1 GHz 段耦合衰减 \(> 65\) dB，则：
+\paragraph{Go/No-Go \#1 触发条件} Phase 0 W2 末 LISN 实测 100 MHz–1 GHz 耦合衰减 \(> 65\) dB \(\to\) 路线 A 申请更高增益 LNA（40–60 dB，单级 NF \(< 2\) dB）；路线 B 改聚焦近场 + 短电源线段（\(< 2\) m）。
 
-\begin{itemize}
-\item 路线 A：申请实验室更高增益 LNA（40–60 dB，单级 NF \(< 2\) dB）
-\item 路线 B：重新评估 EM Eye 场景，先聚焦近场 + 短电源线段（\(< 2\) m）
-\end{itemize}
-
-\paragraph{Go/No-Go \#2 触发条件} Phase 0 W3 末若 RPi V1 在隔离变压器后端电源线上 SNR \(< 15\) dB，则：
-
-\begin{itemize}
-\item 路线 A：换 DUT（选 Wyze Cam Pan / Dafang 1080P 等 Table II 泄漏更强的）
-\item 路线 B：增加被动滤波器组（BPF SAW + 模拟下变频）前置 LDSDR
-\end{itemize}
+\paragraph{Go/No-Go \#2 触发条件} Phase 0 W3 末 RPi V1 隔离变压器后端 SNR \(< 15\) dB \(\to\) 路线 A 换 DUT（Wyze Cam Pan / Dafang 1080P 等更强泄漏）；路线 B 增加被动 BPF SAW + 模拟下变频前置 LDSDR。
 
 % ============================================================================
 \section*{结语}
 \addcontentsline{toc}{section}{结语}
 % ============================================================================
 
-\textbf{6 个月承诺}：候选人保证 6 个月期间全职投入，每周 GitHub commit 节奏，每月一次实验室进度汇报，每 phase 末由 PI / Co-PI 评估通过后才进入下一 phase。
+\textbf{6 个月承诺}：6 个月全职投入，每周 GitHub commit，每月实验室汇报，phase 末 PI/Co-PI 评估。
 
-\textbf{12 个月技术支持窗口期}：所有源码与实测数据将作为开源资产留在实验室仓库，即使 Phase 3 由后继者完成，本人也将提供 12 个月的技术支持窗口期。
+\textbf{12 个月技术支持窗口期}：源码与实测数据开源至实验室仓库，Phase 3 由后继者完成期间提供 12 个月技术支持。
 
 \vspace{2em}
 \hrule
 \vspace{0.5em}
-\noindent\small\textit{致谢}：感谢 Long Y. \textit{et al.} (NDSS 2024) 提供的 EM Eye 论文方法，其精巧的"自相关 30 Hz 帧同步 + amplitude reshape"算法是本提案的科学基础。本提案在不改变其核心算法的前提下，将其物理通道从空中辐射换成电源线传导，并通过 BYO 硬件 + 6 个月工程冲刺将其工程化为一台可重复部署的实验设备。
+\noindent\small\textit{致谢}：感谢 Long Y. \textit{et al.} (NDSS 2024) EM Eye 论文方法（"自相关 30 Hz 帧同步 + amplitude reshape"），本提案在不改变其核心算法的前提下将物理通道从空中辐射换为电源线传导。
 
 \end{document}
