@@ -163,7 +163,7 @@
 \begin{tabularx}{0.85\textwidth}{rX}
 \sffamily\bfseries 申请岗位 & RA, Yan Long Lab \\
 \sffamily\bfseries 申请单位 & University of Michigan \\
-\sffamily\bfseries 申请人  & \textit{(待填写)} \\
+\sffamily\bfseries 申请人  & 胡晔 \\
 \sffamily\bfseries 文档日期 & 2026 年 5 月 14 日 \\
 \sffamily\bfseries GitHub  & \url{https://github.com/stongry/powerline-emeye-proposal} \\
 \sffamily\bfseries 版本   & v1.0 (LaTeX 终稿) \\
@@ -191,7 +191,7 @@ CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\te
 
 \begin{table}[H]
 \centering
-\caption{六项核心决策一览}
+\caption{六项核心计划一览}
 \footnotesize
 \begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X}
 \toprule
@@ -668,21 +668,21 @@ Phase 2 采购 + NRE & 4{,}000 & 备用 LDSDR + 6 层 PCB + CNC 外壳 \\
 \section{已有工作与能力支撑}
 \label{sec:appA}
 
-本附录列出与本提案直接相关的已完成工作。每项均含实测数字与代码归档。
+与本提案 FPGA / SDR 主线直接相关的已完成工作：
 
-\begin{itemize}\setlength\itemsep{0.1em}
-\item \textbf{OFDM + LDPC PlutoSDR Zynq-7010 全链路收发机}：完整 PHY + Baseband HDL + LDPC min-sum + Schmidl-Cox 同步 + GNURadio 实时收发；板级 \textbf{BER = 0} \statusok（\(10^6\) bit 零误码），LUT 38\% / BRAM 52\% / DSP 24\%，QPSK 1/2 LDPC 吞吐 1.5 Mbps。可直接复用为 LDSDR \texttt{emeye\_accel} 的 Vivado 工程框架。
-\item \textbf{XCZU3EG PL CNN 车牌识别端到端部署}：LPRNet（CTC loss, 0.5 M 参数）+ Vivado HLS line-buffer 流水 + AXI4-Stream DMA + Petalinux；字符识别 \textbf{87.94\%}，端到端 \textbf{675 ms} \statusok，PL LUT 71\% / DSP 83\% / BRAM 64\%。\href{https://github.com/stongry/FPGA-ZYNQ}{github.com/stongry/FPGA-ZYNQ}
-\item \textbf{QSM368ZP RK3568 Ubuntu 22.04 移植 + RKNN NPU}：U-Boot + Linux 5.10 + Ubuntu 22.04 + DSI 触摸 + RKNN Toolkit 2.3.2 + RetinaFace 全链路，生产级嵌入式 Linux 已交付客户 \statusok，RetinaFace 端到端 \textbf{41.7 fps}（NPU 单帧 15 ms）。
-\item \textbf{EC800M LTE Cat-1 模块语音 AI 对话集成}：QuecPython + LTE PPP + TCP/TLS + 流式 TTS 半双工 + AT OTA，出货级语音模块批量出货 \statusok，SIM 注网到首字延迟 \(\approx 800\) ms。\href{https://github.com/stongry/2026yiyuan}{github.com/stongry/2026yiyuan}
-\item \textbf{Smart Home Slint UI 全量移植（Flutter \(\to\) Slint）}：Slint Rust + 自定义 widget + aarch64 交叉 + Wayland EGL + tokio，\textbf{62.97 fps} 达 60 Hz vsync 硬件上限 \statusok，二进制体积下降 \(\sim 70\%\)。
-\item \textbf{RetinaFace NPU Benchmark（RK3568 vs RK3588）}：严格 A/B 控制 + 每平台 1000 帧 + p50/p95/p99，NPU 单帧 \textbf{15 ms / 7.75 ms}（\(\sim\) 2\(\times\)），端到端 fps 20.7 / 41.7 \statusok。
-\item \textbf{本提案 Pre-Phase 0 工作}：5 个 Python 仿真 + 4 个 RTL testbench + LDSDR 真目标 bitstream + 烧录 + RF 实测，详见附录 B。
+\begin{itemize}\setlength\itemsep{0.15em}
+\item \textbf{OFDM + LDPC PlutoSDR Zynq-7010 全链路收发机} \statusok：完整 PHY + Baseband HDL + LDPC min-sum + Schmidl-Cox 同步 + GNURadio 实时收发；板级 BER = 0（\(10^6\) bit 零误码），LUT 38\% / BRAM 52\% / DSP 24\%，QPSK 1/2 LDPC 吞吐 1.5 Mbps。可直接复用为 LDSDR \texttt{emeye\_accel} Vivado 工程框架。
+\item \textbf{XCZU3EG PL CNN 车牌识别端到端部署} \statusok：LPRNet + Vivado HLS line-buffer 流水 + AXI4-Stream DMA + Petalinux；字符识别 87.94\%、端到端 675 ms，PL LUT 71\% / DSP 83\% / BRAM 64\%。\href{https://github.com/stongry/FPGA-ZYNQ}{github.com/stongry/FPGA-ZYNQ}
+\item \textbf{Vivado FIR 数字滤波工程（xc7z020）} \statusok：FIR Compiler IP + AD/DA 闭环，7 个 testbench 全 PASS，可直接迁移为 §2.4 AD9361 内嵌 56 MHz 瞬时带宽数字滤波。
+\item \textbf{Anlogic LMS 自适应滤波 RTL} \statusok：用于工频 / 开关电源噪声抑制（Phase 2 可选增强）。
+\item \textbf{FPGA 双通道数字示波器} \statusok：AD7928 ADC + FPGA 采样 + TFT 显示驱动，支撑 §1.3 / §4 现场调试 micro-HDMI 直出可视化路径。
+\item \textbf{RK3568 Ubuntu + RKNN NPU + RetinaFace}\statusok：嵌入式 Linux 移植 + NPU 模型部署，RetinaFace 端到端 41.7 fps（NPU 单帧 15 ms），用于 A7Z 主控侧重建/NPU 加速。
+\item \textbf{本提案 Pre-Phase 0 工作} \statusok：详见附录 B。
 \end{itemize}
 
 \begin{table}[H]
 \centering
-\caption{已有工作与本提案任务的对应关系}
+\caption{已有工作与本提案任务对应（FPGA / SDR 主线）}
 \label{tab:capability-mapping}
 \footnotesize
 \begin{tabularx}{\textwidth}{XXX}
@@ -690,14 +690,13 @@ Phase 2 采购 + NRE & 4{,}000 & 备用 LDSDR + 6 层 PCB + CNC 外壳 \\
 \rowcolor{tableheader}
 \textbf{提案任务} & \textbf{所需技术栈} & \textbf{已有对应工作} \\
 \midrule
-Phase 0：EM Eye demo 复现 + Python 仿真 & Python + 信号处理 + 端到端仿真 & Pre-Phase 0 仿真链路 \\
-Phase 0：LDSDR 实测电源线 SNR & Pluto/LDSDR HDL + bitstream + RF 采集 & OFDM PlutoSDR 全链路 + Pre-Phase 0 \\
-Phase 0：耦合电路 PCB 打样 & PCB layout + RF 走线 & OFDM 项目 SDR 板级 \\
-Phase 1：emeye\_accel IP 顶层设计 & Vivado HLS + RTL 流水线 & XCZU3EG PL CNN \\
-Phase 1：集成进 LDSDR bitstream & Zynq-7010 PL 综合时序闭环 & OFDM PlutoSDR \\
-Phase 2：板上 PS Linux TCP forwarder & 嵌入式 Linux + 驱动 & RK3568 Ubuntu 移植 \\
-Phase 2：（可选）NPU 加速重建 & NPU 模型转换 + 推理 & RK3568/3588 RKNN \\
-Phase 2：上位机可视化 & Rust + Slint / 同级 UI & Smart Home Slint \\
+§2.4 AD9361 内嵌 FPGA 数字滤波 56 MHz BW & Vivado FIR Compiler + AD/DA 闭环 & Vivado FIR 工程（xc7z020，7 testbench） \\
+§2.3 工频 / 开关电源噪声抑制（可选增强） & 自适应滤波 RTL & Anlogic LMS 工程 \\
+§1.3 / §4 现场调试可视化（micro-HDMI 直出） & ADC + FPGA + 显示驱动 & FPGA 双通道数字示波器（AD7928 + TFT） \\
+Phase 1 \texttt{emeye\_accel} IP 顶层设计 & Vivado HLS + RTL 流水线 & XCZU3EG PL CNN \\
+Phase 1 集成进 LDSDR bitstream & Zynq-7010 PL 综合时序闭环 & OFDM PlutoSDR \\
+Phase 2 板上 PS Linux TCP forwarder & 嵌入式 Linux + 驱动 & RK3568 Ubuntu 移植 \\
+Phase 2 NPU 加速重建（可选） & NPU 模型转换 + 推理 & RK3568 RKNN \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -707,38 +706,16 @@ Phase 2：上位机可视化 & Rust + Slint / 同级 UI & Smart Home Slint \\
 \label{sec:appB}
 % ============================================================================
 
-公开 GitHub 仓库与本地工程目录可复现、可审计。6 天工程冲刺合计约 \textbf{6{,}000 行}工程产物。
+本附录聚焦本提案 FPGA / SDR 工程的可复现实测证据。GitHub 仓库与本地工程目录可审计。
 
-\subsection{仿真清单（Python 端到端链路）}
-\label{sec:appB-sim}
-
-\begin{table}[H]
-\centering
-\caption{Python 端到端仿真清单（EM Eye 论文复现 + HDMI TEMPEST 泛化 + TCP demo）}
-\label{tab:appB-sim}
-\footnotesize
-\begin{tabularx}{\textwidth}{lXcl}
-\toprule
-\rowcolor{tableheader}
-\textbf{文件} & \textbf{内容与关键参数} & \textbf{行数} & \textbf{结果} \\
-\midrule
-\texttt{emeye\_simulation.py} & 完整复现 EM Eye 论文方法：OV5647 BT.656 像素流 \(\to\) MIPI byte clk 谐波 \(\to\) IQ 基带 \(\to\) 幅度抽取（factor 8）\(\to\) 自相关帧同步 + 滞后阈值 & 501 & SSIM \(\sim 0.98\) \\
-\texttt{hdmi\_simulation.py} & 原创泛化：HDMI 1080p60 / 148.5 MHz TMDS bit-level + 显式 H/V\_SYNC \(\to\) 160\(\times\)90 重建 & 423 & SSIM \textbf{0.9907} / Corr 0.9976 / 1.2 s \\
-\texttt{network\_demo.py} & FPGA accel mock + TCP 传输 + 主机重建，与 §appB-bd PS forwarder 协议兼容（32-B 帧头 little-endian） & 405 & 闭环 OK \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-输出 \texttt{simulation/output/} 8 张图，含 source/reconstructed/result 三幅一组。直接支撑 Phase 4"多模态侧信道"路线图。
-
-\subsection{Vivado 实现结果（RTL + 综合 + bitstream）}
+\subsection{Vivado 实现：RTL + 综合 + bitstream（真目标）}
 \label{sec:appB-vivado}
 
-\textbf{目标器件：\texttt{xc7z010clg400-2}（LDSDR rev2.1 真硬件，非 PlutoSDR z020）}。全流程 7 分钟跑通，\texttt{Bitgen Completed Successfully}（2026-05-13 23:24），\texttt{.bit} 产物 2.0 MB，MD5 \texttt{01a664a91e77f5477190d4f50a6de2a6}。
+目标器件 \texttt{xc7z010clg400-2}（LDSDR rev2.1 真硬件）。全流程 7 分钟跑通，\texttt{Bitgen Completed Successfully}，\texttt{.bit} 产物 2.0 MB。
 
 \begin{table}[H]
 \centering
-\caption{RTL 模块 + 单元测试 + 资源 + 时序（综合）}
+\caption{\texttt{emeye\_accel} RTL + 单元测试 + 资源 + 时序}
 \label{tab:appB-vivado}
 \footnotesize
 \begin{tabularx}{\textwidth}{lXcl}
@@ -746,8 +723,8 @@ Phase 2：上位机可视化 & Rust + Slint / 同级 UI & Smart Home Slint \\
 \rowcolor{tableheader}
 \textbf{项} & \textbf{内容} & \textbf{数值} & \textbf{状态} \\
 \midrule
-\multicolumn{4}{l}{\textit{RTL 模块（627 行，0 DSP，纯整数）}} \\
-\texttt{magnitude\_jpl.v} & JPL 近似 \(|I+jQ| \approx \max + 0.375 \min\)，仅 2 次右移 + 1 加法 & 117 行 & \statusok \\
+\multicolumn{4}{l}{\textit{RTL 模块（627 行，纯整数无 DSP）}} \\
+\texttt{magnitude\_jpl.v} & JPL 近似 \(|I+jQ| \approx \max + 0.375 \min\)，2 次右移 + 1 加法 & 117 行 & \statusok \\
 \texttt{cic\_decimator.v} & 1 阶 CIC boxcar 抽取 8\(\times\) & 86 行 & \statusok \\
 \texttt{frame\_sync.v} & 帧同步 FSM（平均 + 滞后阈值） & 142 行 & \statusok \\
 \texttt{emeye\_accel\_top.v} & 顶层 + 双通道 + AXI-Stream FIFO & 282 行 & \statusok \\
@@ -755,31 +732,27 @@ Phase 2：上位机可视化 & Rust + Slint / 同级 UI & Smart Home Slint \\
 \multicolumn{4}{l}{\textit{单元测试（Icarus Verilog 13.0，全 PASS）}} \\
 \texttt{tb\_magnitude\_jpl} & 60 用例，平均误差 4.29\% / 峰值 6.80\% & \textbf{60/60} & \statusok \\
 \texttt{tb\_cic\_decimator} & 抽取因子准确，无溢出 & \textbf{11/11} & \statusok \\
-\texttt{tb\_frame\_sync} & 正确触发 \texttt{frame\_start}，忽略短 blanking & \textbf{5/5} & \statusok \\
-\texttt{tb\_emeye\_accel} & 1156 AXI-Stream 输出, 4 \texttt{frame\_starts}, 0 丢样 & \textbf{PASS} & \statusok \\
+\texttt{tb\_frame\_sync} & 正确触发 \texttt{frame\_start} & \textbf{5/5} & \statusok \\
+\texttt{tb\_emeye\_accel} & 1156 AXI-Stream 输出，0 丢样 & \textbf{PASS} & \statusok \\
 \midrule
-\multicolumn{4}{l}{\textit{XC7Z010 资源利用率（write\_bitstream 后）}} \\
-Slice LUT  & 2{,}420 / 17{,}600 & \textbf{13.75\%} & 86\%+ 余量 \\
-Slice FF   & 4{,}074 / 35{,}200 & 11.57\% & — \\
-\textbf{DSP} & \textbf{0} / 80 & \textbf{0\%} & JPL 无乘法器 \\
+\multicolumn{4}{l}{\textit{XC7Z010 资源利用率}} \\
+Slice LUT  & 2{,}420 / 17{,}600 & \textbf{13.75\%} & 86\% 余量 \\
+\textbf{DSP} & \textbf{0} / 80 & \textbf{0\%} & JPL 纯移位+加 \\
 BRAM       & 1 / 60 & 1.67\% & 环形缓冲 \\
 \midrule
-\multicolumn{4}{l}{\textit{时序结果（clk\_fpga\_0 = 8 MHz）}} \\
-emeye\_accel 域 WNS & 我方新加电路时序 clean & \textbf{+3.05 ns} & \statusok \\
-rx\_clk \(\to\) clk\_fpga\_0（跨域） & 原 ad9361 模板已有，我方未引入 & \(-2.985\) ns & \statuspartial \\
-缓解措施 & \texttt{set\_false\_path} + 2-FF 同步器（AXI 寄存器读侧最终一致性即可） & — & Phase 1 W1 \\
+\multicolumn{4}{l}{\textit{时序（\texttt{clk\_fpga\_0} = 8 MHz）}} \\
+\texttt{emeye\_accel} 域 WNS & 新加电路时序 clean & \textbf{+3.05 ns} & \statusok \\
+\texttt{rx\_clk} 跨域 & 原 ad9361 模板已有 & \(-2.985\) ns & \statuspartial（Phase 1 W1 修复）\\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\textbf{Bit \(\to\) Bin 后处理}：\texttt{bitstream/bit\_to\_bin.py}（53 行纯 Python，sync word \texttt{0xAA995566} 后 32-bit byte swap），产物 \texttt{ldsdr\_2tr\_emeye\_safe.bin}，MD5 \texttt{b294f2a3ed77adffc3bebaadb6c4e538}。
-
-\subsection{板上实测（真 LDSDR rev2.1 + AD9361 RF 链路）}
+\subsection{板上实测：真 LDSDR 烧录 + AD9361 RF 链路}
 \label{sec:appB-bd}
 
 \begin{table}[H]
 \centering
-\caption{真 LDSDR 板烧录 + AD9361 RF 链路实测（2026-05-14 上午）}
+\caption{LDSDR rev2.1 板烧录 + AD9361 RF 实测（2026-05-14）}
 \label{tab:appB-board}
 \footnotesize
 \begin{tabularx}{\textwidth}{lXl}
@@ -787,66 +760,43 @@ rx\_clk \(\to\) clk\_fpga\_0（跨域） & 原 ad9361 模板已有，我方未�
 \rowcolor{tableheader}
 \textbf{项} & \textbf{实测值 / 关键证据} & \textbf{状态} \\
 \midrule
-板卡 / 网络 & LDSDR rev2.1（XC7Z010 + AD9361），千兆 GbE IP \textbf{192.168.3.10} & \statusok \\
-板上系统 & Linux 5.15.0 + ARMv7l + PlutoSDR Rev.A rootfs，SSH \texttt{root/analog} & \statusok \\
-烧录 & \texttt{echo *.bin > /sys/class/fpga\_manager/fpga0/firmware} \(\to\) \texttt{state=operating} & \statusok \\
-稳定性 & 30+ 分钟无 kernel oops；千兆 MAC 没断；dmesg AD9361 错误零条 & \statusok \\
-AD9361 配置 & ENSM=\texttt{fdd}, RX\_LO \textbf{204 MHz}（EM Eye byte-clock 4\(\times\)）, SR \textbf{8 MSPS}, RX gain 50 dB & \statusok \\
-\textbf{RSSI / IQ buffer} & \textbf{93.75 dB} / 16 KB signed 12-bit IQ，前 16 字节非零（\texttt{0xfff0}=\(-16\), \texttt{0xffd5}=\(-43\)） & \statusok \\
-\midrule
-Phase 2 BD tap 方案 & \texttt{phase2\_iq\_tap.md} 451 行：A 顶层手动 / B BD IP（推荐），5 项待验证 + Day-by-Day & \statusok \\
-Phase 2 PS forwarder & \texttt{phase2\_tcp\_forwarder.md} 251 行 + \texttt{.c} 394 行骨架：UIO + mmap + ping-pong 2\(\times\)4 MB + TCP\_NODELAY & \statuspartial \\
+板上系统 & Linux 5.15.0 + ARMv7l + PlutoSDR Rev.A rootfs，SSH 通 & \statusok \\
+烧录 & \texttt{echo *.bin > /sys/class/fpga\_manager/fpga0/firmware} \(\to\) \texttt{operating} & \statusok \\
+稳定性 & 30+ 分钟无 oops；千兆 MAC 不断；AD9361 错误零条 & \statusok \\
+AD9361 配置 & ENSM=fdd, RX\_LO \textbf{204 MHz}（EM Eye byte-clock 4\(\times\)）, SR 8 MSPS, gain 50 dB & \statusok \\
+\textbf{RSSI / IQ} & \textbf{93.75 dB} / 16 KB signed 12-bit IQ buffer，非零有效采集 & \statusok \\
+Phase 2 BD tap 设计 & \texttt{phase2\_iq\_tap.md} 451 行：方案 + Day-by-Day 计划 & \statusok \\
+Phase 2 PS forwarder & \texttt{phase2\_tcp\_forwarder} 251 行文档 + 394 行 C 骨架 & \statuspartial \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\textbf{提案意义}：Phase 1 W1 硬件 bring-up 风险被前置消除，LDSDR 进 lab 当天直接进入 Phase 1 Day 3（emeye\_accel IQ tap 接线），省 1-2 周。
-
-\subsection{产物清单 + claim 验证}
+\subsection{仿真与产物清单}
 \label{sec:appB-artifacts}
 
+3 份 Python 端到端仿真（\texttt{emeye\_simulation.py} 复现论文方法 SSIM \(\sim 0.98\)；\texttt{hdmi\_simulation.py} 原创泛化 SSIM \textbf{0.9907}；\texttt{network\_demo.py} TCP 闭环 OK），合计 1{,}329 行 + 8 张输出图。
+
 \begin{table}[H]
 \centering
-\caption{产物清单（工程文件 \(\sim 20\) 份, \(\sim 6{,}000\) 行）}
+\caption{Pre-Phase 0 工程产物总览}
 \label{tab:artifacts}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXcc}
+\begin{tabularx}{\textwidth}{lXc}
 \toprule
 \rowcolor{tableheader}
-\textbf{类别} & \textbf{文件} & \textbf{行数 / 大小} & \textbf{状态} \\
+\textbf{类别} & \textbf{文件} & \textbf{规模} \\
 \midrule
-仿真 & emeye / hdmi / network\_demo.py + output/*.png（8 张） & 501+423+405 & \statusok \\
-RTL 设计 & magnitude\_jpl + cic\_decimator + frame\_sync + emeye\_accel\_top & 627 & \statusok \\
-Testbench & 4 个 testbench 全 PASS（Icarus）& 797 & \statusok \\
-设计文档 & fpga\_derivations + phase2\_iq\_tap + phase2\_tcp\_forwarder.md & 529+451+251 & \statusok \\
-Phase 2 骨架 & phase2\_tcp\_forwarder.c & 394 & \statuspartial \\
-Bitstream & ldsdr\_2tr\_emeye.bit + safe.bin + bit\_to\_bin.py & 2.0 MB \(\times 2\) + 53 & \statusok \\
+Python 仿真 & emeye / hdmi / network\_demo.py + output/*.png & 1{,}329 行 + 8 图 \\
+RTL 设计    & 4 模块（magnitude/cic/frame\_sync/top） & 627 行 \\
+Testbench   & 4 个全 PASS（Icarus Verilog） & 797 行 \\
+设计文档    & fpga\_derivations + phase2\_iq\_tap + tcp\_forwarder.md & 1{,}231 行 \\
+Phase 2 骨架 & phase2\_tcp\_forwarder.c & 394 行 \\
+Bitstream   & ldsdr\_2tr\_emeye.bit / .bin + bit\_to\_bin.py & 2.0 MB \(\times 2\) \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\begin{table}[H]
-\centering
-\caption{提案 claim 与证据对应}
-\label{tab:claim-evidence}
-\footnotesize
-\begin{tabularx}{\textwidth}{XX}
-\toprule
-\rowcolor{tableheader}
-\textbf{提案 claim} & \textbf{支撑证据} \\
-\midrule
-加速器纯整数 + 零 DSP & §B.2 \texttt{magnitude\_jpl} 仅移位+加，DSP = 0 \\
-86\% LUT 余量可扩多通道 & §B.2 LUT 占用 13.75\% \\
-JPL 误差在可接受区间 & §B.2 平均 4.29\% / 峰值 6.80\% \\
-EM Eye 论文方法已掌握 & §B.1 Python SSIM 0.98 \\
-平台可泛化到 HDMI TEMPEST & §B.1 HDMI SSIM 0.9907 \\
-LDSDR 可控，Phase 1 风险低 & §B.3 真板 SSH + 烧录 + RSSI 93.75 dB \\
-AD9361 可调到 EM Eye 频段 & §B.3 RX\_LO 204 MHz + 16 KB IQ \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-\textbf{小结}：Phase 0 关键工程风险已逐一前置消除，Phase 1 W1 可直接进入 \texttt{emeye\_accel} 与 \texttt{axi\_ad9361} IQ tap 真板联调。
+\textbf{小结}：Phase 0 关键工程风险（RTL 可综合性、目标器件资源容量、真板可控性、RF 链路可用性）已前置消除，Phase 1 W1 可直接进入 \texttt{emeye\_accel} 与 \texttt{axi\_ad9361} IQ tap 真板联调。
 
 % ============================================================================
 \section{风险与未决问题清单 + Go/No-Go}
