@@ -163,7 +163,7 @@
 \begin{tabularx}{0.85\textwidth}{rX}
 \sffamily\bfseries 申请岗位 & RA, Yan Long Lab \\
 \sffamily\bfseries 申请单位 & University of Michigan \\
-\sffamily\bfseries 候选人  & \textit{(待填写)} \\
+\sffamily\bfseries 申请人  & \textit{(待填写)} \\
 \sffamily\bfseries 文档日期 & 2026 年 5 月 14 日 \\
 \sffamily\bfseries GitHub  & \url{https://github.com/stongry/powerline-emeye-proposal} \\
 \sffamily\bfseries 版本   & v1.0 (LaTeX 终稿) \\
@@ -199,7 +199,7 @@ CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\te
 \midrule
 形态     & 便携集成式（\(150 \times 80 \times 50\) mm），BYO LDSDR 7010 模块，Phase 2 演进插头式 \\
 耦合     & 主路宽带 CT（Tekbox TBCP2-1000，1 MHz – 1 GHz），辅路 HV 电容（覆盖 \(>\) 500 MHz） \\
-模拟前端 & 候选人 BYO 自研 ERA-4SM+ \(\times\) 2 级联 LNA（VNA 实测 +28 dB @ 100 MHz） \\
+模拟前端 & 我方 BYO 自制 ERA-4SM+ \(\times\) 2 级联 LNA（VNA 实测 +28 dB @ 100 MHz） \\
 采集     & LDSDR 7010（AD9363 \(\to\) AD9361 解锁，70 MHz – 6 GHz，12-bit IQ \(\times\) 2 RX，30 MSPS） \\
 传输     & LDSDR 千兆以太网原始 IQ 直传 \(\to\) Radxa Cubie A7Z 板载主机；Phase 2 板上 \texttt{emeye\_accel} 加速后 32 Mbps 解调流 \\
 主控     & 重建主机使用 Radxa Cubie A7Z（Allwinner A733 八核：2×A76 + 6×A55 + 3 TOPS NPU，65×30 mm）；LDSDR 板内 Zynq-7010 PS 仅做 IQ 数据转发，不外接 RPi CM4 \\
@@ -207,7 +207,7 @@ CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\te
 \end{tabularx}
 \end{table}
 
-\textbf{核心差异化}：候选人已在 Pluto Zynq-7010 平台完成 OFDM + LDPC 全链路 HDL 收发机（BER = 0 板级验证 \statusok），并在 Pre-Phase 0 阶段完成 RTL 设计、单元测试、Vivado 实现、真硬件 bitstream 烧录与 RF 链路实测（详见附录 B）。
+\textbf{已有成果}：我方已在 Pluto Zynq-7010 平台完成 OFDM + LDPC 全链路 HDL 收发机（BER = 0 板级验证 \statusok），并在 Pre-Phase 0 阶段完成 RTL 设计、单元测试、Vivado 实现、真硬件 bitstream 烧录与 RF 链路实测（详见附录 B）。
 
 \textbf{交付计划}（6 个月，1 RA 全职）：Phase 0（3 周）LISN + RPi V1 复现 EM Eye + 电源线传导验证 \(\to\) Go/No-Go 决策门；Phase 1（3 个月）耦合网络 + 模拟前端 + 集成原型；Phase 2（2 个月）板上 FPGA \texttt{emeye\_accel} 加速 + 多设备验证 + 终版报告。
 
@@ -267,7 +267,7 @@ Phase 2 草稿 & BD tap + AXI-DMA + PS TCP forwarder 1{,}096 行文档 \& C 代�
 保护链复杂度    & TVS + DC 隔直 + LC HPF（约 ¥11）       & 全套 GDT/MOV/共模扼流/TVS（约 ¥80+） \\
 BOM 净成本     & \(\sim\) ¥820                        & \(\sim\) ¥1{,}300+ \\
 开发周期       & 3 周 Phase 0 + 12 周 Phase 1          & + 4 周安规认证准备 \\
-Phase 2 演进步骤 & — & AC-DC（2w）+ 保护链（1w）+ 自研小 CT（3w）+ 6 层 PCB（2w）+ EMC 预测（1w） \\
+Phase 2 演进步骤 & — & AC-DC（2w）+ 保护链（1w）+ 自制小 CT（3w）+ 6 层 PCB（2w）+ EMC 预测（1w） \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -417,7 +417,7 @@ W1–W3 完成 5 项实验：W1 Tekbox CT VNA + LNA 整链注入校准；W2 RPi 
 \subsection{LNA 实测一句话 + 链路预算}
 \label{sec:ch3-arch}
 
-候选人 BYO ERA-4SM+ \(\times 2\) 级联 LNA 模块 \statusok：\textbf{VNA 实测 +28 dB @ 100 MHz, 5.6 MHz – 3 GHz \(\pm 3\) dB}，NF 2.5 dB（典型）/级联 \(\sim 3.5\) dB，P1dB +15 dBm，5 V @ 120 mA USB-C 直供，\(50 \times 30 \times 12\) mm 含 SMA + 屏蔽腔。论文 Foresight FST-RFAMP06 单级 40 dB，差 12 dB 由 AD9363 内部 LNA + IF VGA（最高 30 dB）弥补。
+我方 BYO ERA-4SM+ \(\times 2\) 级联 LNA 模块 \statusok：\textbf{VNA 实测 +28 dB @ 100 MHz, 5.6 MHz – 3 GHz \(\pm 3\) dB}，NF 2.5 dB（典型）/级联 \(\sim 3.5\) dB，P1dB +15 dBm，5 V @ 120 mA USB-C 直供，\(50 \times 30 \times 12\) mm 含 SMA + 屏蔽腔。论文 Foresight FST-RFAMP06 单级 40 dB，差 12 dB 由 AD9363 内部 LNA + IF VGA（最高 30 dB）弥补。
 
 \begin{table}[H]
 \centering
@@ -457,7 +457,7 @@ W1–W3 完成 5 项实验：W1 Tekbox CT VNA + LNA 整链注入校准；W2 RPi 
 \subsection{SDR 选型：LDSDR 7010 rev2.1}
 \label{sec:ch4-sdr}
 
-候选人 BYO \textbf{LDSDR 7010 rev2.1} \statusok（取代原计划 ADALM-Pluto）。
+我方 BYO \textbf{LDSDR 7010 rev2.1} \statusok（取代原计划 ADALM-Pluto）。
 
 \begin{table}[H]
 \centering
@@ -474,7 +474,7 @@ DDR3 & \textbf{512 MB} & 256 MB & \textbf{2 倍} IQ 缓冲 \\
 网络接口 & \textbf{千兆 Ethernet + USB OTG} & 仅 USB 2.0 & \textbf{关键差异化} \\
 RF 端口 & \textbf{2 TX + 2 RX（2T2R）} & 1 TX + 1 RX & \textbf{双 RX 通道} \\
 启动 & TF 卡 + 32 MB QSPI Flash & 内嵌 Flash & 调试方便 \\
-候选人持有 & \statusok\ BYO，已跑 OFDM + LDPC & 不持有 & \textbf{零启动成本} \\
+我方持有 & \statusok\ BYO，已跑 OFDM + LDPC & 不持有 & \textbf{零启动成本} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -519,7 +519,7 @@ v1 千兆 Eth 原始 IQ 直传 & 双 384 Mbps & 100 ms+ & \textbf{Phase 1} & PC 
 v2 板上 emeye\_accel + 8-bit 流 & 双 64 Mbps & \(<\) 10 ms & \textbf{Phase 2} & 12 倍压缩；千兆占用 \(\to 4\%\) \\
 WiFi 6 / USB 2.0 OTG & — & — & 否决 & 抖动 / 带宽不足 \\
 \midrule
-LDSDR Zynq-7010 PS 主控 & — & 5 s 启动 & \textbf{选定} & 候选人 BSP 经验；iio\_attr 直接 \\
+LDSDR Zynq-7010 PS 主控 & — & 5 s 启动 & \textbf{选定} & 我方 BSP 经验；iio\_attr 直接 \\
 RPi CM4 8 GB 外接 & — & 25 s 启动 & 取消 & \textbf{省 ¥ 1000 + 省一块 PCB} \\
 \bottomrule
 \end{tabularx}
@@ -607,7 +607,7 @@ RPi CM4 8 GB 外接 & — & 25 s 启动 & 取消 & \textbf{省 ¥ 1000 + 省一�
 主路 + 辅路耦合 & 4{,}530 & Tekbox 大头 + HV 电容 \\
 保护链 Phase 1 必备 & 14 & TVS + DC 隔直 \\
 滤波 Stage 1 必备 & 16 & LC HPF \\
-LNA + SDR + 主控（BYO） & 0 & 候选人 BYO \\
+LNA + SDR + 主控（BYO） & 0 & 我方 BYO \\
 备用 LNA 第三级 + Stage 2 BPF & 450 & Phase 0 触发才启用 \\
 电源 + USB-C & 65 & 含 ESD \\
 PCB / 接插件 / 网线 / 外壳 & 620 & 4 层 + RO4350B + 3D 打印 \\
@@ -643,7 +643,7 @@ Phase 1b & W8–W11  & LDSDR Buildroot rootfs + emeye 算法 Python + 多频段�
 Phase 1c & W12–W14 & PCB 打样 v2 + 3D 外壳 + 整机集成 + 多 DUT 验证 \\
 Phase 1d & W15     & Phase 1 评审，出 v1 完整工程原型 \\
 Phase 2a & W16–W19 & \texttt{emeye\_accel} RTL 板上集成 + PS-PL 联调（OFDM 经验迁移） \\
-Phase 2b & W20–W22 & 6 层集成 PCB + CNC 外壳 + 自研小型化 CT 验证 \\
+Phase 2b & W20–W22 & 6 层集成 PCB + CNC 外壳 + 自制小型化 CT 验证 \\
 Phase 2c & W23–W24 & 多设备 + 多场景验证 + 终版报告 \\
 \bottomrule
 \end{tabularx}
@@ -663,7 +663,7 @@ BYO 资产（LDSDR + LNA + 工具链） & 0（估值 15–20 k） & 不计预算
 Phase 0 采购（实际，借用大头） & 3{,}160 & 完整 \(\sim 8{,}860\)，含 RPi 4B + COTS + 耗材 \\
 Phase 1 BOM（单台原型） & 5{,}245 & 含 Tekbox \\
 Phase 1 NRE & 5{,}100 & PCB 打样 + 外壳 + 测试机时 \\
-Phase 2 采购 + NRE & 6{,}000 & 含备用 LDSDR + 自研 CT + 6 层 PCB + CNC \\
+Phase 2 采购 + NRE & 6{,}000 & 含备用 LDSDR + 自制 CT + 6 层 PCB + CNC \\
 应急预备金（PGA-103+ + 辅路 + 备板） & \(\sim 6{,}350\) & 占总硬件 \(\sim 30\,\%\) \\
 项目硬件 + NRE 合计 & \(\sim\) \textbf{19{,}505} & 最低 \(\sim 14{,}000\) \\
 RA 津贴（¥ 2{,}000 / 月 \(\times 6\)） & 12{,}000 & 校内 RA 标准 \\
@@ -678,10 +678,10 @@ RA 津贴（¥ 2{,}000 / 月 \(\times 6\)） & 12{,}000 & 校内 RA 标准 \\
 \appendix
 % ============================================================================
 
-\section{候选人工程经验与能力支撑}
+\section{我方工程经验与能力支撑}
 \label{sec:appA}
 
-候选人累计 6 个已交付项目 + 1 项 Pre-Phase 0 自费预研（约 23 个月有效工时）。每项均含实测数字与代码归档。
+我方累计 6 个已交付项目 + 1 项 Pre-Phase 0 自费预研（约 23 个月有效工时）。每项均含实测数字与代码归档。
 
 \begin{itemize}\setlength\itemsep{0.1em}
 \item \textbf{§A.1 OFDM + LDPC PlutoSDR Zynq-7010 全链路收发机}（8 个月）：完整 PHY+Baseband HDL + LDPC min-sum + Schmidl-Cox 同步 + GNURadio 实时收发；\textbf{板级 BER = 0} \statusok（SNR \(\geq 10\) dB, \(10^6\) bit 零误码），LUT 38\% / BRAM 52\% / DSP 24\%，吞吐 1.5 Mbps（QPSK, 1/2 LDPC）。直接复用为 LDSDR \texttt{emeye\_accel} bitstream。
@@ -780,8 +780,8 @@ Slice FF   & 4{,}074 / 35{,}200 & 11.57\% & — \\
 BRAM       & 1 / 60 & 1.67\% & 环形缓冲 \\
 \midrule
 \multicolumn{4}{l}{\textit{时序结果（clk\_fpga\_0 = 8 MHz）}} \\
-emeye\_accel 域 WNS & 候选人新加电路时序 clean & \textbf{+3.05 ns} & \statusok \\
-rx\_clk \(\to\) clk\_fpga\_0（跨域） & 原 ad9361 模板已有，候选人未引入 & \(-2.985\) ns & \statuspartial \\
+emeye\_accel 域 WNS & 我方新加电路时序 clean & \textbf{+3.05 ns} & \statusok \\
+rx\_clk \(\to\) clk\_fpga\_0（跨域） & 原 ad9361 模板已有，我方未引入 & \(-2.985\) ns & \statuspartial \\
 缓解措施 & \texttt{set\_false\_path} + 2-FF 同步器（AXI 寄存器读侧最终一致性即可） & — & Phase 1 W1 \\
 \bottomrule
 \end{tabularx}
@@ -884,12 +884,12 @@ Ch4 Phase 2 Day-by-Day 不卡壳 & §B.3 IQ tap 方案 + 5 项待验证 & \textb
 1 & 电源线 100 MHz–1 GHz 传导衰减未知，实测前估 40–60 dB，超 60 dB 拖垮 SNR & 高 & Phase 0 W2 LISN + 频谱仪实测；LNA +28 dB 缓冲；退路近场探头补充 & Go/No-Go \#1 \\
 2 & 铁氧体磁芯 CT 在 \(>500\) MHz 段磁导率下降，带宽不足 & 中 & 主选 Tekbox TBCP2-1000（实测 1 GHz）；辅路电容耦合补 \(>500\) MHz & Phase 1 W3 \\
 3 & COTS 设备差异：Table II 12 台未必每台电源线泄漏强 & 中 & Phase 0 W3 优先复现 RPi V1；Phase 2 扫描 Wyze/Dafang 等 5 台 & Go/No-Go \#2 \\
-4 & LDSDR/Pluto 千兆 Eth 在持续 30 MSPS 下可能丢包 & 低 & 候选人 OFDM+LDPC BER=0 经验；千兆余量 25\(\times\)；退路 v1 走 8 MSPS，v2 板上加速 & Phase 1 W4 \\
+4 & LDSDR/Pluto 千兆 Eth 在持续 30 MSPS 下可能丢包 & 低 & 我方 OFDM+LDPC BER=0 经验；千兆余量 25\(\times\)；退路 v1 走 8 MSPS，v2 板上加速 & Phase 1 W4 \\
 5 & AD9363 \(\to\) AD9361 解锁固件偶尔失效 & 低 & 已验证 LDSDR rev2.1：RX\_LO 204 MHz · RSSI 93.75 dB · 16 KB IQ（附录 B） & N/A \\
 6 & EMC Class B + IEC 61010 安全合规：市电耦合涉及隔离与浪涌防护 & 中 & Ch2 GDT+MOV+共模扼流+TVS+LC HPF 五级链；Phase 1 W2 高压浪涌实测 & Phase 1 W2 \\
 7 & 真 IQ tap \(\to\) \texttt{emeye\_accel} 跨时钟域（adc\_clk 100 MHz \(\to\) emeye\_clk 8 MHz） & 中 & 已生成 idle bitstream 综合通过；附录 B 已起草跨域方案 & Phase 1 W1 \\
 8 & Vivado 实现 rx\_clk \(\to\) AXI 跨时钟域 WNS \(-2.985\) ns（原模板已有） & 低 & \texttt{set\_false\_path} 或 async FIFO 修复，与 \texttt{emeye\_accel} 无关 & Phase 1 W1 \\
-9 & ADALM-Pluto / LDSDR 供应链：AD9361 国内供应偶尔受限 & 低 & 候选人 BYO LDSDR rev2.1，无需采购 & N/A \\
+9 & ADALM-Pluto / LDSDR 供应链：AD9361 国内供应偶尔受限 & 低 & 我方 BYO LDSDR rev2.1，无需采购 & N/A \\
 10 & L+N 工装机械精度不足，DM 抑制 \(< 20\) dB；HV 电容辅路击穿 & 低-中 & 3D 打印高精度工装 \(\delta \leq 0.2\,\mathrm{mm}\)；双电容串联 + GDT 一级浪涌 & Phase 1 W3 \\
 \bottomrule
 \end{tabularx}
