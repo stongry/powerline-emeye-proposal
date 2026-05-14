@@ -844,15 +844,4 @@ Bitstream   & ldsdr\_2tr\_emeye.bit / .bin + bit\_to\_bin.py & 2.0 MB \(\times 2
 \textbf{Go/No-Go \#1 触发条件}：Phase 0 W2 末 LISN 实测 100 MHz–1 GHz 耦合衰减 \(> 65\) dB \(\to\) 路线 A 申请更高增益 LNA（40–60 dB，单级 NF \(< 2\) dB）；路线 B 改聚焦近场 + 短电源线段（\(< 2\) m）。\textbf{Go/No-Go \#2 触发条件}：Phase 0 W3 末 RPi V1 隔离变压器后端 SNR \(< 15\) dB \(\to\) 路线 A 换 DUT（Wyze Cam Pan / Dafang 1080P 等更强泄漏）；路线 B 增加被动 BPF SAW + 模拟下变频前置 LDSDR。
 
 % ============================================================================
-\section*{结语}
-\addcontentsline{toc}{section}{结语}
-% ============================================================================
-
-\textbf{6 个月承诺}：6 个月全职投入，每周 GitHub commit，每月实验室汇报，phase 末 PI/Co-PI 评估。\textbf{12 个月技术支持窗口期}：源码与实测数据开源至实验室仓库，Phase 3 由后继者完成期间提供 12 个月技术支持。
-
-\vspace{1em}
-\hrule
-\vspace{0.5em}
-\noindent\small\textit{致谢}：感谢 Long Y. \textit{et al.} (NDSS 2024) EM Eye 论文方法（"自相关 30 Hz 帧同步 + amplitude reshape"），本提案在不改变其核心算法的前提下将物理通道从空中辐射换为电源线传导。
-
 \end{document}
