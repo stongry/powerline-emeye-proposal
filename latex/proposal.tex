@@ -439,7 +439,7 @@ LNA     & 自制 ERA-4SM+ \(\times 2\) 级联板 \statusok & VNA 实测 +28 dB @
 
 \textbf{SNR 估算}：信号 \(-77\) dBm 经探头 + 滤波 \(\to -97\) dBm，加我方自制 LNA +28 dB \statusok \(\to -69\) dBm @ LDSDR 输入，加 AD9361 内置 LNA + IF VGA +30 dB \(\to -39\) dBm @ ADC，噪底折算 \(\sim -108\) dBm（8 MSPS 工作带宽），SNR \(\approx 39\) dB。经与 PhD 交流：\textbf{自制 ERA-4SM+ \(\times 2\) 已足够}，无需追加第三级放大器；AD9361 内置 LNA 提供额外 30 dB 增益且 NF \(\sim 3.6\) dB 可控，链路已留有充分余量。
 
-\subsection{PCB 与屏蔽（一句话）}
+\subsection{PCB 与屏蔽}
 \label{sec:ch3-pcb}
 
 4 层 PCB 叠层，L1 RF 信号顶层（RO4350B 局部 \(\varepsilon_r=3.66\) 50 \(\Omega\) 微带 30 mil）/ L2 完整接地平面 / L3 电源平面分模拟数字星形互连 / L4 数字控制；LNA 单独铜罩屏蔽腔避免反馈振荡；模拟/数字地通过单 0 \(\Omega\) 跳线（Star Ground）；铝合金外壳 + 铜罩屏蔽效能 40 – 60 dB @ 1 GHz。
