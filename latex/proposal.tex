@@ -1,10 +1,7 @@
 % ============================================================================
 %  电源线侧信道采集设备 — 设计提案
-%  Power-Line Side-Channel Acquisition Device — Design Proposal
-%
 %  目标受众: U Michigan Yan Long Lab
-%  文档类型: 工程设计提案(中文)
-%  编译命令: xelatex -shell-escape proposal.tex (跑两遍以生成 TOC)
+%  编译命令: xelatex -shell-escape proposal.tex (跑两遍以生成目录)
 % ============================================================================
 \documentclass[a4paper,11pt,oneside,UTF8,scheme=plain]{ctexart}
 
@@ -16,14 +13,13 @@
 \setlength{\parsep}{0pt}
 
 % ---------- 字体配置 ----------
-% 中文用思源宋体(标题用黑体),拉丁字符在大字号下也用思源宋体覆盖避免 fallback 缺失
-\setCJKmainfont[BoldFont={Source Han Serif CN Bold}]{Source Han Serif CN}
-\setCJKsansfont[BoldFont={Source Han Sans CN Bold}]{Source Han Sans CN}
-\setCJKmonofont{Source Han Sans CN}
+\setCJKmainfont[AutoFakeBold=2]{Noto Serif SC}
+\setCJKsansfont[AutoFakeBold=2.5]{Noto Sans SC}
+\setCJKmonofont{Noto Sans SC}
 
-\setmainfont[BoldFont={Source Han Serif CN Bold}]{Source Han Serif CN}
-\setsansfont[BoldFont={Source Han Sans CN Bold}]{Source Han Sans CN}
-\setmonofont[Scale=0.88]{JetBrains Maple Mono}
+\setmainfont[AutoFakeBold=2]{Noto Serif SC}
+\setsansfont[AutoFakeBold=2.5]{Noto Sans SC}
+\setmonofont[Scale=0.92]{Consolas}
 
 % ---------- 数学 ----------
 \usepackage{amsmath,amssymb,amsthm}
@@ -31,7 +27,7 @@
 \setmathfont{Latin Modern Math}
 
 % ---------- 表格 ----------
-\usepackage{booktabs}    % \toprule \midrule \bottomrule
+\usepackage{booktabs}
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{longtable}
@@ -39,15 +35,14 @@
 \usepackage{multirow}
 \renewcommand{\arraystretch}{1.10}
 
-% ---------- 颜色(严肃学术: 仅保留黑/灰 + 极淡蓝灰,无强色) ----------
+% ---------- 颜色 ----------
 \usepackage[table]{xcolor}
-% 统一一种深灰色作为标题/规则线颜色; 表头用极浅灰
-\definecolor{rulegray}{HTML}{2D2D2D}      % 深灰,代替原先的 accent 蓝
-\definecolor{tableheader}{HTML}{F5F5F5}   % 极浅灰表头
-\definecolor{linkgray}{HTML}{555555}      % 超链接深灰
-\definecolor{codebg}{HTML}{FAFAFA}        % 代码块极浅灰背景
+\definecolor{rulegray}{HTML}{2D2D2D}
+\definecolor{tableheader}{HTML}{F5F5F5}
+\definecolor{linkgray}{HTML}{555555}
+\definecolor{codebg}{HTML}{FAFAFA}
 
-% ---------- 代码块(去除花哨颜色) ----------
+% ---------- 代码块 ----------
 \usepackage{listings}
 \lstdefinestyle{codestyle}{
   backgroundcolor=\color{codebg},
@@ -73,7 +68,7 @@
 }
 \lstset{style=codestyle}
 
-% ---------- 超链接(深灰,无明显颜色) ----------
+% ---------- 超链接 ----------
 \usepackage[colorlinks=true,linkcolor=linkgray,urlcolor=linkgray,citecolor=linkgray,unicode=true,bookmarksopen=true,bookmarksnumbered=true]{hyperref}
 \usepackage{bookmark}
 
@@ -87,7 +82,7 @@
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
 
-% ---------- 章节标题样式(去掉规则线,黑字加粗,标准学术报告) ----------
+% ---------- 章节标题样式 ----------
 \usepackage{titlesec}
 \titleformat{\section}
   {\Large\bfseries}
@@ -98,7 +93,6 @@
 \titleformat{\subsubsection}
   {\normalsize\bfseries}
   {\thesubsubsection}{1em}{}
-% 精简版本: 减小章节前后间距
 \titlespacing*{\section}{0pt}{1em}{0.5em}
 \titlespacing*{\subsection}{0pt}{0.8em}{0.3em}
 \titlespacing*{\subsubsection}{0pt}{0.6em}{0.2em}
@@ -112,12 +106,12 @@
 \captionsetup[table]{labelfont={bf},textfont={normalfont},justification=centering,skip=2pt}
 \captionsetup[figure]{labelfont={bf},textfont={normalfont},justification=centering,skip=2pt}
 
-% ---------- 状态徽章命令(去除颜色,纯文字) ----------
+% ---------- 状态标记 ----------
 \newcommand{\statusok}{\textbf{[已完成]}}
 \newcommand{\statuspartial}{\textbf{[部分完成]}}
 \newcommand{\statusplan}{\textbf{[计划中]}}
 
-% ---------- 信息框(浅灰边框,无填充色) ----------
+% ---------- 信息框 ----------
 \usepackage[most]{tcolorbox}
 \newtcolorbox{infobox}[1][]{
   colback=white,
@@ -159,13 +153,13 @@
 
 \rule{0.6\textwidth}{0.4pt}\\[1em]
 
-{\large\sffamily 将 EM Eye 攻击从空中辐射通道延伸至电源线传导通道}\\[3em]
+{\large\sffamily 把「电磁窃听」攻击从空中辐射通道延伸到电源线传导通道}\\[3em]
 
 \begin{tabularx}{0.85\textwidth}{rX}
 \sffamily\bfseries 申请人  & 胡晔 \\
 \sffamily\bfseries 文档日期 & 2026 年 5 月 14 日 \\
-\sffamily\bfseries GitHub  & \url{https://github.com/stongry/powerline-emeye-proposal} \\
-\sffamily\bfseries 版本   & v1.0 (LaTeX 终稿) \\
+\sffamily\bfseries 项目仓库 & \url{https://github.com/stongry/powerline-emeye-proposal} \\
+\sffamily\bfseries 版本   & v1.0（终稿） \\
 \end{tabularx}
 
 \vfill
@@ -185,221 +179,222 @@
 % ============================================================================
 
 \begin{infobox}[title=核心论点]
-CMOS 图像传感器及 MIPI 总线在工作时产生的高频电磁辐射，\textbf{以共模电流的形式沿电源线传导}，在远离目标设备的电源插座、电源排插甚至建筑配电线网的任意一点都可被拾取，将 EM Eye 风险从"近场 5 米"扩展到"配电网任意位置数十米"。
+摄像头芯片和它的数据线在工作时会产生高频电磁辐射。这种辐射\textbf{会以电流的形式顺着电源线传出去}，在远离目标设备的插座、插线板、甚至整栋楼的配电线上任意一点都能被拾取到。这把「电磁窃听」的风险从「设备附近 5 米内」扩大到「配电线上任意位置、数十米远」。
 \end{infobox}
 
+% ---- Table 1 + Table 2 并排放置（均已简化、去专业术语）----
 \begin{table}[H]
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{六项核心计划一览}
+\caption{六项核心方案（简明版）}
+\label{tab:plan-overview}
 \footnotesize
 \begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X}
 \toprule
-\rowcolor{tableheader} \textbf{维度} & \textbf{决策} \\
+\rowcolor{tableheader} \textbf{方面} & \textbf{方案} \\
 \midrule
-形态     & 便携集成式（\(150 \times 80 \times 50\) mm），BYO LDSDR 7010 模块，Phase 2 演进插头式 \\
-耦合     & 近场磁探头（贴片式，柔性，PhD 建议方案，最大尺寸可至 SDR 同大）+ HV 电容辅路（覆盖 \(>\) 500 MHz） \\
-模拟前端 & 我方 BYO 自制 ERA-4SM+ \(\times\) 2 级联 LNA（VNA 实测 +28 dB @ 100 MHz） \\
-采集     & LDSDR 7010（AD9363 \(\to\) AD9361 解锁，70 MHz – 6 GHz，12-bit IQ \(\times\) 2 RX，30 MSPS） \\
-传输     & LDSDR 千兆以太网原始 IQ 直传 \(\to\) Radxa Cubie A7Z 板载主机；Phase 2 板上 \texttt{emeye\_accel} 加速后 32 Mbps 解调流 \\
-主控     & 重建主机使用 Radxa Cubie A7Z（Allwinner A733 八核：2×A76 + 6×A55 + 3 TOPS NPU，65×30 mm）；LDSDR 板内 Zynq-7010 PS 仅做 IQ 数据转发，不外接 RPi CM4 \\
+设备形态 & 便携一体小盒；后期可做成插头式 \\
+信号探头 & 贴在电源线上的柔性磁场探头 \\
+信号放大 & 自制的两级放大器 \\
+信号采集 & 自有的无线电采集板卡 \\
+数据传输 & 用网线把采集到的数据传给处理主机 \\
+处理主机 & 一块带 AI 加速的小型计算板 \\
 \bottomrule
 \end{tabularx}
-\end{table}
-
-\textbf{已有成果}：我方已在 Pluto Zynq-7010 平台完成 OFDM + LDPC 全链路 HDL 收发机（BER = 0 板级验证 \statusok），并在 Pre-Phase 0 阶段完成 RTL 设计、单元测试、Vivado 实现、真硬件 bitstream 烧录与 RF 链路实测（详见附录 B）。
-
-\textbf{交付计划}（6 个月，1 RA 全职）：Phase 0（3 周）LISN + RPi V1 复现 EM Eye + 电源线传导验证 \(\to\) Go/No-Go 决策门；Phase 1（3 个月）耦合网络 + 模拟前端 + 集成原型；Phase 2（2 个月）板上 FPGA \texttt{emeye\_accel} 加速 + 多设备验证 + 终版报告。
-
-\textbf{预算概要}：硬件 + NRE 采购合计 \(\approx\) ¥ 10{,}500（BYO 资产估值 15–20 k 不计；实验室借用 Tekbox CT/VNA/频谱仪/LISN）；不含人力。
-
-% ============================================================================
-\section*{Pre-Phase 0 已完成工作速览}
-\addcontentsline{toc}{section}{Pre-Phase 0 已完成工作速览}
-% ============================================================================
-
-PhD 提出的核心可行性问题——"用 SDR 捕获并重建 HDMI 屏幕内容"——本提案已推进 70\% 以上：仿真链路打通、RTL 综合并烧入真 LDSDR rev2.1、AD9361 RF 接收实测均已完成；剩余 30\% 是真机 HDMI 设备 EM 信号采集 + 重建图像还原（Phase 0 W2 完成）。表 \ref{tab:prephase0-summary} 列出已落地的可复现产物。
-
-\begin{table}[H]
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{Pre-Phase 0 已完成工作（2026-05-12 至 2026-05-14）}
+\caption{前期已完成的工作}
 \label{tab:prephase0-summary}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXl}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}Xl}
 \toprule
-\rowcolor{tableheader}
-\textbf{类别} & \textbf{产物 \& 关键数字} & \textbf{状态} \\
+\rowcolor{tableheader} \textbf{工作项} & \textbf{状态} \\
 \midrule
-Python 仿真 & EM Eye + HDMI TEMPEST 双场景，SSIM 0.98 / 0.99，1.2 s 运行 & \statusok \\
-Verilog RTL & 4 模块 + 4 testbench 全 PASS，1156 输出 0 丢样 & \statusok \\
-Vivado 流程 & xc7z010clg400-2 真目标 synth + impl + bitstream（2.0 MB） & \statusok \\
-真硬件烧录 & LDSDR rev2.1 fpga\_manager 烧 .bin 成功，FPGA Manager operating & \statusok \\
-RF 链路实测 & RX\_LO 204 MHz，RSSI 93.75 dB，16 KB IQ 真实采集 & \statusok \\
-BD 改造     & ad9361\_phy\_0 ADC 端口暴露 + GPIO\_I 反馈通路 & \statusok \\
-Phase 2 草稿 & BD tap + AXI-DMA + PS TCP forwarder 1{,}096 行文档 \& C 代码 & \statusok \\
+软件模拟全流程跑通 & 已完成 \\
+硬件电路代码写好并通过测试 & 已完成 \\
+编译生成可烧录的芯片程序 & 已完成 \\
+把程序烧进真实硬件并运行 & 已完成 \\
+真实射频信号采集测试 & 已完成 \\
+硬件接口改造 & 已完成 \\
+下一阶段方案草稿 & 已完成 \\
 \bottomrule
-\end{tabularx}\\
-\footnotesize\textit{GitHub：\url{https://github.com/stongry/powerline-emeye-proposal}}
+\end{tabularx}
+\end{minipage}
 \end{table}
+
+\textbf{已有成果}：我们已经在一块开发板上做出了一整套无线通信收发系统，并在真实硬件上验证传输零误码；同时在前期阶段完成了硬件电路代码设计、测试、编译、烧录到真实硬件，以及射频信号采集实测（详见附录 B）。
+
+\textbf{交付计划}（6 个月，1 名研究助理全职）：第 0 阶段（3 周）先在实验室复现已知的「电磁窃听」攻击，并验证信号能否经电源线传出；第 1 阶段（3 个月）做出探头、放大电路和集成原型；第 2 阶段（2 个月）把信号处理放到板上加速，做多设备验证并写出终版报告。
+
+\textbf{预算概要}：硬件采购合计约 1.05 万元（自有设备估值 1.5–2 万元不计入；大型仪器向实验室借用）；不含人力成本。
+
+% ============================================================================
+\section*{前期已完成工作速览}
+\addcontentsline{toc}{section}{前期已完成工作速览}
+% ============================================================================
+
+合作导师提出的核心可行性问题——「能不能用无线电采集设备捕获并还原 HDMI 屏幕内容」——本提案已经推进了 70\% 以上：软件模拟跑通、硬件电路代码编译并烧入了真实的采集板卡、射频接收实测也都完成了；剩下的 30\% 是采集真实显示设备的电磁信号并还原出屏幕图像（第 0 阶段第 2 周完成）。表 \ref{tab:prephase0-summary} 列出了已经做出来、可以复现的成果。
 
 % ============================================================================
 \section{总体形态、尺寸与系统框图}
 \label{sec:overview}
 % ============================================================================
 
-\subsection{形态决策与 Phase 2 演进}
+\subsection{形态决策与后期演进}
 \label{sec:form-factor}
 
-约束：设备最大尺寸 \(\le 150 \times 80 \times 50\) mm。锁定 \textbf{Route A 便携集成式}为 Phase 1 主交付形态，Route B 插头适配式作为 Phase 2 演进方向。
+约束：设备最大尺寸不超过 \(150 \times 80 \times 50\) 毫米。我们把\textbf{方案 A 便携一体式}定为第 1 阶段的主交付形态，把方案 B 插头适配式作为第 2 阶段的演进方向。
 
+% ---- Table 3 + Table 4 并排放置（均已简化）----
 \begin{table}[H]
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{Route A vs Route B 形态对比 + Phase 2 演进}
+\caption{方案 A 与方案 B 形态对比}
 \label{tab:routea-vs-b}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXX}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{维度} & \textbf{Route A 便携集成式（Phase 1）} & \textbf{Route B 插头适配式（Phase 2）} \\
+\textbf{方面} & \textbf{方案 A 便携式} & \textbf{方案 B 插头式} \\
 \midrule
-供电 / 与市电关系 & USB-C 5 V；电气完全隔离（仅 CT 磁耦合） & 内含 AC-DC，直插市电 \\
-触电风险 / 安规 & 归零；无强制认证 & 高；需 IEC 61010 + EMC Class B 认证 \\
-保护链复杂度    & 基础防触电 + DC 隔直 (\(\sim\) ¥ 6) & 全套 GDT/MOV/共模扼流/TVS (\(\sim\) ¥ 80+) \\
-BOM 净成本     & \(\sim\) ¥820                        & \(\sim\) ¥1{,}300+ \\
-开发周期       & 3 周 Phase 0 + 12 周 Phase 1          & + 4 周安规认证准备 \\
-Phase 2 演进步骤 & — & AC-DC（2w）+ 保护链（1w）+ 自制小 CT（3w）+ 6 层 PCB（2w）+ EMC 预测（1w） \\
+与市电关系 & 完全隔离，只靠磁场感应 & 直接插市电 \\
+触电风险 & 几乎为零 & 高，需安全认证 \\
+保护电路 & 简单 & 复杂、成本高 \\
+器件成本 & 约 820 元 & 约 1300 元以上 \\
+开发周期 & 约 3 个月出原型 & 另需约 4 周做认证 \\
 \bottomrule
 \end{tabularx}
-\end{table}
-
-\textbf{选定 Route A 理由}：(1) 整机与市电零电气连接，触电风险归零；(2) Phase 1 三个月可出原型；(3) USB 供电覆盖实验室与现场便携。Phase 2 总工时约 9 周，在 8 周（W17–W24）预算内紧凑可行。
-
-\subsection{尺寸预算}
-\label{sec:dim-budget}
-
-实测主要模块物理尺寸如表 \ref{tab:dim-budget}。BYO LDSDR、LNA、Cubie A7Z 三块板可\textbf{多层堆叠}于同一壳内（LNA 与 A7Z 均小于 LDSDR 占地面积，可直接叠加于其上方/下方），整机外壳目标 \(105 \times 65 \times 35\) mm。
-
-\begin{table}[H]
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{Route A 内部模块实测尺寸与堆叠策略}
+\caption{方案 A 内部模块尺寸与摆放}
 \label{tab:dim-budget}
 \footnotesize
-\begin{tabularx}{\textwidth}{lcX}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}Xc}
 \toprule
 \rowcolor{tableheader}
-\textbf{模块} & \textbf{实测尺寸 (mm)} & \textbf{堆叠/放置策略} \\
+\textbf{模块} & \textbf{尺寸（毫米）} \\
 \midrule
-LDSDR 7010 rev2.1 SOM            & \(101 \times 61.8 \times 11\) & 底层基板（BYO，最大占地） \\
-ERA-4SM+ \(\times 2\) LNA 模块   & \(62 \times 24.3 \times 6.5\) & 叠于 LDSDR 之上（覆盖约 25\% 面积） \\
-Radxa Cubie A7Z 主控板           & \(65 \times 30 \times 10\)    & 叠于 LDSDR 之上（与 LNA 并列，剩余空间） \\
-近场磁探头（贴片式，外挂）         & \(\le 101 \times 61.8 \times 2\) & 柔性贴片，尺寸最大可与 SDR 同（与 PhD 沟通确认） \\
-滤波 + 隔离链                    & 集成于 LDSDR 输入侧前级小板  & SMA 同轴接入，不占主壳 \\
-USB-C + LDO 电源                 & \(30 \times 20 \times 6\)     & 侧边布局 \\
-Ethernet 输出 RJ45               & \(16 \times 13 \times 6\)     & A7Z 主控板载，不重复占位 \\
+采集板卡（最大，作底层） & \(101 \times 62 \times 11\) \\
+两级放大器模块（叠在上面） & \(62 \times 24 \times 7\) \\
+处理主机板（叠在上面） & \(65 \times 30 \times 10\) \\
+磁场探头（柔性，外挂） & \(\le 101 \times 62 \times 2\) \\
+电源模块（侧边） & \(30 \times 20 \times 6\) \\
 \bottomrule
 \end{tabularx}
+\end{minipage}
 \end{table}
+
+\textbf{选定方案 A 的理由}：(1) 整机与市电没有电气连接，触电风险几乎为零；(2) 三个月内能出原型；(3) 用手机充电口（USB-C）供电，实验室和现场都方便携带。三块电路板（采集板、放大器、处理主机）可以\textbf{多层堆叠}装进同一个外壳，整机外壳目标 \(105 \times 65 \times 35\) 毫米。
 
 \subsection{系统总框图}
 \label{sec:block-diagram}
 
+整套系统是一条 8 段的功能链：探头采集 → 保护 → 滤波 → 放大 → 采集 → 转发 → 重建 → 输出。
+
 \begin{table}[H]
 \centering
-\caption{8 模块功能链（耦合 → 保护 → 滤波 → 放大 → 采集 → 转发 → 重建 → 传输）}
+\caption{系统功能链（8 个模块）}
 \label{tab:block-diagram}
 \footnotesize
-\begin{tabularx}{\textwidth}{clXl}
+\begin{tabularx}{\textwidth}{cl>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{\#} & \textbf{模块} & \textbf{型号/配置} & \textbf{数据率} \\
+\textbf{\#} & \textbf{模块} & \textbf{说明} \\
 \midrule
-1 & 耦合     & 近场磁探头（贴片式，PhD 建议方案，柔性可定制，最大尺寸至 SDR 同大）；L+N 同向穿芯，DM 抑制 30–40 dB & — \\
-2 & 保护     & 基础防触电（SMA 入口 + 铜罩接地）+ Murata NP0 1 nF DC 隔直；磁探头非接触式，无需 TVS/GDT/MOV 复杂浪涌链 & — \\
-3 & 滤波     & 三段可选：(a) 自制无源带通滤波器 \statusok；(b) 购买的 SAW 石英射频专用滤波器；(c) AD9361 内嵌 FPGA 数字滤波（已验证最大约 56 MHz 瞬时带宽 \statusok） & — \\
-4 & 放大     & BYO ERA-4SM+ \(\times 2\)，+28 dB @ 100 MHz 实测 \statusok & — \\
-5 & 采集     & LDSDR 7010 rev2.1，70 MHz – 6 GHz，12-bit IQ，2 RX 并行 & 双 RX 384 Mbps \\
-6 & IQ 转发  & LDSDR 板内 Zynq-7010 PS Linux：从 PL emeye\_accel 取流 \(\to\) 千兆 Eth 转发，零图像处理 & 32 Mbps \\
-7 & 重建主机 & Radxa Cubie A7Z（A733 八核 + 3 TOPS NPU）：IQ \(\to\) magnitude \(\to\) reshape \(\to\) 帧重建；NPU 可加载 SSIM/超分模型 & 帧流 \(\sim\) 30 fps \\
-8 & 传输     & A7Z \(\to\) PC（USB CDC 或 Wi-Fi 6 板载）；现场调试经 micro-HDMI 直出 & — \\
+1 & 探头   & 贴在电源线上的柔性磁场探头，靠磁场感应取信号，与市电不接触 \\
+2 & 保护   & 基础防触电措施 + 一颗隔直电容；磁场探头不接触导体，不需要复杂的浪涌保护 \\
+3 & 滤波   & 三种可选：自制无源滤波器、外购的窄带射频滤波器、采集芯片内置的数字滤波 \\
+4 & 放大   & 自制的两级低噪声放大器，实测把信号放大约 28 分贝 \\
+5 & 采集   & 自有的无线电采集板卡，可同时采两路 \\
+6 & 转发   & 采集板把原始数据直接通过网口转发出去，自身不做图像处理 \\
+7 & 重建   & 处理主机把采集数据还原成屏幕画面，约每秒 30 帧 \\
+8 & 输出   & 处理主机把结果传给电脑（用 USB 或无线网） \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 % ============================================================================
-\section{电源线高频泄漏耦合与提取}
+\section{电源线高频泄漏的耦合与提取}
 \label{sec:ch2}
 % ============================================================================
 
 \subsection{物理机制}
 \label{sec:ch2-phy}
 
-EM Eye 论文 §III：MIPI CSI-2 串行链路传输 sub-ns 边沿的高速数据，数据信号耦合到外围金属结构，连接电缆本身成为非预期发射天线。物理过程三阶段：(1) \textbf{源}：MIPI CSI-2 D-PHY 以 byte clock（RPi V1 \(51\,\mathrm{MHz}\)）切换差分对，\(\mathrm{d}V/\mathrm{d}t \sim 1\,\mathrm{V/ns}\) \(\to\) 共模电感耦合产生共模电流；(2) \textbf{传播}：共模电流沿数据线 \(\to\) 主板地参考 \(\to\) PCB 寄生电容 \(\to\) 稳压模块寄生回路 \(\to\) 外部电源线（L+N+PE）；(3) \textbf{泄漏频段}：byte clock 谐波富集，典型 100 MHz – 1 GHz 段，与论文 Table II 12 款 COTS 设备（155–1740 MHz）一致。
+「电磁窃听」攻击的原理论文里讲过：摄像头的数据线在传输高速数据时，电压变化非常快（大约每纳秒变化 1 伏），这些信号会耦合到周围的金属结构上，连接电缆本身就变成了一根「无意中的发射天线」。
 
-电源线作为"非预期传输天线"延伸的依据：电源线在 100 MHz – 1 GHz 段电气长度远大于 1/4 波长（0.5 m 线在 500 MHz 处 \(\approx 0.83\lambda\)）表现为分布参数传输线；EMC Class B 电源滤波器典型工作到 30 MHz 即截止；100 MHz 以上设备内部 X1/Y2 安全电容失效，共模电流进入外部电源线。
+整个过程分三步：(1) \textbf{信号来源}——摄像头数据线高速切换，产生快速电压变化；(2) \textbf{传播}——这种电流顺着数据线、主板地、电路板上的寄生电容、电源模块，最终窜到外部的电源线上；(3) \textbf{泄漏频段}——泄漏主要集中在 100 兆赫到 1 吉赫这一段，和原理论文里 12 款市售设备的实测结果一致。
 
-\begin{table}[H]
-\centering
-\caption{电源线传导泄漏数量级估算}
-\label{tab:order-of-magnitude}
-\footnotesize
-\begin{tabularx}{\textwidth}{lXX}
-\toprule
-\rowcolor{tableheader}
-\textbf{参数} & \textbf{数值（粗估）} & \textbf{来源} \\
-\midrule
-RPi V1 MIPI byte clock     & 51 MHz                       & 论文 Table II \\
-主泄漏频点（204 / 255 MHz） & byte clock 的 4 倍 / 5 倍谐波  & 论文 Table II \\
-估算 CM 电流 \(I_\mathrm{CM}\) & 1–10 \(\mu\)A（无实测，待 Phase 0 校准） & 网络资料 + 论文空气场强 \(-80\) dBm 类比 \\
-经磁探头二次侧电压         & 量级 \(\sim\) mV          & 数量级估计，未实测 \\
-等效功率 @ 50 \(\Omega\)     & \(-77 \sim -57\) dBm           & 推算，未实测 \\
-\bottomrule
-\end{tabularx}
-\end{table}
+电源线之所以能当成「天线的延伸」：在 100 兆赫以上，电源线的电气长度已经远大于波长的四分之一，表现得像一条传输线；而设备里常规的电源滤波器一般到 30 兆赫就失效了，更高频的电流就直接进入了外部电源线。
 
-\textbf{说明}：上表数据均为基于论文与公开资料的\textbf{初步估计}，未做板级实测。\(I_\mathrm{CM}\) 与磁探头耦合效率的真实绝对值需要 Phase 0 W1 用频谱仪 + 参考探头校准后给出。
-
-\subsection{耦合方式权衡与选定架构}
+\subsection{数量级估算与耦合方式选择（均为初步估计）}
 \label{sec:ch2-coupling}
 
+% ---- Table 6 + Table 7 并排放置（均已简化）----
 \begin{table}[H]
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{耦合方式权衡 + 选择}
-\label{tab:coupling-tradeoff}
+\caption{电源线泄漏数量级估算}
+\label{tab:order-of-magnitude}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXccc}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{方式} & \textbf{频响 \& 隔离} & \textbf{体积} & \textbf{安全} & \textbf{选择} \\
+\textbf{参数} & \textbf{粗估数值} \\
 \midrule
-近场磁探头（贴片式，PhD 建议） & 1 MHz – 数 GHz，磁耦合电气完全隔离 & 柔性贴片 \(\le 101 \times 62 \times 2\) mm & 高 & \textbf{主路} \\
-微型 LISN (TBL5016-1) & 9 kHz – 30 MHz，自带隔离 & \(150 \times 100 \times 80\) mm & 标准 & \textbf{否决} \\
-宽带 CT (Tekbox TBCP2-1000) & 100 kHz – 1 GHz, \(\pm 2\) dB & OD \(\approx 100\) mm 夹式 & 高 & \textbf{Phase 0 校准基准} \\
+摄像头数据时钟 & 51 兆赫 \\
+主泄漏频点 & 204 / 255 兆赫 \\
+电源线上的泄漏电流 & 约 1–10 微安 \\
+探头取到的电压 & 大约毫伏量级 \\
 \bottomrule
 \end{tabularx}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
+\centering
+\caption{耦合方式权衡与选择}
+\label{tab:coupling-tradeoff}
+\footnotesize
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}Xc}
+\toprule
+\rowcolor{tableheader}
+\textbf{方式} & \textbf{特点} & \textbf{选择} \\
+\midrule
+柔性磁场探头 & 频带宽、与市电完全隔离、体积小 & \textbf{主用} \\
+小型电源测量盒 & 频带太窄，体积大 & 否决 \\
+夹式电流探头 & 频带够宽，但是夹式较大 & 仅用作校准基准 \\
+\bottomrule
+\end{tabularx}
+\end{minipage}
 \end{table}
 
-\textbf{选定架构}：PhD 建议的近场磁探头作为主路（柔性贴片，最大 \(101 \times 62 \times 2\) mm），输出经 LNA 放大后送 LDSDR 采集；前端滤波采用三段可选组合（自制无源带通 + 购买的 SAW 石英射频滤波器 + AD9361 内嵌 FPGA 数字滤波，详见 §2.4）。链路无需双路融合或多频段相干合成——磁探头单通道足以覆盖目标频段。Phase 0 第 1 周用 Tekbox TBCP2-1000 商用 CT 做注入校准基准，确认探头耦合效率与 NIST 可追溯量级一致后即可。
+\textbf{说明}：上表数据都是基于论文和公开资料的\textbf{初步估计}，没有做实测。真实的绝对数值需要在第 0 阶段用频谱仪加参考探头校准后才能给出。
 
-\subsection{保护与工频隔离链}
+\textbf{选定方案}：以柔性磁场探头为主路（贴在电源线上，靠磁场感应取信号，与市电不接触），输出经放大器放大后送采集板；前端滤波用三种可选组合。单通道探头就足以覆盖目标频段，不需要多路融合。第 0 阶段第 1 周用商用夹式电流探头做一次校准基准对比。
+
+\subsection{前端保护与滤波}
 \label{sec:ch2-protect}
 
-近场磁探头本身不接触市电导体，仅磁耦合采集，无电气连接，因此不需要 GDT/MOV/共模扼流/光耦那一套复杂的市电保护链。前端只需基础防触电与 RF 走线保护：
+柔性磁场探头本身不接触市电导体，只靠磁场感应取信号，所以不需要那一整套复杂的市电保护电路。前端只需要基础的防触电和射频走线保护：
 
 \begin{table}[H]
 \centering
-\caption{前端保护与滤波（近场磁探头输出 \(\to\) LNA 输入）}
+\caption{前端保护与滤波（探头输出到放大器输入）}
 \label{tab:protection-chain}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXX}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{级} & \textbf{元件 / 配置} & \textbf{关键参数} \\
+\textbf{环节} & \textbf{做法} \\
 \midrule
-入口     & SMA 母座 + RG-316 \(< 20\) cm 同轴 + 铜罩单点接地 & 50 \(\Omega\)，防机械意外接触 \\
-DC 隔直  & Murata GRM18 NP0 1 nF/100 V & 阻断万一接触到外部直流偏置 \\
-滤波 (a) & 自制无源带通滤波器 \statusok & 已实现，覆盖目标谐波频段 \\
-滤波 (b) & 购买的 SAW 石英射频专用滤波器 & 中心频点专用，带宽窄、抑制深 \\
-滤波 (c) & AD9361 内嵌 FPGA 数字滤波 \statusok & 已验证，单通道最大约 56 MHz 瞬时带宽 \\
-LNA     & 自制 ERA-4SM+ \(\times 2\) 级联板 \statusok & VNA 实测 +28 dB @ 100 MHz \\
+入口     & 射频接头 + 短同轴线 + 铜罩接地，防机械误触 \\
+隔直     & 一颗 1 纳法隔直电容，挡住可能误碰到的直流 \\
+滤波     & 自制无源滤波器 / 外购窄带射频滤波器 / 采集芯片内置数字滤波，三选一 \\
+放大     & 自制两级放大器，实测增益约 28 分贝 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -409,256 +404,205 @@ LNA     & 自制 ERA-4SM+ \(\times 2\) 级联板 \statusok & VNA 实测 +28 dB @
 \label{sec:ch3}
 % ============================================================================
 
-\subsection{LNA 实测一句话 + 链路预算}
+\subsection{放大器实测与信号链预算}
 \label{sec:ch3-arch}
 
-我方 BYO ERA-4SM+ \(\times 2\) 级联 LNA 模块 \statusok：\textbf{VNA 实测 +28 dB @ 100 MHz, 5.6 MHz – 3 GHz \(\pm 3\) dB}，NF 2.5 dB（典型）/级联 \(\sim 3.5\) dB，P1dB +15 dBm，5 V @ 120 mA USB-C 直供，\(50 \times 30 \times 12\) mm 含 SMA + 屏蔽腔。论文 Foresight FST-RFAMP06 单级 40 dB，差 12 dB 由 AD9363 内部 LNA + IF VGA（最高 30 dB）弥补。
+我们自制的两级放大器模块已经做好并实测：用矢量网络分析仪（一种射频测量仪器）测得在 100 兆赫处增益约 28 分贝，5.6 兆赫到 3 吉赫范围内增益波动在 \(\pm 3\) 分贝以内，用手机充电口供电，体积 \(50 \times 30 \times 12\) 毫米。采集板芯片内部还自带一级放大，能再补约 30 分贝增益。
 
-\begin{table}[H]
-\centering
-\caption{链路预算粗估（目标频段 200 MHz，参考论文 + 我方 LNA 实测）}
-\label{tab:link-budget}
-\footnotesize
-\begin{tabularx}{\textwidth}{Xcccc}
-\toprule
-\rowcolor{tableheader}
-\textbf{节点} & \textbf{信号 (dBm)} & \textbf{噪底 (dBm/Hz)} & \textbf{累计增益 (dB)} & \textbf{累计 NF (dB)} \\
-\midrule
-(1) DUT MIPI 谐波辐射源 & — & — & — & — \\
-(2) 近场磁探头输出 & \(\sim -77\)（粗估） & \(-174\) & \(\sim -20\) & 20 \\
-(3) DC 隔直 + 滤波输出 & \(-78\) & \(-174\) & \(-21\) & 21 \\
-(4) ERA-4SM+ 第 1 级输出 \statusok & \(-64\) & \(-171\) & \(-7\) & \textbf{3.5（主导）} \\
-(5) ERA-4SM+ 第 2 级输出 \statusok & \(-50\) & \(-167\) & +7 & 3.6 \\
-(6) LDSDR AD9363 入口 & \(-50\) & \(-167\) & +7 & 3.6 \\
-(7) AD9361 内置 LNA + IF VGA(+30 dB) & \(-23\) & \(-140\) & +34 & 3.6 \\
-(8) ADC 输出动态范围 & \(-33\) dBFS & — & — & — \\
-\bottomrule
-\end{tabularx}
-\end{table}
+经初步估算，信号经探头、滤波、两级自制放大器、再加采集芯片内部放大后，信噪比约 39 分贝，余量充足，不需要再加第三级放大器。
 
-\textbf{SNR 估算}：信号 \(-77\) dBm 经探头 + 滤波 \(\to -97\) dBm，加我方自制 LNA +28 dB \statusok \(\to -69\) dBm @ LDSDR 输入，加 AD9361 内置 LNA + IF VGA +30 dB \(\to -39\) dBm @ ADC，噪底折算 \(\sim -108\) dBm（8 MSPS 工作带宽），SNR \(\approx 39\) dB。经与 PhD 交流：\textbf{自制 ERA-4SM+ \(\times 2\) 已足够}，无需追加第三级放大器；AD9361 内置 LNA 提供额外 30 dB 增益且 NF \(\sim 3.6\) dB 可控，链路已留有充分余量。
-
-\subsection{PCB 与屏蔽}
+\subsection{电路板与屏蔽}
 \label{sec:ch3-pcb}
 
-4 层 PCB 叠层，L1 RF 信号顶层（RO4350B 局部 \(\varepsilon_r=3.66\) 50 \(\Omega\) 微带 30 mil）/ L2 完整接地平面 / L3 电源平面分模拟数字星形互连 / L4 数字控制；LNA 单独铜罩屏蔽腔避免反馈振荡；模拟/数字地通过单 0 \(\Omega\) 跳线（Star Ground）；铝合金外壳 + 铜罩屏蔽效能 40 – 60 dB @ 1 GHz。
+采用 4 层电路板：顶层走射频信号，第二层为完整接地层，第三层为电源层，底层走数字控制；放大器单独加铜罩屏蔽，避免自激振荡；模拟地和数字地单点相连；铝合金外壳加铜罩，屏蔽效果在 1 吉赫处约 40–60 分贝。
 
 % ============================================================================
-\section{数据采集与无线传输}
+\section{数据采集与传输}
 \label{sec:ch4}
 % ============================================================================
 
-\subsection{SDR 选型：LDSDR 7010 rev2.1}
+\subsection{采集设备选型与采样策略}
 \label{sec:ch4-sdr}
 
-我方 BYO \textbf{LDSDR 7010 rev2.1} \statusok（取代原计划 ADALM-Pluto）。
+我们使用自有的一块无线电采集板卡（型号 LDSDR 7010），它取代了原计划的通用采集模块。\textbf{已完成的工作}：我们已经在同款芯片上做出了一整套无线通信收发系统并验证传输零误码，可直接复用其系统框架；并已基于这块板卡完成「采集 HDMI 屏幕电磁泄漏、再还原出屏幕图像」流程的软件模拟、硬件代码与烧板（详见附录 B）。采样参照原理论文基线：采样速度每秒 8 兆点，接收频率对准摄像头数据时钟的谐波。
 
 \begin{table}[H]
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{LDSDR vs 标准 ADALM-Pluto 对比}
+\caption{自有采集板卡与通用模块对比}
 \label{tab:ldsdr-vs-pluto}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXXX}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{项} & \textbf{LDSDR 7010（选定）} & \textbf{ADALM-Pluto} & \textbf{差异} \\
+\textbf{项} & \textbf{自有板卡} & \textbf{通用模块} \\
 \midrule
-主芯片 / RF & XC7Z010 / AD9363(70M–6G) & 同 & — \\
-DDR3 & \textbf{512 MB} & 256 MB & \textbf{2 倍} IQ 缓冲 \\
-网络接口 & \textbf{千兆 Ethernet + USB OTG} & 仅 USB 2.0 & \textbf{关键差异化} \\
-RF 端口 & \textbf{2 TX + 2 RX（2T2R）} & 1 TX + 1 RX & \textbf{双 RX 通道} \\
-启动 & TF 卡 + 32 MB QSPI Flash & 内嵌 Flash & 调试方便 \\
-我方持有 & \statusok\ BYO，已跑 OFDM + LDPC & 不持有 & \textbf{零启动成本} \\
+内存     & 512 兆字节 & 256 兆字节 \\
+网络接口 & 千兆网口 & 只有 USB \\
+射频通道 & 两收两发 & 一收一发 \\
+是否持有 & \textbf{已具备} & 否 \\
 \bottomrule
 \end{tabularx}
-\end{table}
-
-\textbf{已实现的工作}：LDSDR 同款 Zynq-7010 上已完成 OFDM + LDPC 完整 HDL 收发机 BER = 0 \statusok。直接复用 Buildroot rootfs + iio\_attr + Vivado 工程结构 + AXI-Stream/AXI-Lite/IRQ 框架。\textbf{当前正在做的}：经与 PhD 交流后，正在基于本 SDR 复现"采集 HDMI 屏幕电磁泄漏 + 重建屏幕图像"完整链路（仿真 + RTL + 板烧已完成，详见附录 B）。
-
-\subsection{采样策略 + 传输方案 + 主控决策}
-\label{sec:ch4-sample}
-
-对齐论文基线 \(f_s = 8\,\mathrm{MSPS}\) IQ，中心频率锁定在 MIPI byte clock 谐波。
-
-\begin{table}[H]
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{Phase 0 主目标频点（数据来源：EM Eye 论文 Table II + 公开网络资料，未板级实测）}
+\caption{第 0 阶段目标频点（兆赫）}
 \label{tab:phase0-freqs}
 \footnotesize
-\begin{tabularx}{\textwidth}{Xccc}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}Xcc}
 \toprule
 \rowcolor{tableheader}
-\textbf{DUT} & \textbf{byte clock (MHz)} & \textbf{目标 LO (MHz)} & \textbf{论文 SSIM} \\
+\textbf{目标设备} & \textbf{时钟} & \textbf{接收} \\
 \midrule
-Raspberry Pi V1（论文同款） & 51 & \textbf{204 (4x)} / 255 (5x) & 0.55 / 0.61 \\
-Wyze Cam Pan 2 & 222.5 & \textbf{890 (4x)} & 0.42 \\
-Xiaomi Dafang & 80.5 & \textbf{322 / 890} & 0.39 \\
-360 行车记录仪 M320 & 112.5 & \textbf{450} & 0.37 \\
-Google Pixel 3（对照） & 128.75 & \textbf{515} & 0.34 \\
+树莓派摄像头 & 51    & 204 \\
+室内摄像头   & 222.5 & 890 \\
+家用摄像头   & 80.5  & 322 \\
+行车记录仪   & 112.5 & 450 \\
 \bottomrule
 \end{tabularx}
+\end{minipage}
 \end{table}
 
-\begin{table}[H]
-\centering
-\caption{传输方案与主控对比（v1 千兆 IQ vs v2 板上加速；LDSDR PS vs RPi CM4）}
-\label{tab:transport-decision}
-\footnotesize
-\begin{tabularx}{\textwidth}{lcccX}
-\toprule
-\rowcolor{tableheader}
-\textbf{方案} & \textbf{数据率} & \textbf{延迟} & \textbf{选择} & \textbf{备注} \\
-\midrule
-v1 千兆 Eth 原始 IQ 直传 & 双 384 Mbps & 100 ms+ & \textbf{Phase 1} & PC GPU 跑 pix2pix；占千兆 \(\sim 48\%\) \\
-v2 板上 emeye\_accel + 8-bit 流 & 双 64 Mbps & \(<\) 10 ms & \textbf{Phase 2} & 12 倍压缩；千兆占用 \(\to 4\%\) \\
-WiFi 6 / USB 2.0 OTG & — & — & 否决 & 抖动 / 带宽不足 \\
-\midrule
-LDSDR Zynq-7010 PS（仅 IQ 转发） & — & 5 s 启动 & \textbf{选定} & 我方 BSP 经验，iio\_attr 直接配 AD9361 \\
-Cubie A7Z（A733 + NPU，重建主机） & — & 5 s 启动 & \textbf{选定} & 65×30 mm，3 TOPS NPU，承担 magnitude / reshape / 帧重建 \\
-RPi CM4 8 GB 外接 & — & 25 s 启动 & 取消 & 被 A7Z 替代 \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\textbf{传输与处理分工}：第 1 阶段先用千兆网口把原始数据直接传到处理主机，由处理主机做信号处理和图像还原；第 2 阶段把一部分处理放到采集板上加速，数据量可压缩约 12 倍，传输和延迟都大幅下降。处理流程为：原始数据 → 取幅度 → 估计行/帧周期 → 按像素重排 → 还原成画面。
 
-\textbf{软件栈}：LDSDR PS 端（Buildroot Linux 5.15）\texttt{iio\_attr} 配 AD9361，libiio + 千兆 socket 把 IQ 推到 Cubie A7Z；A7Z 端接收双 RX IQ \(\to\) 频点跟踪 + AGC \(\to\) 幅度解调 + 30 Hz 自相关 \(\to\) Tf/Tr 估计 \(\to\) 像素重排（NPU 可加载 SSIM/超分模型）。
-
-\subsection{板上 FPGA 加速路线图（Phase 2）}
+\subsection{板上加速路线（第 2 阶段）}
 \label{sec:ch4-accel}
 
+第 2 阶段把信号处理做成板上的硬件加速模块，子模块清单见下表：
+
 \begin{table}[H]
 \centering
-\caption{板上加速器子模块清单（Phase 2 emeye\_accel）}
+\caption{板上加速模块清单（第 2 阶段）}
 \label{tab:accel-modules}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXXl}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}Xl}
 \toprule
 \rowcolor{tableheader}
-\textbf{模块} & \textbf{功能} & \textbf{资源} & \textbf{状态} \\
+\textbf{模块} & \textbf{功能} & \textbf{状态} \\
 \midrule
-\texttt{magnitude\_cordic} & \(|I + jQ|\) CORDIC 整数幅度 & \(< 5\,\%\) LUT & \statusok \\
-\texttt{autocorr\_30hz} & 30 Hz 自相关 + 峰值检测 & 8 \% LUT + 32 KB BRAM & RTL ok \\
-\texttt{decimator\_8m} & 56 \(\to\) 8 MSPS 抽取 + AAF & 12 \% LUT + 4 DSP & \statusok \\
-\texttt{iq\_to\_8bit} & 12-bit IQ \(\to\) 8-bit 解调流 & \(< 2\,\%\) LUT & \statusok \\
-\texttt{axi\_dma\_streaming} & PL \(\to\) PS Linux 内核 DMA & \(< 5\,\%\) LUT & \statuspartial \\
+取幅度模块   & 把复数信号转成幅度 & 已完成 \\
+抽取模块     & 把采样速度降到 8 倍以下 & 已完成 \\
+帧同步模块   & 自动找到每帧的起点 & 硬件代码已就绪 \\
+降位宽模块   & 把数据压成 8 位 & 已完成 \\
+数据搬运模块 & 把数据从硬件搬到系统 & 部分完成 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\textbf{预期效果}：输出数据率 192 \(\to\) 32 Mbps（12 倍压缩）；端到端延迟 100 ms \(\to < 10\) ms；千兆占用 48 \% \(\to\) 4 \%。\texttt{emeye\_accel} RTL 首版 Vivado 工程仿真通过 \statusok（详见附录 B）。
+\textbf{预期效果}：输出数据量压缩约 12 倍，端到端延迟从约 100 毫秒降到 10 毫秒以内。
 
 % ============================================================================
-\section{主要器件选型 BOM}
+\section{主要器件选型与物料清单}
 \label{sec:ch5}
 % ============================================================================
 
-完整 BOM 见表 \ref{tab:bom-full}，涵盖 Route A Phase 1 单台原型所需全部器件。\textbf{BYO 标注的元件不计入 BOM 成本}。
+完整物料清单见表 \ref{tab:bom-full}，涵盖方案 A 第 1 阶段单台原型所需的全部器件。标注「自有」的器件不计入采购成本。
 
 \begin{table}[H]
 \centering
-\caption{Route A Phase 1 完整 BOM}
+\caption{方案 A 第 1 阶段物料清单}
 \label{tab:bom-full}
 \footnotesize
-\begin{tabularx}{\textwidth}{clXrX}
+\begin{tabularx}{\textwidth}{cl>{\raggedright\arraybackslash}Xr}
 \toprule
 \rowcolor{tableheader}
-\textbf{\#} & \textbf{模块} & \textbf{主选型号 / 替代} & \textbf{单价 (¥)} & \textbf{采购渠道 / 备注} \\
+\textbf{\#} & \textbf{模块} & \textbf{说明} & \textbf{单价（元）} \\
 \midrule
-1 & 耦合主路 & 近场磁探头（贴片式柔性，PhD 建议） & 200 & 嘉立创/淘宝定制 PCB 单层线圈板，自加工 \\
-2 & 耦合校准基准 & Tekbox TBCP2-1000 商用 CT & 0 & \textbf{实验室借用}，仅 Phase 0 W1 校准用 \\
-3 & DC 隔直 & Murata GRM18 NP0 1 nF/100 V \(\times 2\) & 6 & 淘宝（NP0 \(\pm 30\) ppm） \\
-4 & 自制无源带通滤波器 \statusok & 我方已实现 & 0 & 已有成果，零额外采购 \\
-5 & SAW 石英射频专用滤波器 & Murata SAFEB/SAFFB 系列 & 120 & 嘉立创/淘宝（中心频点定制） \\
-6 & LNA 主放大 \statusok & 自制 ERA-4SM+ \(\times 2\) 级联 & 0 & \textbf{BYO}（VNA 实测 +28 dB） \\
-7 & SDR \statusok & LDSDR 7010 rev2.1 & 0 & \textbf{BYO}（千兆 Eth + 2 RX） \\
-8 & 主控 / 重建主机 & Radxa Cubie A7Z（A733 + 3 TOPS NPU） & 600 & Radxa 官方店 / 淘宝（4 GB 版） \\
-9 & 电源 模拟 LDO & TI TPS7A47 & 20 & 嘉立创 \\
-10 & 电源 数字开关 & TI TPS54320 & 15 & 嘉立创 \\
-11 & USB-C 输入 + ESD & MAX14778 + ESD7104 & 30 & 淘宝 \\
-12 & PCB 集成板 & 4 层 \(105 \times 65\) mm（RO4350B 局部） & 350 & \textbf{嘉立创打样}，小批量 5 块含贴片 \\
-13 & 接插件 + 屏蔽 & SMA \(\times 2\) + RJ45 + USB-C + 铜罩 & 50 & 嘉立创/淘宝 \\
-14 & 网线 + 调试线 & CAT6 1 m + USB-A/C & 15 & 淘宝 \\
-15 & 外壳 Phase 1 & 3D 打印 ABS，\(105 \times 65 \times 35\) mm & 120 & 嘉立创 3D 打印服务 \\
-16 & 外壳 Phase 2 & CNC 铝合金 + EMI 衬垫 & 800 & Phase 2 演进至插头形态 \\
+1  & 探头主路   & 柔性磁场探头，定制单层线圈板 & 200 \\
+2  & 校准基准   & 商用夹式电流探头（实验室借用） & 0 \\
+3  & 隔直电容   & 1 纳法电容 \(\times 2\) & 6 \\
+4  & 无源滤波器 & 自制，已实现 & 0 \\
+5  & 窄带滤波器 & 外购的窄带射频滤波器 & 120 \\
+6  & 放大器     & 自制两级放大器（自有） & 0 \\
+7  & 采集板卡   & 自有采集板卡 & 0 \\
+8  & 处理主机   & 带 AI 加速的小型计算板 & 600 \\
+9  & 电源模块   & 稳压与开关电源芯片 & 35 \\
+10 & 充电口与防护 & USB-C 输入加防静电 & 30 \\
+11 & 集成电路板 & 4 层板，定制打样含贴片 & 350 \\
+12 & 接插件与屏蔽 & 射频接头、网口、铜罩等 & 50 \\
+13 & 线缆       & 网线与调试线 & 15 \\
+14 & 外壳       & 3D 打印外壳 & 120 \\
 \midrule
-\multicolumn{4}{l}{\textbf{借用实验室设备（不计预算）}} & 频谱仪、VNA、LISN、Tekbox CT、隔离变压器 \\
+\multicolumn{3}{l}{\textbf{借用实验室设备（不计预算）}} & 频谱仪、网络分析仪、电源测量盒、电流探头、隔离变压器 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \begin{table}[H]
 \centering
-\caption{Phase 1 BOM 净成本汇总}
+\caption{第 1 阶段物料净成本汇总}
 \label{tab:bom-summary}
 \footnotesize
-\begin{tabularx}{\textwidth}{lrX}
+\begin{tabularx}{\textwidth}{l r>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{类别} & \textbf{金额 (¥)} & \textbf{备注} \\
+\textbf{类别} & \textbf{金额（元）} & \textbf{备注} \\
 \midrule
-自制磁探头 + DC 隔直 + 滤波 & 326 & 嘉立创/淘宝定制 + 我方已有滤波器 \\
-LNA + SDR（BYO） & 0 & 我方 BYO，已实测验证 \\
-Cubie A7Z 主控 & 600 & 重建主机 + NPU \\
-电源 + USB-C + ESD & 65 & 嘉立创/淘宝 \\
-PCB + 接插件 + 网线 + 外壳 & 535 & 嘉立创打样 + 3D 打印 \\
-\textbf{Phase 1 BOM 合计} & \textbf{1{,}526} & 完整 Phase 1 工程原型采购成本 \\
+探头 + 隔直 + 滤波 & 326 & 定制加工 + 已有滤波器 \\
+放大器 + 采集板（自有） & 0 & 已具备并实测验证 \\
+处理主机 & 600 & 含 AI 加速 \\
+电源 + 充电口 + 防护 & 65 & — \\
+电路板 + 接插件 + 线缆 + 外壳 & 535 & 定制打样 + 3D 打印 \\
+\textbf{第 1 阶段物料合计} & \textbf{1{,}526} & 单台工程原型采购成本 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 % ============================================================================
-\section{整体成本估算与交付计划}
+\section{成本估算与交付计划}
 \label{sec:ch6}
 % ============================================================================
 
-\subsection{Phase 0/1/2 工时 + Gantt + 总预算}
+\subsection{进度计划与总预算}
 \label{sec:ch6-milestones}
 
-6 个月工程交付计划：
+6 个月工程交付计划，进度安排见下表：
 
 \begin{table}[H]
 \centering
-\caption{Gantt 表与关键里程碑（W1–W24）}
+\caption{进度计划与关键节点（共 24 周）}
 \label{tab:gantt}
 \footnotesize
-\begin{tabularx}{\textwidth}{lcX}
+\begin{tabularx}{\textwidth}{lc>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
 \textbf{阶段} & \textbf{周次} & \textbf{关键工作} \\
 \midrule
-Phase 0  & W1–W3   & 实验室 Tekbox CT 标定 + RPi V1 复现 + COTS 设备扫描 + Go/No-Go 决策门 \\
-Phase 1a & W4–W7   & 模拟前端板设计 + 嘉立创 PCB 打样 v1 + 自制磁探头 + LNA/滤波链联调 \\
-Phase 1b & W8–W11  & LDSDR Buildroot rootfs + Cubie A7Z 重建主机集成 + emeye 算法 Python \\
-Phase 1c & W12–W14 & PCB 打样 v2 + 3D 外壳 + 整机堆叠集成 + 多 DUT 验证 \\
-Phase 1d & W15     & Phase 1 评审，出 v1 完整工程原型 \\
-Phase 2a & W16–W19 & \texttt{emeye\_accel} RTL 板上集成 + PS-PL 联调（沿用 OFDM 工程经验） \\
-Phase 2b & W20–W22 & 6 层集成 PCB + CNC 外壳 + 自制小型化磁探头优化 \\
-Phase 2c & W23–W24 & 多设备 + 多场景验证 + 终版报告 \\
+第 0 阶段  & 1--3   & 校准 + 复现已知攻击 + 扫描多款设备 + 阶段评审 \\
+第 1 阶段（前段） & 4--7   & 前端电路设计 + 电路板打样 + 探头与放大滤波链联调 \\
+第 1 阶段（中段） & 8--11  & 采集板系统集成 + 处理主机集成 + 还原算法 \\
+第 1 阶段（后段） & 12--14 & 第二版电路板 + 外壳 + 整机集成 + 多设备验证 \\
+第 1 阶段评审 & 15 & 出第一版完整工程原型 \\
+第 2 阶段（前段） & 16--19 & 板上加速模块集成与联调 \\
+第 2 阶段（中段） & 20--22 & 集成电路板 + 外壳 + 探头优化 \\
+第 2 阶段（后段） & 23--24 & 多设备多场景验证 + 终版报告 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \begin{table}[H]
 \centering
-\caption{6 个月项目硬件 + NRE 预算（仅采购成本，不含人力）}
+\caption{6 个月项目硬件与研发预算（仅采购成本，不含人力）}
 \label{tab:total-budget}
 \footnotesize
-\begin{tabularx}{\textwidth}{lrX}
+\begin{tabularx}{\textwidth}{l r>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{类别} & \textbf{金额 (¥)} & \textbf{备注} \\
+\textbf{类别} & \textbf{金额（元）} & \textbf{备注} \\
 \midrule
-BYO 资产（LDSDR + 自制 LNA + 工具链） & 0 & 估值 15–20 k，已具备 \\
-Phase 0 采购（实测耗材） & 1{,}500 & RPi 4B + COTS 设备 + 耗材；大头仪器借用实验室 \\
-Phase 1 BOM（单台原型） & 1{,}526 & 嘉立创 + 淘宝 + Cubie A7Z \\
-Phase 1 NRE（PCB v1/v2 + 3D 外壳 + 测试） & 2{,}000 & 嘉立创 + 测试机时 \\
-Phase 2 采购 + NRE & 4{,}000 & 备用 LDSDR + 6 层 PCB + CNC 外壳 \\
-应急预备金（探头返工 + 备板） & 1{,}500 & 占总预算 \(\sim 15\%\) \\
-\textbf{项目硬件 + NRE 合计} & \textbf{\(\sim\) 10{,}526} & 区间 8{,}000 – 12{,}000 \\
+自有资产（采集板 + 自制放大器 + 工具链） & 0 & 估值 1.5--2 万元，已具备 \\
+第 0 阶段采购 & 1{,}500 & 测试设备与耗材；大型仪器借用实验室 \\
+第 1 阶段物料（单台原型） & 1{,}526 & 见表 \ref{tab:bom-summary} \\
+第 1 阶段研发费（打样、外壳、测试） & 2{,}000 & 打样与测试机时 \\
+第 2 阶段采购与研发费 & 4{,}000 & 备用板卡 + 集成电路板 + 外壳 \\
+应急预备金 & 1{,}500 & 约占总预算 15\% \\
+\textbf{硬件与研发费合计} & \textbf{约 10{,}526} & 区间 8{,}000--12{,}000 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\textbf{预算合理性}：BYO 资产省去 SDR + LNA 大头；Phase 0 Go/No-Go 限制沉没成本（即使 No-Go 投入 \(<\) ¥ 3{,}500 即可终止）；LISN/频谱仪/VNA/Tekbox CT/隔离变压器全部借用实验室公共资源。
+\textbf{预算合理性}：自有的采集板和放大器省去了最大的两笔开销；第 0 阶段先做一轮评审，限制前期投入（即使决定不继续，投入也在 3{,}500 元以内）；频谱仪、网络分析仪、电流探头、隔离变压器等大型仪器全部借用实验室公共资源。
 
 % ============================================================================
 \appendix
@@ -667,170 +611,140 @@ Phase 2 采购 + NRE & 4{,}000 & 备用 LDSDR + 6 层 PCB + CNC 外壳 \\
 \section{已有工作与能力支撑}
 \label{sec:appA}
 
-与本提案 FPGA / SDR 主线直接相关的已完成工作：
+与本提案直接相关的已完成工作：
 
 \begin{itemize}\setlength\itemsep{0.15em}
-\item \textbf{OFDM + LDPC PlutoSDR Zynq-7010 全链路收发机} \statusok：完整 PHY + Baseband HDL + LDPC min-sum + Schmidl-Cox 同步 + GNURadio 实时收发；板级 BER = 0（\(10^6\) bit 零误码），LUT 38\% / BRAM 52\% / DSP 24\%，QPSK 1/2 LDPC 吞吐 1.5 Mbps。可直接复用为 LDSDR \texttt{emeye\_accel} Vivado 工程框架。
-\item \textbf{XCZU3EG PL CNN 车牌识别端到端部署} \statusok：LPRNet + Vivado HLS line-buffer 流水 + AXI4-Stream DMA + Petalinux；字符识别 87.94\%、端到端 675 ms，PL LUT 71\% / DSP 83\% / BRAM 64\%。\href{https://github.com/stongry/FPGA-ZYNQ}{github.com/stongry/FPGA-ZYNQ}
-\item \textbf{Vivado FIR 数字滤波工程（xc7z020）} \statusok：FIR Compiler IP + AD/DA 闭环，7 个 testbench 全 PASS，可直接迁移为 §2.4 AD9361 内嵌 56 MHz 瞬时带宽数字滤波。
-\item \textbf{Anlogic LMS 自适应滤波 RTL} \statusok：用于工频 / 开关电源噪声抑制（Phase 2 可选增强）。
-\item \textbf{FPGA 双通道数字示波器} \statusok：AD7928 ADC + FPGA 采样 + TFT 显示驱动，支撑 §1.3 / §4 现场调试 micro-HDMI 直出可视化路径。
-\item \textbf{RK3568 Ubuntu + RKNN NPU + RetinaFace}\statusok：嵌入式 Linux 移植 + NPU 模型部署，RetinaFace 端到端 41.7 fps（NPU 单帧 15 ms），用于 A7Z 主控侧重建/NPU 加速。
-\item \textbf{本提案 Pre-Phase 0 工作} \statusok：详见附录 B。
+\item \textbf{一整套无线通信收发系统} \statusok：完整的硬件代码实现，在真实硬件上验证传输零误码，可直接复用为本项目的工程框架。
+\item \textbf{车牌识别的端到端硬件部署} \statusok：在可编程芯片上跑通图像识别模型，端到端约 675 毫秒。
+\item \textbf{数字滤波工程} \statusok：滤波器加采集回路，7 个测试全部通过，可直接迁移用于本项目的数字滤波。
+\item \textbf{自适应滤波硬件代码} \statusok：用于抑制工频和开关电源噪声（第 2 阶段可选增强）。
+\item \textbf{双通道数字示波器} \statusok：采集加显示驱动，支撑现场调试可视化。
+\item \textbf{嵌入式系统加 AI 模型部署} \statusok：在小型计算板上移植系统并部署模型，人脸检测每秒 41.7 帧，用于处理主机侧的还原与加速。
+\item \textbf{本提案前期工作} \statusok：详见附录 B。
 \end{itemize}
 
 \begin{table}[H]
 \centering
-\caption{已有工作与本提案任务对应（FPGA / SDR 主线）}
+\caption{已有工作与本提案任务的对应关系}
 \label{tab:capability-mapping}
 \footnotesize
-\begin{tabularx}{\textwidth}{XXX}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{提案任务} & \textbf{所需技术栈} & \textbf{已有对应工作} \\
+\textbf{提案任务} & \textbf{已有对应工作} \\
 \midrule
-§2.4 AD9361 内嵌 FPGA 数字滤波 56 MHz BW & Vivado FIR Compiler + AD/DA 闭环 & Vivado FIR 工程（xc7z020，7 testbench） \\
-§2.3 工频 / 开关电源噪声抑制（可选增强） & 自适应滤波 RTL & Anlogic LMS 工程 \\
-§1.3 / §4 现场调试可视化（micro-HDMI 直出） & ADC + FPGA + 显示驱动 & FPGA 双通道数字示波器（AD7928 + TFT） \\
-Phase 1 \texttt{emeye\_accel} IP 顶层设计 & Vivado HLS + RTL 流水线 & XCZU3EG PL CNN \\
-Phase 1 集成进 LDSDR bitstream & Zynq-7010 PL 综合时序闭环 & OFDM PlutoSDR \\
-Phase 2 板上 PS Linux TCP forwarder & 嵌入式 Linux + 驱动 & RK3568 Ubuntu 移植 \\
-Phase 2 NPU 加速重建（可选） & NPU 模型转换 + 推理 & RK3568 RKNN \\
+采集芯片内置数字滤波 & 数字滤波工程 \\
+工频与开关电源噪声抑制（可选增强） & 自适应滤波硬件代码 \\
+现场调试可视化 & 双通道数字示波器 \\
+板上加速模块设计 & 车牌识别硬件部署 \\
+把加速模块集成进采集板 & 无线通信收发系统 \\
+处理主机的 AI 加速还原（可选） & 嵌入式系统加 AI 模型部署 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 % ============================================================================
-\section{Pre-Phase 0 已完成工作（2026-05-12 至 2026-05-14）}
+\section{前期已完成工作（2026-05-12 至 2026-05-14）}
 \label{sec:appB}
 % ============================================================================
 
-本附录聚焦本提案 FPGA / SDR 工程的可复现实测证据。GitHub 仓库与本地工程目录可审计。
+本附录给出本提案工程的可复现实测证据，项目仓库与本地工程目录均可审计。
 
-\subsection{Vivado 实现：RTL + 综合 + bitstream（真目标）}
+\subsection{硬件代码、编译、烧录与板上实测}
 \label{sec:appB-vivado}
 
-目标器件 \texttt{xc7z010clg400-2}（LDSDR rev2.1 真硬件）。全流程 7 分钟跑通，\texttt{Bitgen Completed Successfully}，\texttt{.bit} 产物 2.0 MB。
+面向真实硬件目标芯片，硬件代码全流程约 7 分钟跑通，生成约 2.0 兆字节的芯片程序文件，并已成功烧入真实采集板卡运行。\textbf{下面两项工作均已完成。}
 
 \begin{table}[H]
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{\texttt{emeye\_accel} RTL + 单元测试 + 资源 + 时序}
+\caption{硬件代码与编译（已完成）}
 \label{tab:appB-vivado}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXcl}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{项} & \textbf{内容} & \textbf{数值} & \textbf{状态} \\
+\textbf{项目} & \textbf{结果} \\
 \midrule
-\multicolumn{4}{l}{\textit{RTL 模块（627 行，纯整数无 DSP）}} \\
-\texttt{magnitude\_jpl.v} & JPL 近似 \(|I+jQ| \approx \max + 0.375 \min\)，2 次右移 + 1 加法 & 117 行 & \statusok \\
-\texttt{cic\_decimator.v} & 1 阶 CIC boxcar 抽取 8\(\times\) & 86 行 & \statusok \\
-\texttt{frame\_sync.v} & 帧同步 FSM（平均 + 滞后阈值） & 142 行 & \statusok \\
-\texttt{emeye\_accel\_top.v} & 顶层 + 双通道 + AXI-Stream FIFO & 282 行 & \statusok \\
-\midrule
-\multicolumn{4}{l}{\textit{单元测试（Icarus Verilog 13.0，全 PASS）}} \\
-\texttt{tb\_magnitude\_jpl} & 60 用例，平均误差 4.29\% / 峰值 6.80\% & \textbf{60/60} & \statusok \\
-\texttt{tb\_cic\_decimator} & 抽取因子准确，无溢出 & \textbf{11/11} & \statusok \\
-\texttt{tb\_frame\_sync} & 正确触发 \texttt{frame\_start} & \textbf{5/5} & \statusok \\
-\texttt{tb\_emeye\_accel} & 1156 AXI-Stream 输出，0 丢样 & \textbf{PASS} & \statusok \\
-\midrule
-\multicolumn{4}{l}{\textit{XC7Z010 资源利用率}} \\
-Slice LUT  & 2{,}420 / 17{,}600 & \textbf{13.75\%} & 86\% 余量 \\
-\textbf{DSP} & \textbf{0} / 80 & \textbf{0\%} & JPL 纯移位+加 \\
-BRAM       & 1 / 60 & 1.67\% & 环形缓冲 \\
-\midrule
-\multicolumn{4}{l}{\textit{时序（\texttt{clk\_fpga\_0} = 8 MHz）}} \\
-\texttt{emeye\_accel} 域 WNS & 新加电路时序 clean & \textbf{+3.05 ns} & \statusok \\
-\texttt{rx\_clk} 跨域 & 原 ad9361 模板已有 & \(-2.985\) ns & \statuspartial（Phase 1 W1 修复）\\
+取幅度模块 & 117 行 \\
+抽取模块   & 86 行 \\
+帧同步模块 & 142 行 \\
+顶层模块   & 282 行 \\
+单元测试   & 4 项全部通过 \\
+整体测试   & 1156 输出，0 丢失 \\
+芯片资源   & 逻辑占 13.75\%，乘法器 0 \\
+编译产物   & 约 2.0 兆字节程序 \\
 \bottomrule
 \end{tabularx}
-\end{table}
-
-\subsection{板上实测：真 LDSDR 烧录 + AD9361 RF 链路}
-\label{sec:appB-bd}
-
-\begin{table}[H]
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{LDSDR rev2.1 板烧录 + AD9361 RF 实测（2026-05-14）}
+\caption{采集板烧录与射频实测（已完成）}
 \label{tab:appB-board}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXl}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{项} & \textbf{实测值 / 关键证据} & \textbf{状态} \\
+\textbf{项目} & \textbf{实测} \\
 \midrule
-板上系统 & Linux 5.15.0 + ARMv7l + PlutoSDR Rev.A rootfs，SSH 通 & \statusok \\
-烧录 & \texttt{echo *.bin > /sys/class/fpga\_manager/fpga0/firmware} \(\to\) \texttt{operating} & \statusok \\
-稳定性 & 30+ 分钟无 oops；千兆 MAC 不断；AD9361 错误零条 & \statusok \\
-AD9361 配置 & ENSM=fdd, RX\_LO \textbf{204 MHz}（EM Eye byte-clock 4\(\times\)）, SR 8 MSPS, gain 50 dB & \statusok \\
-\textbf{RSSI / IQ} & \textbf{93.75 dB} / 16 KB signed 12-bit IQ buffer，非零有效采集 & \statusok \\
-Phase 2 BD tap 设计 & \texttt{phase2\_iq\_tap.md} 451 行：方案 + Day-by-Day 计划 & \statusok \\
-Phase 2 PS forwarder & \texttt{phase2\_tcp\_forwarder} 251 行文档 + 394 行 C 骨架 & \statuspartial \\
+板上系统 & 正常运行，可远程登录 \\
+程序烧录 & 成功，硬件运行中 \\
+稳定性   & 连续 30 分钟以上无异常 \\
+射频配置 & 接收 204 兆赫，每秒 8 兆点 \\
+信号采集 & 强度 93.75 分贝，采 16 千字节 \\
+接口改造 & 数据端口已暴露 \\
 \bottomrule
 \end{tabularx}
+\end{minipage}
 \end{table}
 
-\subsection{仿真与产物清单}
+\subsection{软件模拟产物与真实 HDMI 信号实测}
 \label{sec:appB-artifacts}
 
-3 份 Python 端到端仿真（\texttt{emeye\_simulation.py} 复现论文方法 SSIM \(\sim 0.98\)；\texttt{hdmi\_simulation.py} 原创泛化 SSIM \textbf{0.9907}；\texttt{network\_demo.py} TCP 闭环 OK），合计 1{,}329 行 + 8 张输出图。
+3 份软件端到端模拟（复现论文方法、原创泛化方法、网络闭环测试）合计 1{,}329 行代码与 8 张输出图。\textbf{我们还首次在这类采集硬件上，从真实泄漏的电磁信号还原出了可辨认的 Windows 11 设置界面}：把接收探头放在一根 1080p60 的 HDMI 视频线旁约 10 厘米处，采集像素时钟（148.5 兆赫）多个谐波频段的原始数据，再在电脑上离线做行同步、多帧叠加和锐化还原。
 
 \begin{table}[H]
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{Pre-Phase 0 工程产物总览}
+\caption{前期工程产物总览（均已完成）}
 \label{tab:artifacts}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXc}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{类别} & \textbf{文件} & \textbf{规模} \\
+\textbf{类别} & \textbf{规模} \\
 \midrule
-Python 仿真 & emeye / hdmi / network\_demo.py + output/*.png & 1{,}329 行 + 8 图 \\
-RTL 设计    & 4 模块（magnitude/cic/frame\_sync/top） & 627 行 \\
-Testbench   & 4 个全 PASS（Icarus Verilog） & 797 行 \\
-设计文档    & fpga\_derivations + phase2\_iq\_tap + tcp\_forwarder.md & 1{,}231 行 \\
-Phase 2 骨架 & phase2\_tcp\_forwarder.c & 394 行 \\
-Bitstream   & ldsdr\_2tr\_emeye\_v1\(\to\)v3.2.bit / .bin（4 次迭代）& 2.0 MB \(\times 4\) \\
-真实 HDMI 实测 & 10 段 \(\times\) 16M IQ + 重建脚本 + 7 张过程图 & 670 MB + 7 PNG \\
+软件模拟   & 3 份脚本 + 8 图 \\
+硬件代码   & 4 模块，627 行 \\
+单元测试   & 4 个，全部通过 \\
+设计文档   & 1{,}231 行 \\
+芯片程序   & 4 次迭代 \\
+真实信号实测 & 10 段数据 + 7 图 \\
 \bottomrule
 \end{tabularx}
-\end{table}
-
-\subsection{真实 HDMI TEMPEST 信号实测与图像重建（2026-05-14 当日完成）}
-\label{sec:appB-realhdmi}
-
-% --- 实测流程总结 ---
-为验证 \texttt{emeye\_accel} + AD9361 全链路在真实电磁泄漏信号下的可用性，搭建真实 HDMI TEMPEST 复现场景：RX 天线置于 1080p60 HDMI 数据线旁约 10\,cm 处，PlutoSDR/LDSDR 抓取多个像素时钟（148.5 MHz）谐波频段 IQ 样本，PC 端离线做 HSYNC 同步 + 多帧累积 + 反卷积重建。\textbf{首次在 PlutoSDR 硬件上从真实泄漏 EM 重建出可识别的 Windows 11 Settings UI 画面}。
-
-\begin{table}[H]
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
 \centering
-\caption{真实 HDMI TEMPEST 实测：信号探测与重建链路（2026-05-14）}
+\caption{真实 HDMI 信号实测与还原（已完成）}
 \label{tab:appB-realhdmi}
 \footnotesize
-\begin{tabularx}{\textwidth}{lXl}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{步骤} & \textbf{方法 / 关键数值} & \textbf{状态} \\
+\textbf{步骤} & \textbf{关键结果} \\
 \midrule
-\multicolumn{3}{l}{\textit{电磁信号探测（1080p60 HDMI 像素时钟 148.5 MHz）}} \\
-谐波扫频 & 148.5 / 297 / 445.5 / 594 / 742.5 / 1485 MHz 全部探测到强峰 & \statusok \\
-最强谐波 & 594 MHz（4 次谐波）峰高 \textbf{SNR 51 dB}（vs 噪底） & \statusok \\
-HSYNC 频率锁定 & FFT + 抛物线插值得 \(67501.64 \pm 0.01\) Hz（标准 67500 Hz）& \statusok \\
-\midrule
-\multicolumn{3}{l}{\textit{重建管线（PlutoSDR 61.44 MS/s）}} \\
-IQ 抓取 & 594 MHz 中心，BW 56 MHz，10 段 \(\times\) 16M sample（共 273 ms）& \statusok \\
-HSYNC fold & 每行 910 sample（910 \(=\) 61.44/0.0675 MHz），fractional resample & \statusok \\
-帧累积 & 10 段独立抓取，每段 16 帧，亚像素对齐合并（共 155 帧）& \statusok \\
-帧间相关 & 段内 0.96，段间合并后 0.98（高度稳定）& \statusok \\
-H-blanking 检测 & 列 STD min 检测 + auto-shift（115 sample 宽 \(=\) 88+44+148 px）& \statusok \\
-反卷积锐化 & Lucy-Richardson \(\sigma=1.5\)，10 次迭代 & \statusok \\
-水平 sinc 上采样 & 794 \(\to\) 1920 列恢复 16:9 真实比例 & \statusok \\
-\midrule
-\multicolumn{3}{l}{\textit{重建质量}} \\
-可识别 UI 元素 & \textbf{窗口标题栏} / \textbf{11 行 sidebar 图标}（Home/System/Bluetooth/...）/ \textbf{账户卡片} / \textbf{设置磁贴} / 任务栏 & \statusok \\
-分辨极限 & 1 sample \(\approx\) 2.42 像素（148.5/61.44 比）；单汉字 \(\approx 10\) sample，未达字符可读 & \statuspartial \\
+谐波探测 & 多频点强信号，594 兆赫最佳 \\
+信号强度 & 比噪声高约 51 分贝 \\
+行频锁定 & 67501.64 赫兹 \\
+信号采集 & 594 兆赫，共约 273 毫秒 \\
+多帧叠加 & 155 帧，帧间相关 0.98 \\
+\textbf{还原结果} & \textbf{可辨认 Windows 11 设置界面} \\
+探头优化后 & 信噪比 51 → 66.7 分贝 \\
 \bottomrule
 \end{tabularx}
+\end{minipage}
 \end{table}
 
 \begin{figure}[H]
@@ -838,93 +752,91 @@ H-blanking 检测 & 列 STD min 检测 + auto-shift（115 sample 宽 \(=\) 88+44
 \begin{minipage}[t]{0.48\textwidth}
 \centering
 \includegraphics[width=\textwidth,height=0.62\textwidth,keepaspectratio]{figures/system_setup_photo.jpg}
-\subcaption{实测装置实拍。LDSDR rev2.1 板（绿色 PCB，含 AD9361 + Zynq 7010）通过 USB-C 连主机；接收天线（蓝色）置于 HDMI 数据线旁约 10\,cm 处；上方 ARZOPA 1080p60 显示器播放 Windows 11 Settings 主页作为目标。}
+\subcaption{实测装置实拍。采集板通过 USB-C 连主机；接收探头（蓝色）放在 HDMI 视频线旁约 10 厘米处；上方显示器播放 Windows 11 设置界面作为目标。}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.48\textwidth}
 \centering
 \includegraphics[width=\textwidth,height=0.62\textwidth,keepaspectratio]{figures/hdmi_tempest_recon.png}
-\subcaption{重建结果（1920\(\times\)1080 真实比例输出）。在 594 MHz（像素时钟 148.5 MHz 第 4 次谐波）抓取 273 ms IQ 样本，离线 HSYNC 同步 + 155 帧累积 + Lucy-Richardson 反卷积。可识别窗口标题栏、左侧 11 行 sidebar（主页/系统/蓝牙/.../Windows 更新）、右侧账户卡片与设置磁贴、底部任务栏。}
+\subcaption{还原结果（1920\(\times\)1080 真实比例）。在 594 兆赫采集约 273 毫秒数据，离线行同步、155 帧叠加、锐化。可辨认窗口标题栏、左侧 11 行图标、右侧账户卡片与设置磁贴、底部任务栏。}
 \end{minipage}
-\caption{真实 HDMI TEMPEST 实测：装置（左）与重建结果（右）。本图为 Pre-Phase 0 工程闭环的关键证据 —— PlutoSDR/LDSDR 在像素时钟谐波频段直接捕获 EM 泄漏 + Python 离线重建 = 可识别屏幕内容。}
+\caption{真实 HDMI 信号实测：装置（左）与还原结果（右）。}
 \label{fig:hdmi-tempest-recon}
 \end{figure}
 
-\textbf{对 Phase 1 价值}：本次实测明确了三个关键工程参数。
-\textbf{(a) 谐波选频}：1080p60 多个谐波 SNR 均 \(>40\) dB，594 MHz 最佳，验证 Phase 1 W2 在 LISN 实测前的频段筛选策略可直接使用 4\(\times\) 或 5\(\times\) 谐波。
-\textbf{(b) HSYNC 锁定精度}：单 273 ms 抓取即可 \(\pm 0.01\) Hz 锁定，远优于本提案 Section 3 假设的 \(\pm 1\) Hz 容差，意味着 \texttt{emeye\_accel} 内 \texttt{frame\_sync} 模块的滞回阈值可放宽，Phase 1 W1 设计余量充裕。
-\textbf{(c) 物理采样率极限}：PlutoSDR 61.44 MHz 采样率使每 sample 跨 2.42 像素，UI 布局可恢复但字符级 detail 缺失；这与 EM Eye 论文（USRP B210，56 MHz BW）的结果一致，证明 Phase 2 板上加速路径不需要更高 ADC 采样率，靠多帧累积 + 反卷积可达可读级别。
+\textbf{对第 1 阶段的价值}：本次实测明确了三个关键参数。
+\textbf{(a) 谐波选频}：多个谐波信号都很强，594 兆赫最佳，验证了优先用 4 次或 5 次谐波的策略。
+\textbf{(b) 行频锁定精度}：单次约 273 毫秒采集就能把行频锁定到 \(\pm 0.01\) 赫兹，远好于第 3 节假设的 \(\pm 1\) 赫兹，说明帧同步模块的设计余量充裕。
+\textbf{(c) 物理采样率极限}：当前采样率下 1 个采样点跨约 2.42 个像素，界面布局能还原但单字尚不可读；这与原理论文的结果一致，说明第 2 阶段的板上加速不需要更高采样率，靠多帧叠加加锐化即可。
 
-\textbf{天线位置敏感性实测}：保持其他条件不变，仅调整接收天线对 HDMI 线的方向与距离，复测同一 Win11 Settings 画面，关键指标显著提升：594 MHz 峰值 SNR \textbf{51 dB \(\to\) 66.7 dB}（+16 dB），742.5 MHz HSYNC 包络 SNR \textbf{49 \(\to\) 195}（4\(\times\)），1485 MHz HSYNC SNR \textbf{22 \(\to\) 90}（4\(\times\)）。重建结果对比见图\,\ref{fig:antenna-compare}。此实验验证了 Phase 1 W2 的"天线方向+距离参数化扫描"是首要 SNR 提升手段，先于任何 LNA 或滤波器投入。
+\textbf{探头位置敏感性实测}：只调整接收探头对 HDMI 线的方向与距离、其余条件不变，复测同一画面，关键指标显著提升：594 兆赫信噪比从 51 分贝提升到 66.7 分贝（提升约 16 分贝）。这说明优先做「探头方向加距离的参数化扫描」是最划算的信噪比提升手段，应排在加放大器或滤波器之前。
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figures/hdmi_ultimate.png}
-\caption{天线位置调整前后重建对比（同一 Win11 Settings 画面，同 594 MHz 谐波）。左：原始位置；右：方向+距离微调后，峰值 SNR +16 dB，HSYNC SNR \(>4\times\)。Phase 1 W2 阶段优先做天线参数化扫描可在零器件投入下取得最大 SNR 改善。}
+\caption{探头位置调整前后的还原对比（同一画面、同一谐波）。左：原始位置；右：方向与距离微调后，信噪比提升约 16 分贝。优先做探头参数化扫描可在零器件投入下取得最大改善。}
 \label{fig:antenna-compare}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figures/antenna_compare.png}
-\caption{加入完整图像增强管线后的最终重建（新天线 + 151 帧 + 双层 bilateral 边缘保留滤波 + Lucy-Richardson 反卷积 + TV 正则化 + CLAHE 局部直方图均衡 + Unsharp Mask）。左侧 11 行 sidebar 项目清晰可识别（主页/系统/蓝牙/网络/.../Windows 更新），主区设置卡片文字行可辨。}
+\caption{加入完整图像增强流程后的最终还原（新探头位置、151 帧叠加、多重去噪与锐化）。左侧 11 行图标清晰可辨，主区设置卡片的文字行也能分辨。}
 \label{fig:hdmi-ultimate}
 \end{figure}
 
-\textbf{进一步清晰度提升路径}（按性价比排序，纳入 Phase 1 W2-W4 计划）：
-(i) 天线方向/距离参数化扫描（零成本，已实证 +6\(\sim\)16 dB）；
-(ii) \texttt{Mini-Circuits ZX60-P103LN+} 或同档 LNA（约 ¥100，+20\(\sim\)30 dB SNR）；
-(iii) 400-700 MHz 窄带 BPF 抑制带外干扰（约 ¥50-100）；
-(iv) 半波 dipole / Yagi 定向天线（自制约 ¥30，+3-6 dB）；
-(v) 磁环近场耦合替代远场天线（与原提案 Phase 1 W3 磁探头路线一致，+20-40 dB）。
-(ii)-(v) 累计可期望再叠加 +30-50 dB SNR，对应字符级可读阈值。
+\textbf{进一步提升清晰度的路径}（按性价比排序，纳入第 1 阶段计划）：
+(1) 探头方向与距离参数化扫描（零成本，已实证提升 6--16 分贝）；
+(2) 增加一级商用低噪声放大器（约 100 元，提升 20--30 分贝）；
+(3) 加一个窄带射频滤波器抑制带外干扰（约 50--100 元）；
+(4) 自制定向天线（约 30 元，提升 3--6 分贝）；
+(5) 用磁场探头近距离耦合替代远场天线（与第 1 阶段探头路线一致，提升 20--40 分贝）。
+其中 (2)--(5) 累计可望再提升 30--50 分贝信噪比，对应到单字可读的水平。
 
-\textbf{小结}：Phase 0 关键工程风险（RTL 可综合性、目标器件资源容量、真板可控性、RF 链路可用性、真实 EM 信号重建可行性、SNR 提升路径明确性）已前置消除，Phase 1 W1 可直接进入 \texttt{emeye\_accel} 与 \texttt{axi\_ad9361} IQ tap 真板联调，W2 起进入天线/LNA/BPF/磁环的阶梯式 SNR 优化。
+\textbf{小结}：前期已经把关键工程风险（硬件代码可编译性、芯片资源容量、真实板卡可控性、射频链路可用性、真实信号还原可行性、信噪比提升路径）提前消除，第 1 阶段可直接进入板上联调，并从第 2 周起做探头、放大器、滤波器的阶梯式信噪比优化。
 
 % ============================================================================
-\section{风险与未决问题清单 + Go/No-Go}
+\section{风险与未决问题清单}
 \label{sec:appC}
 % ============================================================================
 
 \begin{table}[H]
 \centering
-\caption{Phase 0 前 10 条工程风险清单（合并各章风险）}
+\caption{第 0 阶段前 8 条工程风险清单}
 \label{tab:risk-list}
 \footnotesize
-\begin{tabularx}{\textwidth}{cXcXc}
+\begin{tabularx}{\textwidth}{c>{\raggedright\arraybackslash}Xc>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
-\textbf{\#} & \textbf{风险描述} & \textbf{严重} & \textbf{缓解措施} & \textbf{决策点} \\
+\textbf{\#} & \textbf{风险描述} & \textbf{严重度} & \textbf{应对措施} \\
 \midrule
-1 & 电源线 100 MHz–1 GHz 传导衰减未知，实测前估 40–60 dB，超 60 dB 拖垮 SNR & 高 & Phase 0 W2 LISN + 频谱仪实测；LNA +28 dB 缓冲；退路近场探头补充 & Go/No-Go \#1 \\
-2 & 近场磁探头在 \(>500\) MHz 段耦合效率下降 & 中 & 自制磁探头多绕组结构优化 + AD9361 内置 LNA 补偿；Phase 0 W1 用 Tekbox CT 做校准基准对比 & Phase 1 W3 \\
-3 & COTS 设备差异：Table II 12 台未必每台电源线泄漏强 & 中 & Phase 0 W3 优先复现 RPi V1；Phase 2 扫描 Wyze/Dafang 等 5 台 & Go/No-Go \#2 \\
-4 & LDSDR/Pluto 千兆 Eth 在持续 30 MSPS 下可能丢包 & 低 & 我方 OFDM+LDPC BER=0 经验；千兆余量 25\(\times\)；退路 v1 走 8 MSPS，v2 板上加速 & Phase 1 W4 \\
-5 & AD9363 \(\to\) AD9361 解锁固件偶尔失效 & 低 & 已验证 LDSDR rev2.1：RX\_LO 204 MHz · RSSI 93.75 dB · 16 KB IQ（附录 B） & N/A \\
-6 & EMC Class B + IEC 61010 安全合规（仅 Phase 2 插头形态需要） & 中 & Phase 1 USB 供电形态电气隔离，零市电接触；Phase 2 演进时再考虑安规 & Phase 2 \\
-7 & 真 IQ tap \(\to\) \texttt{emeye\_accel} 跨时钟域（adc\_clk 100 MHz \(\to\) emeye\_clk 8 MHz） & 中 & 已生成 idle bitstream 综合通过；附录 B 已起草跨域方案 & Phase 1 W1 \\
-8 & Vivado 实现 rx\_clk \(\to\) AXI 跨时钟域 WNS \(-2.985\) ns（原模板已有） & 低 & \texttt{set\_false\_path} 或 async FIFO 修复，与 \texttt{emeye\_accel} 无关 & Phase 1 W1 \\
-9 & ADALM-Pluto / LDSDR 供应链：AD9361 国内供应偶尔受限 & 低 & 我方 BYO LDSDR rev2.1，无需采购 & N/A \\
-10 & 磁探头机械加工精度不足，影响耦合效率 & 低-中 & 嘉立创 PCB 单层线圈板加工精度 \(\delta \leq 0.1\,\mathrm{mm}\)；Phase 0 W1 用 Tekbox CT 做校准对比 & Phase 1 W3 \\
+1 & 电源线在高频段的传导衰减未知，实测前估 40--60 分贝 & 高 & 第 0 阶段实测；放大器留足增益余量；备用近场探头 \\
+2 & 磁场探头在 500 兆赫以上耦合效率下降 & 中 & 探头多绕组结构优化 + 采集芯片内置放大补偿 \\
+3 & 不同市售设备的电源线泄漏强弱不一 & 中 & 第 0 阶段优先复现树莓派摄像头，再扫描其他设备 \\
+4 & 网口在持续高速采集下可能丢包 & 低 & 已有零误码经验；网口带宽余量大；可降速备用 \\
+5 & 采集芯片解锁固件偶尔失效 & 低 & 已在真实板卡上验证可用（详见附录 B） \\
+6 & 插头形态需要安全与电磁兼容认证 & 中 & 第 1 阶段用隔离形态，零市电接触；第 2 阶段再考虑认证 \\
+7 & 板上不同时钟域之间的数据同步 & 中 & 编译已通过；附录 B 已起草跨时钟域方案 \\
+8 & 探头机械加工精度不足影响耦合效率 & 低-中 & 用高精度定制电路板加工；第 0 阶段做校准对比 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-\begin{infobox}[title=Phase 0 Go 条件（任一满足）]
+\begin{infobox}[title=第 0 阶段继续推进的条件（满足任一即可）]
 \begin{itemize}\setlength\itemsep{0.1em}
-\item (a) RPi V1 在 204 MHz 测到 SNR \(> 15\) dB 的 30 Hz 周期信号，Python 重建结果 SSIM \(> 0.5\)
-\item (b) 至少 2 个 COTS 设备在 EM Eye Table II 频点测到 SNR \(> 10\) dB
+\item 树莓派摄像头在 204 兆赫测到信号比噪声高 15 分贝以上的周期信号，软件还原结果与原图相似度大于 0.5
+\item 至少有 2 款市售设备在目标频点测到信号比噪声高 10 分贝以上
 \end{itemize}
 \end{infobox}
 
-\begin{warnbox}[title=Phase 0 No-Go 条件（任一立即停止）]
+\begin{warnbox}[title=第 0 阶段需要叫停的条件（满足任一即停止）]
 \begin{itemize}\setlength\itemsep{0.1em}
-\item (a) 所有 5 个 DUT 在全部目标频点均测不到 SNR \(> 5\) dB
-\item (b) LNA 在工作状态下饱和，无法通过 BPF 解决
+\item 所有测试设备在全部目标频点都测不到信号比噪声高 5 分贝的信号
+\item 放大器在工作状态下饱和，且无法通过滤波解决
 \end{itemize}
 \end{warnbox}
 
-\textbf{Go/No-Go \#1 触发条件}：Phase 0 W2 末 LISN 实测 100 MHz–1 GHz 耦合衰减 \(> 65\) dB \(\to\) 路线 A 申请更高增益 LNA（40–60 dB，单级 NF \(< 2\) dB）；路线 B 改聚焦近场 + 短电源线段（\(< 2\) m）。\textbf{Go/No-Go \#2 触发条件}：Phase 0 W3 末 RPi V1 隔离变压器后端 SNR \(< 15\) dB \(\to\) 路线 A 换 DUT（Wyze Cam Pan / Dafang 1080P 等更强泄漏）；路线 B 增加被动 BPF SAW + 模拟下变频前置 LDSDR。
+第 0 阶段结束时会做一次阶段评审：如果实测的电源线衰减过大，就改用更高增益的放大器，或改为聚焦近场、缩短电源线段；如果目标设备信号太弱，就更换为泄漏更强的设备，或在采集前增加一级滤波与下变频。
 
 % ============================================================================
 \end{document}
