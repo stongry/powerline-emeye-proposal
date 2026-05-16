@@ -231,11 +231,82 @@
 预算上，需要新购置的硬件总共约 1.05 万元。已有的设备（估值 1.5 至 2 万元）直接复用，不计入这笔费用；频谱仪等大型仪器向实验室借用。以上都不含人力成本。
 
 % ============================================================================
-\section*{前期已完成工作速览}
-\addcontentsline{toc}{section}{前期已完成工作速览}
+\section*{已完成的核心成果：真实 HDMI 屏幕画面重建}
+\addcontentsline{toc}{section}{已完成的核心成果：真实 HDMI 屏幕画面重建}
 % ============================================================================
 
-合作导师提出的核心可行性问题——「能不能用无线电采集设备捕获并还原 HDMI 屏幕内容」——本提案已经推进了 70\% 以上：软件模拟跑通、硬件电路代码编译并烧入了真实的采集板卡、射频接收实测也都完成了；剩下的 30\% 是采集真实显示设备的电磁信号并还原出屏幕图像（第 0 阶段第 2 周完成）。表 \ref{tab:prephase0-summary} 列出了已经做出来、可以复现的成果。
+合作导师提出的核心可行性问题——「能不能用无线电采集设备捕获并还原 HDMI 屏幕内容」——\textbf{我们已经做到了}。在真实的采集板卡上，我们从一根正常工作的 HDMI 视频线泄漏出的电磁信号里，成功还原出了屏幕上正在显示的画面：把接收探头放在 1080p60 的 HDMI 视频线旁约 10 厘米处，采集像素时钟（148.5 兆赫）多个谐波频段的原始数据，再在电脑上离线做行同步、多帧叠加和锐化还原。
+
+目前最清楚的一次结果是一张演示文稿的「议程」幻灯片（图 \ref{fig:hdmi-recon-agenda}）：幻灯片标题和其下五行中文要点都能直接读出来。这说明从「采集电磁泄漏」到「还原出可读屏幕内容」的整条链路已经在真实硬件上跑通——这正是本提案把攻击面从 HDMI 线泄漏推广到电源线泄漏的现实基础。表 \ref{tab:appB-realhdmi} 给出其中一次完整实测（Windows 11 设置界面）的关键数据。
+
+\begin{table}[H]
+\centering
+\caption{真实 HDMI 信号实测与还原（已完成）}
+\label{tab:appB-realhdmi}
+\footnotesize
+\begin{tabularx}{0.72\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+\rowcolor{tableheader}
+\textbf{步骤} & \textbf{关键结果} \\
+\midrule
+谐波探测 & 多频点强信号，594 兆赫最佳 \\
+信号强度 & 比噪声高约 51 分贝 \\
+行频锁定 & 67501.64 赫兹 \\
+信号采集 & 594 兆赫，共约 273 毫秒 \\
+多帧叠加 & 155 帧，帧间相关 0.98 \\
+\textbf{还原结果} & \textbf{可辨认 Windows 11 设置界面} \\
+探头优化后 & 信噪比 51 → 66.7 分贝 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth,height=0.62\textwidth,keepaspectratio]{figures/system_setup_photo.jpg}
+\subcaption{实测装置实拍。采集板通过 USB-C 连主机；接收探头（蓝色）放在 HDMI 视频线旁约 10 厘米处；上方显示器播放 Windows 11 设置界面作为目标。}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\includegraphics[width=\textwidth,height=0.62\textwidth,keepaspectratio]{figures/hdmi_tempest_recon.png}
+\subcaption{还原结果（1920\(\times\)1080 真实比例）。在 594 兆赫采集约 273 毫秒数据，离线行同步、155 帧叠加、锐化。可辨认窗口标题栏、左侧 11 行图标、右侧账户卡片与设置磁贴、底部任务栏。}
+\end{minipage}
+\caption{真实 HDMI 信号实测：装置（左）与还原结果（右）。}
+\label{fig:hdmi-recon-setup}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/hdmi_recon_agenda.png}
+\caption{另一次实测中还原出的演示文稿「议程」幻灯片：标题与其下五行中文要点均清晰可辨，是目前最清楚的一次屏幕内容还原结果。}
+\label{fig:hdmi-recon-agenda}
+\end{figure}
+
+\textbf{对第 1 阶段的价值}：本次实测明确了三个关键参数。
+\textbf{(a) 谐波选频}：多个谐波信号都很强，594 兆赫最佳，验证了优先用 4 次或 5 次谐波的策略。
+\textbf{(b) 行频锁定精度}：单次约 273 毫秒采集就能把行频锁定到 \(\pm 0.01\) 赫兹，远好于设计时假设的 \(\pm 1\) 赫兹，说明帧同步模块的设计余量充裕。
+\textbf{(c) 物理采样率极限}：当前采样率下 1 个采样点跨约 2.42 个像素，界面布局能还原但单字尚不可读；这与原理论文的结果一致，说明第 2 阶段的板上加速不需要更高采样率，靠多帧叠加加锐化即可。
+
+\textbf{探头位置敏感性实测}：只调整接收探头对 HDMI 线的方向与距离、其余条件不变，复测同一画面，关键指标显著提升：594 兆赫信噪比从 51 分贝提升到 66.7 分贝（提升约 16 分贝）。这说明优先做「探头方向加距离的参数化扫描」是最划算的信噪比提升手段，应排在加放大器或滤波器之前。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/antenna_compare.png}
+\caption{加入完整图像增强流程后的最终还原（新探头位置、151 帧叠加、多重去噪与锐化）。左侧 11 行图标清晰可辨，主区设置卡片的文字行也能分辨。}
+\label{fig:hdmi-recon-enhanced}
+\end{figure}
+
+\textbf{进一步提升清晰度的路径}（按性价比排序，纳入第 1 阶段计划）：
+(1) 探头方向与距离参数化扫描（零成本，已实证提升 6--16 分贝）；
+(2) 增加一级商用低噪声放大器（约 100 元，提升 20--30 分贝）；
+(3) 加一个窄带射频滤波器抑制带外干扰（约 50--100 元）；
+(4) 自制定向天线（约 30 元，提升 3--6 分贝）；
+(5) 用磁场探头近距离耦合替代远场天线（与第 1 阶段探头路线一致，提升 20--40 分贝）。
+其中 (2)--(5) 累计可望再提升 30--50 分贝信噪比，对应到单字可读的水平。
+
+\textbf{小结}：硬件代码可编译性、芯片资源容量、真实板卡可控性、射频链路可用性、真实信号还原可行性、信噪比提升路径——这些关键工程风险前期都已提前消除（硬件实现的细节见附录 B），第 1 阶段可直接进入板上联调，并从第 2 周起做探头、放大器、滤波器的阶梯式信噪比优化。
 
 % ============================================================================
 \section{总体形态、尺寸与系统框图}
@@ -699,18 +770,17 @@ EM Eye 攻击的原理论文里讲过：摄像头的数据线在传输高速数�
 \end{minipage}
 \end{table}
 
-\subsection{软件模拟产物与真实 HDMI 信号实测}
+\subsection{软件模拟与工程产物}
 \label{sec:appB-artifacts}
 
-3 份软件端到端模拟（复现论文方法、原创泛化方法、网络闭环测试）合计 1{,}329 行代码与 8 张输出图。\textbf{我们还首次在这类采集硬件上，从真实泄漏的电磁信号还原出了可辨认的 Windows 11 设置界面}：把接收探头放在一根 1080p60 的 HDMI 视频线旁约 10 厘米处，采集像素时钟（148.5 兆赫）多个谐波频段的原始数据，再在电脑上离线做行同步、多帧叠加和锐化还原。
+围绕本提案，前期完成了 3 份软件端到端模拟（复现论文方法、原创泛化方法、网络闭环测试），合计 1{,}329 行代码与 8 张输出图。下表汇总全部可复现的工程产物；真实 HDMI 信号的实测与图像还原结果见正文「已完成的核心成果」一节。
 
 \begin{table}[H]
-\begin{minipage}[t]{0.49\textwidth}
 \centering
 \caption{前期工程产物总览（均已完成）}
 \label{tab:artifacts}
 \footnotesize
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\begin{tabularx}{0.72\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
 \toprule
 \rowcolor{tableheader}
 \textbf{类别} & \textbf{规模} \\
@@ -723,77 +793,7 @@ EM Eye 攻击的原理论文里讲过：摄像头的数据线在传输高速数�
 真实信号实测 & 10 段数据 + 7 图 \\
 \bottomrule
 \end{tabularx}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.49\textwidth}
-\centering
-\caption{真实 HDMI 信号实测与还原（已完成）}
-\label{tab:appB-realhdmi}
-\footnotesize
-\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
-\toprule
-\rowcolor{tableheader}
-\textbf{步骤} & \textbf{关键结果} \\
-\midrule
-谐波探测 & 多频点强信号，594 兆赫最佳 \\
-信号强度 & 比噪声高约 51 分贝 \\
-行频锁定 & 67501.64 赫兹 \\
-信号采集 & 594 兆赫，共约 273 毫秒 \\
-多帧叠加 & 155 帧，帧间相关 0.98 \\
-\textbf{还原结果} & \textbf{可辨认 Windows 11 设置界面} \\
-探头优化后 & 信噪比 51 → 66.7 分贝 \\
-\bottomrule
-\end{tabularx}
-\end{minipage}
 \end{table}
-
-\begin{figure}[H]
-\centering
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\includegraphics[width=\textwidth,height=0.62\textwidth,keepaspectratio]{figures/system_setup_photo.jpg}
-\subcaption{实测装置实拍。采集板通过 USB-C 连主机；接收探头（蓝色）放在 HDMI 视频线旁约 10 厘米处；上方显示器播放 Windows 11 设置界面作为目标。}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.48\textwidth}
-\centering
-\includegraphics[width=\textwidth,height=0.62\textwidth,keepaspectratio]{figures/hdmi_tempest_recon.png}
-\subcaption{还原结果（1920\(\times\)1080 真实比例）。在 594 兆赫采集约 273 毫秒数据，离线行同步、155 帧叠加、锐化。可辨认窗口标题栏、左侧 11 行图标、右侧账户卡片与设置磁贴、底部任务栏。}
-\end{minipage}
-\caption{真实 HDMI 信号实测：装置（左）与还原结果（右）。}
-\label{fig:hdmi-tempest-recon}
-\end{figure}
-
-\textbf{对第 1 阶段的价值}：本次实测明确了三个关键参数。
-\textbf{(a) 谐波选频}：多个谐波信号都很强，594 兆赫最佳，验证了优先用 4 次或 5 次谐波的策略。
-\textbf{(b) 行频锁定精度}：单次约 273 毫秒采集就能把行频锁定到 \(\pm 0.01\) 赫兹，远好于第 3 节假设的 \(\pm 1\) 赫兹，说明帧同步模块的设计余量充裕。
-\textbf{(c) 物理采样率极限}：当前采样率下 1 个采样点跨约 2.42 个像素，界面布局能还原但单字尚不可读；这与原理论文的结果一致，说明第 2 阶段的板上加速不需要更高采样率，靠多帧叠加加锐化即可。
-
-\textbf{探头位置敏感性实测}：只调整接收探头对 HDMI 线的方向与距离、其余条件不变，复测同一画面，关键指标显著提升：594 兆赫信噪比从 51 分贝提升到 66.7 分贝（提升约 16 分贝）。这说明优先做「探头方向加距离的参数化扫描」是最划算的信噪比提升手段，应排在加放大器或滤波器之前。
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{figures/hdmi_ultimate.png}
-\caption{探头位置调整前后的还原对比（同一画面、同一谐波）。左：原始位置；右：方向与距离微调后，信噪比提升约 16 分贝。优先做探头参数化扫描可在零器件投入下取得最大改善。}
-\label{fig:antenna-compare}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{figures/antenna_compare.png}
-\caption{加入完整图像增强流程后的最终还原（新探头位置、151 帧叠加、多重去噪与锐化）。左侧 11 行图标清晰可辨，主区设置卡片的文字行也能分辨。}
-\label{fig:hdmi-ultimate}
-\end{figure}
-
-\textbf{进一步提升清晰度的路径}（按性价比排序，纳入第 1 阶段计划）：
-(1) 探头方向与距离参数化扫描（零成本，已实证提升 6--16 分贝）；
-(2) 增加一级商用低噪声放大器（约 100 元，提升 20--30 分贝）；
-(3) 加一个窄带射频滤波器抑制带外干扰（约 50--100 元）；
-(4) 自制定向天线（约 30 元，提升 3--6 分贝）；
-(5) 用磁场探头近距离耦合替代远场天线（与第 1 阶段探头路线一致，提升 20--40 分贝）。
-其中 (2)--(5) 累计可望再提升 30--50 分贝信噪比，对应到单字可读的水平。
-
-\textbf{小结}：前期已经把关键工程风险（硬件代码可编译性、芯片资源容量、真实板卡可控性、射频链路可用性、真实信号还原可行性、信噪比提升路径）提前消除，第 1 阶段可直接进入板上联调，并从第 2 周起做探头、放大器、滤波器的阶梯式信噪比优化。
 
 % ============================================================================
 \section{风险与未决问题清单}
